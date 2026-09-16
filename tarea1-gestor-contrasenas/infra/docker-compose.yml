@@ -1,0 +1,54 @@
+version: "3.8"
+
+# Stack del control central. Wazuh y Mailu se despliegan con sus propios
+# instaladores/compose oficiales (ver infra/wazuh/README.md e infra/mailu/README.md)
+# y se conectan a esta misma red `blue-team-net`.
+
+networks:
+  blue-team-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  grafana-data:
+
+services:
+  control-central:
+    build: ../control-central
+    env_file: ./control-central.env.example
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - blue-team-net
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: control_central
+      POSTGRES_USER: gestor
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - blue-team-net
+
+  grafana:
+    image: grafana/grafana-oss:11.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - blue-team-net
+
+  thehive:
+    image: strangebee/thehive:5.2
+    ports:
+      - "9000:9000"
+    networks:
+      - blue-team-net
+    # TODO: requiere Cassandra + Elasticsearch propios; ver infra/thehive/README.md
+    # antes de habilitar este servicio en el laboratorio.

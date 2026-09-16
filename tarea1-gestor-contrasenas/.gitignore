@@ -1,0 +1,19 @@
+# Node / frontend
+node_modules/
+dist/
+cliente-gestor/src-tauri/target/
+
+# Python / backend
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Secretos y bóvedas de prueba (nunca versionar)
+*.env
+!*.env.example
+*.vault
+keys/
+
+# Evidencias grandes (videos) opcionalmente fuera de git si se usa almacenamiento externo
+# docs/evidencias/*.mp4
