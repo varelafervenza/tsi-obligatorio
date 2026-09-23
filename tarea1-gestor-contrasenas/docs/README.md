@@ -20,6 +20,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☐ |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |
+| `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |
 | `28-Informe-Blue-Team.md` | nueva | ☐ |
 | `evidencias/` | capturas, vídeos, logs | ☐ |
 
