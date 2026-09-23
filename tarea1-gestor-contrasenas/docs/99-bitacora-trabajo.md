@@ -9,7 +9,7 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-BIT-99 |
-| Dueño | Equipo Blue Team |
+| Dueño | Equipo Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Período | 15/09/2026 → 07/10/2026 (pre-entrega) |
 | Versión | 1.0 |
 
@@ -20,7 +20,7 @@
 ---
 Fecha: 15/09/2026
 Equipo: Blue
-Responsable: [completar nombre de quien firma]
+Responsable: Andrés Varela
 ---
 
 ## Actividad: Análisis de la letra y definición de arquitectura/stack
@@ -64,7 +64,7 @@ Responsable: [completar nombre de quien firma]
 ---
 Fecha: 15/09/2026
 Equipo: Blue
-Responsable: [completar nombre de quien firma]
+Responsable: Andrés Varela
 ---
 
 ## Actividad: Esqueleto del repositorio
@@ -104,7 +104,7 @@ Responsable: [completar nombre de quien firma]
 ---
 Fecha: 22/09/2026
 Equipo: Blue
-Responsable: [completar nombre de quien firma]
+Responsable: Andrés Varela
 ---
 
 ## Actividad: Registro de activos (Markdown + Excel MCU 5.0)
@@ -133,7 +133,7 @@ Responsable: [completar nombre de quien firma]
 ---
 Fecha: 22/09/2026
 Equipo: Blue
-Responsable: [completar nombre de quien firma]
+Responsable: Andrés Varela
 ---
 
 ## Actividad: Análisis de riesgos (12 riesgos derivados de RT-01..RT-12)
@@ -162,7 +162,7 @@ Responsable: [completar nombre de quien firma]
 ---
 Fecha: 22/09/2026
 Equipo: Blue
-Responsable: [completar nombre de quien firma]
+Responsable: Andrés Varela
 ---
 
 ## Actividad: Política de Seguridad de la Información
@@ -185,9 +185,36 @@ Responsable: [completar nombre de quien firma]
   sección 8.1 de `LETRA.md` (arquitectura 4+1/C4, registro de activos, análisis de riesgos,
   política de seguridad). Siguiente en la matriz: `09-Gestion-Accesos.md` (23-30/09/2026).
 
+---
+Fecha: 22/09/2026
+Equipo: Blue
+Responsable: Andrés Varela
+---
+
+## Actividad: Gestión de accesos (diseño; evidencia pendiente)
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `docs/09-Gestion-Accesos.md` (función Proteger): modelo de
+  autenticación (maestra + Argon2id, TOTP, WebAuthn/Windows Hello), política de factor mínimo por
+  operación (2FA obligatorio para cambio de maestra y panel de `control-central`), gestión de
+  identidades del panel (RBAC), reglas de secretos y política de contraseñas por sistema (RF-04).
+  Se dejó una tabla explícita de **qué capturas de evidencia faltan y cuándo van a poder tomarse**
+  (enroll TOTP/WebAuthn, config del hash, delay de fuerza bruta, login con 2FA), porque hoy el
+  módulo de auth es solo un esqueleto (`cliente-gestor/src-tauri/src/auth/`,
+  `control-central/app/core/mfa.py`) y no tiene sentido fabricar evidencia de algo que no corre.
+- **Herramienta / comando**: Redacción manual sobre `plantilla/isaca/09-gestion-accesos.md`.
+- **Resultado**: Éxito (diseño). Ningún ítem del check de aceptación que requiere evidencia real
+  está marcado todavía — a propósito, para no declarar un control no demostrable en la auditoría.
+- **Evidencia anexa**: Ninguna todavía (ver tabla "Evidencia pendiente" del propio documento).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Este documento queda "abierto" hasta H3 (02/10): a medida que se implemente
+  cada mecanismo, hay que volver acá a tildar el check de aceptación y agregar la captura real en
+  `docs/evidencias/`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
-- [ ] Cada miembro firma sus entradas (reemplazar los `[completar nombre]` de arriba).
+- [x] Cada miembro firma sus entradas (entradas hasta el 22/09 firmadas por Andrés Varela, que las redactó; Horacio Duarte y Pablo Morales firman las suyas cuando corresponda).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

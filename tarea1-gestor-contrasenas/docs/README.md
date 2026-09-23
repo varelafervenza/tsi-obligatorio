@@ -16,7 +16,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `04-Gestion-Incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☐ |
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☐ |
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☐ |
-| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☐ |
+| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (evidencia real pendiente de implementación) |
 | `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☐ |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |

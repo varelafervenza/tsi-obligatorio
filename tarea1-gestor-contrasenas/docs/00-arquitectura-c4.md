@@ -13,7 +13,7 @@
 | Nombre | Modelo de arquitectura C4 — Gestor de Contraseñas con Control Centralizado |
 | Código | ARQ-C4-01 |
 | Versión | 0.1 (borrador) |
-| Autor/equipo | Blue Team |
+| Autor/equipo | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Fecha | 15/09/2026 |
 | Aprobación | Pendiente (docente / RSI) |
 

@@ -25,7 +25,7 @@
 |---|---|
 | Código | SI-ACT-02 |
 | Versión | 0.1 (borrador — hito H1, 21/09/2026) |
-| Responsable | Blue Team |
+| Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Fecha | 22/09/2026 |
 
 ### Historial de versiones

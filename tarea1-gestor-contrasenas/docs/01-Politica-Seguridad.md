@@ -31,7 +31,7 @@
 | Versión | 0.1 (borrador) |
 | Fecha de aprobación | Pendiente — a formalizar en la auditoría del 14/10/2026 |
 | Aprobado por | Pendiente (RSI del equipo / docente en la auditoría) |
-| Autor | Blue Team |
+| Autor | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Próxima revisión | 07/10/2026 (pre-entrega) y luego ante cualquier cambio significativo de arquitectura |
 
 ### Historial de versiones
