@@ -22,6 +22,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |
 | _(Excel)_ `03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada — reparto por componente (Horacio/Pablo/Andrés) |
+| _(Excel)_ `01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 controles con Aplica + evidencia/pendiente (45 Sí, 2 N.A. justificados) |
 | `28-Informe-Blue-Team.md` | nueva | ☐ |
 | `evidencias/` | capturas, vídeos, logs | ☐ |
 

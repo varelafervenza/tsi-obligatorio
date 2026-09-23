@@ -241,6 +241,41 @@ Responsable: Andrés Varela
   este Excel y actualizarlo, porque el auditor puede pedir consistencia entre la RACI y quién
   demuestra cada control en la auditoría del 14/10.
 
+---
+Fecha: 23/09/2026
+Equipo: Blue
+Responsable: Andrés Varela
+---
+
+## Actividad: Excel de controles MCU 5.0 perfil Avanzado (47 controles)
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `plantilla/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx`
+  (Gobernar, Identificar, Proteger, Detectar, Responder, Recuperar — 47 controles en total),
+  marcando **Aplica = Sí/N.A.** en cada uno y completando **evidencia necesaria** y **cómo se
+  demuestra** con referencias reales a lo ya construido (`docs/`, `plantilla/mcu5/excel/`,
+  `infra/`, código del esqueleto) en vez de dejar el texto genérico del template. Resultado: 45
+  controles en Sí (la mayoría de Proteger/Detectar/Responder/Recuperar quedan honestamente
+  "pendiente de implementación", con fecha objetivo) y 2 en **N.A. justificado**:
+  - *Presupuesto y recursos de seguridad* (Gobernar): no aplica un presupuesto monetario en un
+    proyecto académico; el recurso real son las horas del equipo, trazadas en esta bitácora.
+  - *Monitoreo continuo de la red / NIDS* (Detectar): decisión de alcance del equipo de no
+    implementar Security Onion/Suricata/Zeek (explícitamente opcional en la letra) y concentrar
+    la detección en Wazuh (HIDS/SIEM).
+- **Herramienta / comando**: Python + `openpyxl`.
+- **Resultado**: Éxito. Esta planilla queda como el tracker maestro que el auditor va a recorrer
+  control por control el 14/10; conviene revisarla cada vez que se implemente algo nuevo (semanal,
+  según la letra) para ir pasando filas de "pendiente" a evidencia real.
+- **Evidencia anexa**: (pendiente — captura del Excel en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Al completarla quedó explícito que casi todo Proteger/Detectar
+  (MFA, cifrado, Wazuh, Mailu, Grafana) sigue sin implementación real — es información valiosa
+  para priorizar las próximas dos semanas antes del 07/10, no una sorpresa a evitar sino algo para
+  registrar (no se omiten fallos ni huecos).
+- **Observaciones**: Con este Excel completo, ya cubrimos las tres planillas de apoyo del MCU 5.0
+  pendientes de esta semana (activos, RACI, controles). Falta la de bitácora
+  (`04-bitacora-planilla.xlsx`), que se llena en paralelo a este mismo archivo `.md`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
