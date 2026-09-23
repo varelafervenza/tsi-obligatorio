@@ -159,6 +159,32 @@ Responsable: [completar nombre de quien firma]
 - **Observaciones**: Próximo paso natural en el orden de la matriz de documentación (sección 8.1
   de `LETRA.md`): `01-Politica-Seguridad.md` (aún pendiente, vence 30/09) y `09-Gestion-Accesos.md`.
 
+---
+Fecha: 22/09/2026
+Equipo: Blue
+Responsable: [completar nombre de quien firma]
+---
+
+## Actividad: Política de Seguridad de la Información
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `docs/01-Politica-Seguridad.md` (función **Gobernar** de MCU
+  5.0), después de tener ya la arquitectura, el inventario de activos y el análisis de riesgos —
+  a propósito, para que la política refleje lo que realmente se diseñó y no una declaración
+  genérica. Define alcance (cliente-gestor, control-central, infra, repositorio, personas),
+  principios de seguridad ligados a decisiones concretas (zero-knowledge, AEAD + JWS, RBAC, Zero
+  Trust), la jerarquía hacia las políticas específicas todavía pendientes (accesos, monitoreo,
+  incidentes, continuidad) y roles/responsabilidades.
+- **Herramienta / comando**: Redacción manual sobre `plantilla/isaca/01-politica-seguridad.md`.
+- **Resultado**: Éxito (borrador v0.1). Sin aprobación formal todavía — queda pendiente que el
+  RSI del equipo la apruebe antes de la auditoría del 14/10/2026.
+- **Evidencia anexa**: (pendiente).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Con esto quedan cubiertos los primeros 4 documentos de la matriz de la
+  sección 8.1 de `LETRA.md` (arquitectura 4+1/C4, registro de activos, análisis de riesgos,
+  política de seguridad). Siguiente en la matriz: `09-Gestion-Accesos.md` (23-30/09/2026).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
