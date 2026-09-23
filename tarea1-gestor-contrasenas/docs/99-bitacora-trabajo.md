@@ -212,6 +212,35 @@ Responsable: Andrés Varela
   cada mecanismo, hay que volver acá a tildar el check de aceptación y agregar la captura real en
   `docs/evidencias/`.
 
+---
+Fecha: 23/09/2026
+Equipo: Blue
+Responsable: Andrés Varela
+---
+
+## Actividad: Matriz RACI (reparto de roles por componente)
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `plantilla/mcu5/excel/03-matriz-raci-mcu5.xlsx` (vencía hoy,
+  23/09/2026, según la sección 8.1 de `LETRA.md`) reemplazando los roles genéricos del template
+  ("Analista/SOC", "Admin IAM", etc.) por los tres integrantes reales del equipo, repartidos por
+  componente: **Horacio Duarte** = `cliente-gestor` (bóveda, cripto, MFA local); **Pablo
+  Morales** = `control-central` + infraestructura (API, Wazuh, Mailu, backups); **Andrés
+  Varela** = RSI/coordinación, monitoreo y documentación. Se completaron los 7 procesos del
+  template (gestión de incidentes, accesos, riesgos, vulnerabilidades, capacitación,
+  continuidad, notificación a autoridades) con R/A/C/I, documento de referencia y evidencia
+  (marcando como pendiente la de los documentos aún no escritos).
+- **Herramienta / comando**: Python + `openpyxl`, mismo enfoque que para el registro de activos.
+- **Resultado**: Éxito. Queda como base para repartir el trabajo real de las próximas semanas
+  (07-monitoreo-logs, 10-vulnerabilidades, 06-continuidad, 04-incidentes, 12-notificación).
+- **Evidencia anexa**: (pendiente — captura del Excel en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: El reparto por componente fue una decisión del equipo (confirmada por
+  Andrés en esta sesión); si en la práctica el trabajo se reparte distinto, hay que volver a
+  este Excel y actualizarlo, porque el auditor puede pedir consistencia entre la RACI y quién
+  demuestra cada control en la auditoría del 14/10.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
