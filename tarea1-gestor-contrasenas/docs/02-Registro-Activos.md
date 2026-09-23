@@ -1,7 +1,7 @@
 # Inventario y Clasificación de Activos — Gestor de Contraseñas con Control Centralizado
 
 > Basado en `plantilla/isaca/02-registro-activos.md`. Los mismos activos están cargados en
-> `plantilla/mcu5/excel/02-registro-activos-mcu5.xlsx` (hoja `Activos`), que es el formato
+> `docs/mcu5/excel/02-registro-activos-mcu5.xlsx` (hoja `Activos`), que es el formato
 > exigido para MCU 5.0 (ID-01). Este `.md` agrega el contexto (clasificación, matriz crítica,
 > responsabilidades) que el Excel no cubre.
 
@@ -59,7 +59,7 @@ el riesgo (`03-analisis-riesgos`) y demostrar cumplimiento en la auditoría del 
 
 ## 4. Inventario de activos
 
-> Fuente de verdad operativa: `plantilla/mcu5/excel/02-registro-activos-mcu5.xlsx` (hoja
+> Fuente de verdad operativa: `docs/mcu5/excel/02-registro-activos-mcu5.xlsx` (hoja
 > `Activos`). Tabla espejo abajo para lectura rápida sin abrir el Excel.
 
 | ID | Nombre del activo | Tipo | Ubicación | Dueño | Clasificación | Crítico | Dato personal | Función MCU |

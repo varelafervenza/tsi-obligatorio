@@ -68,7 +68,7 @@ ataque fuera de las VMs del laboratorio del curso (ver reglas de compromiso, sec
 - **MCU 5.0**: esta política es el artefacto de la función **Gobernar**; las demás funciones
   (Identificar, Proteger, Detectar, Responder, Recuperar) se documentan en los archivos
   numerados de esta misma carpeta y se auditan contra el Excel
-  `plantilla/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` en **perfil Avanzado**.
+  `docs/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` en **perfil Avanzado**.
 - **BCU — GSI**: esta política cubre el "Requisito 1"; los requisitos de 2FA, monitoreo y
   notificación de incidentes de la GSI se resuelven en `09-Gestion-Accesos.md`,
   `07-Monitoreo-Logs-SIEM.md` y `12-Notificacion-Incidentes.md` respectivamente.

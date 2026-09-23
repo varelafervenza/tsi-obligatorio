@@ -117,7 +117,7 @@ Responsable: Andrés Varela
   firma de eventos, control-central, PostgreSQL, claves públicas de agentes, RBAC del panel,
   Wazuh (manager y agentes), Mailu, Grafana, gestión de incidentes, el propio repositorio Git y
   la segmentación de red del laboratorio. Se completó tanto `docs/02-Registro-Activos.md` como
-  la hoja `Activos` de `plantilla/mcu5/excel/02-registro-activos-mcu5.xlsx` (mismo contenido,
+  la hoja `Activos` de `docs/mcu5/excel/02-registro-activos-mcu5.xlsx` (mismo contenido,
   formato exigido para MCU 5.0 ID-01), preservando el estilo/formato original del Excel.
 - **Herramienta / comando**: Python + `openpyxl` (`pip install openpyxl`) para editar el `.xlsx`
   manteniendo encabezado, bordes y anchos de columna del template.
@@ -222,7 +222,7 @@ Responsable: Andrés Varela
 
 - **Fase**: Diseño
 - **Duración**: (completar)
-- **Tarea realizada**: Se completó `plantilla/mcu5/excel/03-matriz-raci-mcu5.xlsx` (vencía hoy,
+- **Tarea realizada**: Se completó `docs/mcu5/excel/03-matriz-raci-mcu5.xlsx` (vencía hoy,
   23/09/2026, según la sección 8.1 de `LETRA.md`) reemplazando los roles genéricos del template
   ("Analista/SOC", "Admin IAM", etc.) por los tres integrantes reales del equipo, repartidos por
   componente: **Horacio Duarte** = `cliente-gestor` (bóveda, cripto, MFA local); **Pablo
@@ -251,10 +251,10 @@ Responsable: Andrés Varela
 
 - **Fase**: Diseño
 - **Duración**: (completar)
-- **Tarea realizada**: Se completó `plantilla/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx`
+- **Tarea realizada**: Se completó `docs/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx`
   (Gobernar, Identificar, Proteger, Detectar, Responder, Recuperar — 47 controles en total),
   marcando **Aplica = Sí/N.A.** en cada uno y completando **evidencia necesaria** y **cómo se
-  demuestra** con referencias reales a lo ya construido (`docs/`, `plantilla/mcu5/excel/`,
+  demuestra** con referencias reales a lo ya construido (`docs/`, `docs/mcu5/excel/`,
   `infra/`, código del esqueleto) en vez de dejar el texto genérico del template. Resultado: 45
   controles en Sí (la mayoría de Proteger/Detectar/Responder/Recuperar quedan honestamente
   "pendiente de implementación", con fecha objetivo) y 2 en **N.A. justificado**:
@@ -275,6 +275,35 @@ Responsable: Andrés Varela
 - **Observaciones**: Con este Excel completo, ya cubrimos las tres planillas de apoyo del MCU 5.0
   pendientes de esta semana (activos, RACI, controles). Falta la de bitácora
   (`04-bitacora-planilla.xlsx`), que se llena en paralelo a este mismo archivo `.md`.
+
+---
+Fecha: 23/09/2026
+Equipo: Blue
+Responsable: Andrés Varela
+---
+
+## Actividad: Excel de bitácora + reorganización de los Excel MCU 5.0
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `04-bitacora-planilla.xlsx` como espejo de las 8 entradas ya
+  cargadas en este mismo archivo `.md` (mismas fechas, responsable y tareas, con la columna
+  "Hora (UTC)" marcada como `N/D` porque no veníamos registrando la hora exacta — a corregir de
+  acá en adelante). Además, siguiendo indicación explícita, se movieron los 4 Excel completados
+  (activos, RACI, controles, bitácora) desde `plantilla/mcu5/excel/` hacia
+  `docs/mcu5/excel/` (mismo nombre de subcarpeta que en `plantilla/`), y se **restauraron los
+  originales en blanco** en `plantilla/mcu5/excel/` (vía `git checkout` del commit inicial), para
+  que esa carpeta siga siendo material de referencia del curso sin material propio de la Tarea 1
+  encima. Se actualizaron todas las referencias cruzadas en `01-Politica-Seguridad.md`,
+  `02-Registro-Activos.md` y este mismo archivo para apuntar a la nueva ruta.
+- **Herramienta / comando**: Python + `openpyxl`; `git checkout <commit-inicial> -- <archivos>`
+  para restaurar los templates.
+- **Resultado**: Éxito. `plantilla/` queda limpia; `docs/mcu5/excel/` es ahora la fuente de verdad
+  de los 4 Excel de esta tarea.
+- **Evidencia anexa**: (pendiente).
+- **Incidencia / hallazgo**: Ninguna, más allá de la falta de registro de hora exacta ya anotada.
+- **Observaciones**: De acá en más, si se generan más Excel de apoyo, copiarlos directamente a
+  `docs/mcu5/excel/` y dejar `plantilla/` intacta.
 
 ## Check de aceptación (repetir por período de entrega)
 
