@@ -130,6 +130,35 @@ Responsable: [completar nombre de quien firma]
 - **Observaciones**: Próximo paso natural: `03-analisis-riesgos` (usa este inventario como
   insumo directo) y el Excel `03-matriz-raci-mcu5.xlsx`.
 
+---
+Fecha: 22/09/2026
+Equipo: Blue
+Responsable: [completar nombre de quien firma]
+---
+
+## Actividad: Análisis de riesgos (12 riesgos derivados de RT-01..RT-12)
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó `docs/03-Analisis-Riesgos.md` usando como catálogo de amenazas
+  los propios objetivos del Red Team (RT-01 a RT-12 de la sección 7.2 de `LETRA.md`), en vez de
+  inventar amenazas genéricas — así el registro de riesgos queda alineado 1 a 1 con lo que el
+  Red Team va a intentar entre el 28/10 y el 09/11. Se evaluaron los 12 riesgos (probabilidad,
+  impacto, nivel según la matriz 5x5), se armó el plan de tratamiento y la sección de riesgo
+  residual. Quedaron 4 riesgos en nivel **Alto** (R01 fuerza bruta de maestra, R03 IDOR/XSS/SQLi
+  en control-central, R06 bypass de MFA, R10 exfiltración por errores de la app, R11 OSINT del
+  repositorio) marcados como tratamiento obligatorio antes del 07/10/2026.
+- **Herramienta / comando**: Redacción manual sobre la plantilla `plantilla/isaca/03-analisis-riesgos.md`.
+- **Resultado**: Éxito (borrador v0.1). Falta la aceptación formal del riesgo residual por el RSI
+  (hoy son fechas objetivo, no firmas reales) y la v1 formal que el cronograma de la letra
+  marcaba para el 18/09/2026 — ya pasada.
+- **Evidencia anexa**: (pendiente).
+- **Incidencia / hallazgo**: Igual que la entrada anterior, quedamos con el cronograma de la letra
+  atrasado (H1 vencía 21/09, análisis de riesgos v1 vencía 18/09). Registrado para que el equipo
+  decida cómo recuperar el atraso antes del 07/10.
+- **Observaciones**: Próximo paso natural en el orden de la matriz de documentación (sección 8.1
+  de `LETRA.md`): `01-Politica-Seguridad.md` (aún pendiente, vence 30/09) y `09-Gestion-Accesos.md`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
