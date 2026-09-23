@@ -101,6 +101,35 @@ Responsable: [completar nombre de quien firma]
 
 ---
 
+---
+Fecha: 22/09/2026
+Equipo: Blue
+Responsable: [completar nombre de quien firma]
+---
+
+## Actividad: Registro de activos (Markdown + Excel MCU 5.0)
+
+- **Fase**: Diseño
+- **Duración**: (completar)
+- **Tarea realizada**: Se completó el inventario de activos a partir de la arquitectura ya
+  definida (`docs/00-arquitectura-c4.md`, `docs/00-arquitectura-4mas1.md`) y del esqueleto real
+  del repositorio. Se cargaron 14 activos (A01-A14) cubriendo cliente-gestor, bóveda, clave de
+  firma de eventos, control-central, PostgreSQL, claves públicas de agentes, RBAC del panel,
+  Wazuh (manager y agentes), Mailu, Grafana, gestión de incidentes, el propio repositorio Git y
+  la segmentación de red del laboratorio. Se completó tanto `docs/02-Registro-Activos.md` como
+  la hoja `Activos` de `plantilla/mcu5/excel/02-registro-activos-mcu5.xlsx` (mismo contenido,
+  formato exigido para MCU 5.0 ID-01), preservando el estilo/formato original del Excel.
+- **Herramienta / comando**: Python + `openpyxl` (`pip install openpyxl`) para editar el `.xlsx`
+  manteniendo encabezado, bordes y anchos de columna del template.
+- **Resultado**: Éxito. Ambos documentos quedan alineados; los datos de infraestructura (IPs,
+  VLANs) siguen como pendiente explícito hasta levantar las VMs del laboratorio (Anexo A).
+- **Evidencia anexa**: (pendiente — agregar captura del Excel abierto en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna. Nota: el hito H1 (aprobación de arquitectura y RF/RNF)
+  vencía el 21/09/2026; esta entrada es del 22/09, un día después — a mencionar en la próxima
+  revisión de cronograma con el equipo.
+- **Observaciones**: Próximo paso natural: `03-analisis-riesgos` (usa este inventario como
+  insumo directo) y el Excel `03-matriz-raci-mcu5.xlsx`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
