@@ -305,9 +305,75 @@ Responsable: Andrés Varela
 - **Observaciones**: De acá en más, si se generan más Excel de apoyo, copiarlos directamente a
   `docs/mcu5/excel/` y dejar `plantilla/` intacta.
 
+---
+Fecha: 25/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 23:06
+---
+
+## Actividad: Contraste de la letra con el repositorio y ubicación de los Excel MCU
+
+- **Fase**: Documentación
+- **Duración**: 0,8 h
+- **Tarea realizada**: Se contrastó `LETRA.md` (RF-01..17, hitos H1–H5, matriz §8.1) con el
+  árbol de `tarea1-gestor-contrasenas/`. Se confirmó que los 4 Excel MCU de la Tarea 1 están
+  en `docs/mcu5/excel/` y que `plantilla/mcu5/excel/` queda como template del curso.
+- **Herramienta / comando**: lectura de `LETRA.md`, `docs/README.md` y `docs/mcu5/excel/*.xlsx`.
+- **Resultado**: Éxito. Fuente de verdad de los Excel confirmada.
+- **Evidencia anexa**: (ninguna captura; los Excel ya están versionados en `docs/mcu5/excel/`).
+- **Incidencia / hallazgo**: Hueco de bitácora 23/09→25/09 (límite de 2 días).
+- **Observaciones**: No se fabricaron evidencias de MFA/Wazuh/correo.
+
+---
+Fecha: 25/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 23:54
+---
+
+## Actividad: Recorrido del esqueleto de control-central e infra
+
+- **Fase**: Documentación
+- **Duración**: 0,8 h
+- **Tarea realizada**: Se recorrió `control-central/` e `infra/`. Solo `GET /healthz` responde;
+  eventos, usuarios y dashboard lanzan `NotImplementedError`. El compose define
+  `blue-team-net` (API, Postgres, Grafana; TheHive incompleto).
+- **Herramienta / comando**: lectura de `control-central/app/main.py` e
+  `infra/docker-compose.yml`.
+- **Resultado**: Parcial. Ningún RF demostrable; el código sigue en stub (entrada 15/09).
+- **Evidencia anexa**: (ninguna captura — revisión de código).
+- **Incidencia / hallazgo**: TheHive vs tabla `Incident` sigue abierta (RF-13).
+- **Observaciones**: Próximo paso de este rol: persistencia + `POST /api/events` sobre
+  `blue-team-net`.
+
+---
+Fecha: 26/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 00:48
+---
+
+## Actividad: Decisión de despliegue H2 (Docker, no VMs)
+
+- **Fase**: Documentación
+- **Duración**: 0,9 h
+- **Tarea realizada**: Se resolvió no bloquear H2 (29/09) por VMs. El prototipo se levanta
+  con Docker en un host, red `blue-team-net`, enganchando Wazuh y Mailu (stacks oficiales).
+  El cliente Tauri queda nativo. Las filas VM-* de la 4+1 son nodos lógicos. El Anexo A no
+  está en el repo; se consulta a la cátedra sin frenar el compose.
+- **Herramienta / comando**: lectura de `LETRA.md` §6.1/§10, `docs/00-arquitectura-4mas1.md`
+  e `infra/docker-compose.yml`.
+- **Resultado**: Éxito. Criterio de despliegue para H2 registrado.
+- **Evidencia anexa**: (ninguna captura — decisión documentada acá).
+- **Incidencia / hallazgo**: Anexo A ausente del repositorio.
+- **Observaciones**: Docs `07` y `06` se diseñan en paralelo (28/09–01/10) sin tildar KPIs
+  ni restores hasta que corran.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
-- [x] Cada miembro firma sus entradas (entradas hasta el 22/09 firmadas por Andrés Varela, que las redactó; Horacio Duarte y Pablo Morales firman las suyas cuando corresponda).
+- [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09; Pablo Morales el
+  25/09–26/09 UTC; Horacio Duarte firma las suyas cuando corresponda).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

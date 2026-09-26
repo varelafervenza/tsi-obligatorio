@@ -1,0 +1,14 @@
+# Locks y temporales de Office / LibreOffice (en cualquier carpeta)
+.~lock.*
+~$*
+*.tmp
+*.temp
+*.bak
+
+# Temporales de editor / SO
+*~
+*.swp
+*.swo
+Thumbs.db
+Desktop.ini
+.DS_Store
