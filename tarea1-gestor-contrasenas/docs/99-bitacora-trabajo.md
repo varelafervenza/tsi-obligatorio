@@ -465,6 +465,27 @@ Hora (UTC): 02:15
 - **Observaciones**: Docs `07` se pueden empezar a diseñar sobre este formato. Siguiente:
   correo o JWS (un commit cada uno).
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:26
+---
+
+## Actividad: Verificación del forwarder JSONL en el host
+
+- **Fase**: Prueba
+- **Duración**: 0,2 h
+- **Tarea realizada**: Tras rebuild del compose, un POST `alta_credencial` escribió
+  `event_id: 2` en `infra/logs/audit-events.jsonl` (programa, tipo, sistema, agente,
+  timestamps, `firma_valida: null`). Sin `firma_jws` ni secretos.
+- **Herramienta / comando**: `Get-Content .\logs\audit-events.jsonl`
+- **Resultado**: Éxito. Pipeline evento → Postgres → log demostrable.
+- **Evidencia anexa**: (captura de la línea JSONL en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Espejar en `04-bitacora-planilla.xlsx`. Siguiente commit: correo
+  (RF-07) o verificación JWS.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

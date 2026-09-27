@@ -2,8 +2,7 @@
 # 01
 # 26/09/26 - Alta de credencial desde terminal -
 # Al dar de alta una credencial se genera un registro correctamente.
-
-En terminal, desde /infra:
+# En terminal, desde /infra:
 
 $body = @{
   tipo = "alta_credencial"
@@ -27,9 +26,14 @@ firma_valida :
 ip_origen    : *.*.*.*
 
 
+# 02
+# - Verificación del forwarder JSONL en el host -
+# En terminal, desde /infra:
 
+Get-Content .\logs\audit-events.jsonl
 
-
+Respuesta:
+{"programa": "control-central", "event_id": 2, "tipo": "alta_credencial", "sistema": "sistema-prueba", "agente_id": "agente-dev-01", "occurred_at": "2026-09-27T02:26:32+00:00", "received_at": "2026-09-27T02:26:32.241867+00:00", "ip_origen": "172.20.0.1", "firma_valida": null}
 
 
 
