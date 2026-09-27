@@ -486,6 +486,28 @@ Hora (UTC): 02:26
 - **Observaciones**: Espejar en `04-bitacora-planilla.xlsx`. Siguiente commit: correo
   (RF-07) o verificación JWS.
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:45
+---
+
+## Actividad: Parte 4 H2 — notificación SMTP (Mailpit)
+
+- **Fase**: Implementación
+- **Duración**: 0,5 h
+- **Tarea realizada**: Cada evento RF-07 (alta/mod/borrado/cambio de maestra) dispara
+  un correo SMTP con metadata solamente. `intento_fallido_maestra` no manda mail.
+  H2 usa Mailpit (`localhost:8025`); Mailu se enchufa después con las mismas
+  `SMTP_*`. Si SMTP falla, el 201 no se revierte.
+- **Herramienta / comando**: `app/notify/mailer.py`; servicio `mailpit` en
+  `infra/docker-compose.yml`.
+- **Resultado**: Código listo. Verificar: rebuild, POST, abrir http://localhost:8025.
+- **Evidencia anexa**: (captura de Mailpit en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna. Mailu (SPF/DKIM) queda para un commit de infra.
+- **Observaciones**: Docs `07`/`12` se pueden mencionar este canal. Siguiente: JWS.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

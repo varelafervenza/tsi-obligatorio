@@ -1,7 +1,7 @@
 """Recepción de eventos de auditoría (RF-08).
 
-Persiste metadata en Postgres y escribe una línea JSONL para el SIEM.
-La verificación JWS y el correo quedan para commits siguientes.
+Persiste metadata en Postgres, escribe JSONL para el SIEM y notifica por correo
+(RF-07). La verificación JWS queda para un commit siguiente.
 """
 from datetime import datetime, timezone
 from typing import Literal
@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.event import AuditEvent
+from app.notify.mailer import enviar_notificacion_segura
 from app.siem.wazuh_forwarder import reenviar_evento_seguro
 
 router = APIRouter()
@@ -64,6 +65,7 @@ def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(ge
     db.commit()
     db.refresh(evento)
     reenviar_evento_seguro(evento)
+    enviar_notificacion_segura(evento)
     return evento
 
 

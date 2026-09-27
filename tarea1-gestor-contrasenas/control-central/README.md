@@ -22,14 +22,14 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 - [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`). Firma JWS se guarda, no se verifica todavía.
 - [x] Forwarder JSONL a `infra/logs/audit-events.jsonl` (Wazuh lo consume después).
 - [ ] Verificación JWS con clave pública por agente (no HMAC compartida global).
-- [ ] Disparo de correo (Mailu/Postfix) en alta/mod/borrado/cambio de maestra. RF-07.
+- [x] Correo SMTP en alta/mod/borrado/cambio de maestra (Mailpit en H2; Mailu después).
 - [ ] Reglas de detección en Wazuh (RF-10) sobre ese JSONL.
 - [ ] RBAC de usuarios del panel + enroll TOTP/WebAuthn/Windows Hello. RF-11.
 - [ ] Retención de eventos ≥ 90 días (RNF-07) y purga programada.
 
 ## Cómo correr
 
-Stack del H2 (API + Postgres + Grafana; TheHive no arranca):
+Stack del H2 (API + Postgres + Grafana + Mailpit; TheHive no arranca):
 
 ```bash
 cd ../infra
@@ -41,6 +41,7 @@ curl http://localhost:8000/healthz
 bash ../scripts/generar_evento_prueba.sh
 curl http://localhost:8000/api/events/
 # Una línea JSON nueva en infra/logs/audit-events.jsonl (Get-Content).
+# Correo de prueba: http://localhost:8025  (Mailpit; Mailu se apunta después).
 ```
 
 Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):

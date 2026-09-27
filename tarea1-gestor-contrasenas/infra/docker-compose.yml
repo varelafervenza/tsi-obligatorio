@@ -44,6 +44,14 @@ services:
     networks:
       - blue-team-net
 
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - blue-team-net
+
   grafana:
     image: grafana/grafana-oss:11.2.0
     ports:
