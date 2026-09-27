@@ -1,0 +1,23 @@
+# Node / frontend
+node_modules/
+dist/
+cliente-gestor/src-tauri/target/
+
+# Python / backend
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Secretos y bóvedas de prueba (nunca versionar)
+*.env
+!*.env.example
+*.vault
+keys/
+
+# Logs SIEM generados en runtime (el directorio sí se versiona con .gitkeep)
+infra/logs/*.jsonl
+infra/logs/*.log
+
+# Evidencias grandes (videos) opcionalmente fuera de git si se usa almacenamiento externo
+# docs/evidencias/*.mp4

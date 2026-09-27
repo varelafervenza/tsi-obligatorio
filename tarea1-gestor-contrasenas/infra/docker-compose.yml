@@ -1,0 +1,73 @@
+version: "3.8"
+
+# Stack del control central. Wazuh y Mailu se despliegan con sus propios
+# instaladores/compose oficiales (ver infra/wazuh/README.md e infra/mailu/README.md)
+# y se conectan a esta misma red `blue-team-net`.
+
+networks:
+  blue-team-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  grafana-data:
+
+services:
+  control-central:
+    build: ../control-central
+    env_file: ./control-central.env.example
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/var/log/control-central
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - blue-team-net
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: control_central
+      POSTGRES_USER: gestor
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestor -d control_central"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blue-team-net
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - blue-team-net
+
+  grafana:
+    image: grafana/grafana-oss:11.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - blue-team-net
+
+  thehive:
+    profiles: ["thehive"]
+    image: strangebee/thehive:5.2
+    ports:
+      - "9000:9000"
+    networks:
+      - blue-team-net
+    # No se levanta con `docker compose up`. Requiere Cassandra + Elasticsearch;
+    # ver infra/thehive/README.md. Activar con: --profile thehive
