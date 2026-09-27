@@ -420,6 +420,27 @@ Hora (UTC): 01:15
 - **Incidencia / hallazgo**: Ninguna nueva. JWS sigue sin verificar a propósito.
 - **Observaciones**: Docs `07`/`06` siguen pendientes (diseño). No mezclar Mailu/Wazuh acá.
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:02
+---
+
+## Actividad: Verificación de POST /api/events en el host
+
+- **Fase**: Prueba
+- **Duración**: 0,2 h
+- **Tarea realizada**: Tras `docker compose up --build`, se envió un evento
+  `alta_credencial` / `sistema-prueba` / `agente-dev-01`. La API respondió 201 con
+  `id=1`, `firma_valida` vacío y `occurred_at`/`received_at` coherentes.
+- **Herramienta / comando**: `Invoke-RestMethod` POST `http://localhost:8000/api/events/`.
+- **Resultado**: Éxito. Persistencia demostrable en vivo.
+- **Evidencia anexa**: (guardar captura del 201 en `docs/evidencias/26-post-evento-alta.png`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Espejar esta fila en `04-bitacora-planilla.xlsx`. Siguiente parte H2:
+  verificar JWS o forwarder/correo (no ambos en el mismo commit).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
