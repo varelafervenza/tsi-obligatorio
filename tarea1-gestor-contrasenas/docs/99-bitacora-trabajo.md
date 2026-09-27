@@ -370,6 +370,34 @@ Hora (UTC): 00:48
 - **Observaciones**: Docs `07` y `06` se diseñan en paralelo (28/09–01/10) sin tildar KPIs
   ni restores hasta que corran.
 
+---
+Fecha: 26/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 23:00
+---
+
+## Actividad: Parte 1 H2 — sesión Postgres y healthz en el compose
+
+- **Fase**: Implementación
+- **Duración**: 1,0 h
+- **Tarea realizada**: Se conectó `control-central` a PostgreSQL (`app/db/session.py`) y
+  `GET /healthz` ahora hace `SELECT 1` (503 si la BD no responde). En
+  `infra/docker-compose.yml`: healthcheck de Postgres, `depends_on` con condición,
+  puerto 5432 publicado, TheHive detrás del profile `thehive` para que `docker compose up`
+  no lo levante. `POST /api/events` sigue sin implementar (siguiente commit).
+- **Herramienta / comando**: edición de `session.py`, `main.py`, `docker-compose.yml`.
+  Verificación: `cd infra; docker compose up --build -d` y
+  `curl http://localhost:8000/healthz` (pendiente en esta máquina: el entorno del agente
+  no pudo spawn Docker).
+- **Resultado**: Parcial. Código listo; falta confirmar `{"status":"ok","database":"up"}`
+  en el host.
+- **Evidencia anexa**: (captura de healthz cuando corra el compose en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Shell del agente con EPERM al invocar Docker; verificar en
+  terminal local.
+- **Observaciones**: Docs `07`/`06` no se tocan en este commit. Siguiente parte: persistir
+  eventos en Postgres.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

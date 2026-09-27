@@ -19,7 +19,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - blue-team-net
 
@@ -29,8 +30,15 @@ services:
       POSTGRES_DB: control_central
       POSTGRES_USER: gestor
       POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestor -d control_central"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - blue-team-net
 
@@ -45,10 +53,11 @@ services:
       - blue-team-net
 
   thehive:
+    profiles: ["thehive"]
     image: strangebee/thehive:5.2
     ports:
       - "9000:9000"
     networks:
       - blue-team-net
-    # TODO: requiere Cassandra + Elasticsearch propios; ver infra/thehive/README.md
-    # antes de habilitar este servicio en el laboratorio.
+    # No se levanta con `docker compose up`. Requiere Cassandra + Elasticsearch;
+    # ver infra/thehive/README.md. Activar con: --profile thehive

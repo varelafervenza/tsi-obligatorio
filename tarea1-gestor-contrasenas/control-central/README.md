@@ -26,10 +26,21 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 - [ ] RBAC de usuarios del panel + enroll TOTP/WebAuthn/Windows Hello. RF-11.
 - [ ] Retención de eventos ≥ 90 días (RNF-07) y purga programada.
 
-## Cómo correr (una vez implementado)
+## Cómo correr
+
+Stack del H2 (API + Postgres + Grafana; TheHive no arranca):
 
 ```bash
-python -m venv venv && source venv/bin/activate  # o venv\Scripts\activate en Windows
+cd ../infra
+docker compose up --build -d
+curl http://localhost:8000/healthz
+# esperado: {"status":"ok","database":"up"}
+```
+
+Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):
+
+```bash
+python -m venv venv && venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
