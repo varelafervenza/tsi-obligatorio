@@ -528,6 +528,29 @@ Hora (UTC): 02:52
 - **Incidencia / hallazgo**: Ninguna. Mailu (SPF/DKIM) sigue pendiente.
 - **Observaciones**: Espejar en `04-bitacora-planilla.xlsx`. Siguiente: verificación JWS.
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 18:46
+---
+
+## Actividad: Parte 5 H2 — verificación JWS por agente
+
+- **Fase**: Implementación
+- **Duración**: 0,7 h
+- **Tarea realizada**: El central verifica RS256 con `keys/agentes/{agente_id}.pub.pem`
+  (una clave por agente, no HMAC global). Los claims del JWS deben coincidir con
+  tipo/sistema/agente/timestamp. Se persiste igual si falla (`firma_valida=false`)
+  para que el SIEM vea el intento. Scripts: `generar_par_agente.py` y
+  `generar_evento_prueba.py`. La privada no se versiona (`keys/` en .gitignore).
+- **Herramienta / comando**: `app/core/security.py`; volumen `../keys/agentes` en compose.
+- **Resultado**: Código listo. Verificar: par de claves, POST firmado (`true`) y
+  `--sin-firma` (`false`).
+- **Evidencia anexa**: (captura de ambos 201 en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Grafana (paso 2) es el siguiente commit; la UI ya está en :3000.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

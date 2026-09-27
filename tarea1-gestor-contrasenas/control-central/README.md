@@ -19,9 +19,9 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 
 ## Pendiente (no implementado aún)
 
-- [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`). Firma JWS se guarda, no se verifica todavía.
+- [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`).
 - [x] Forwarder JSONL a `infra/logs/audit-events.jsonl` (Wazuh lo consume después).
-- [ ] Verificación JWS con clave pública por agente (no HMAC compartida global).
+- [x] Verificación JWS RS256 con clave pública por agente (`firma_valida` true/false).
 - [x] Correo SMTP en alta/mod/borrado/cambio de maestra (Mailpit en H2; Mailu después).
 - [ ] Reglas de detección en Wazuh (RF-10) sobre ese JSONL.
 - [ ] RBAC de usuarios del panel + enroll TOTP/WebAuthn/Windows Hello. RF-11.
@@ -37,8 +37,12 @@ docker compose up --build -d
 curl http://localhost:8000/healthz
 # esperado: {"status":"ok","database":"up"}
 
-# Evento de prueba (Git Bash / WSL). En PowerShell usar el mismo JSON con Invoke-RestMethod.
-bash ../scripts/generar_evento_prueba.sh
+# Una vez (en la raíz de tarea1-gestor-contrasenas); la privada no se commitea:
+#   pip install python-jose[cryptography]
+#   python scripts/generar_par_agente.py
+# Luego recrear el compose para montar keys/agentes/*.pub.pem
+python ../scripts/generar_evento_prueba.py
+# esperado: firma_valida true. Con --sin-firma queda false (TODO).
 curl http://localhost:8000/api/events/
 # Una línea JSON nueva en infra/logs/audit-events.jsonl (Get-Content).
 # Correo de prueba: http://localhost:8025  (Mailpit; Mailu se apunta después).

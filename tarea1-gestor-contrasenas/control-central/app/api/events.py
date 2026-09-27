@@ -1,7 +1,7 @@
 """Recepción de eventos de auditoría (RF-08).
 
 Persiste metadata en Postgres, escribe JSONL para el SIEM y notifica por correo
-(RF-07). La verificación JWS queda para un commit siguiente.
+(RF-07). Verifica JWS con la clave pública del agente (RF-08).
 """
 from datetime import datetime, timezone
 from typing import Literal
@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.security import verificar_jws
 from app.db.session import get_db
 from app.models.event import AuditEvent
 from app.notify.mailer import enviar_notificacion_segura
@@ -50,7 +51,14 @@ class EventoOut(BaseModel):
 
 @router.post("/", response_model=EventoOut, status_code=201)
 def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(get_db)):
-    # firma_valida=None: todavía no se verifica JWS (RF-08, siguiente parte).
+    ts = payload.timestamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    firma_valida = verificar_jws(
+        payload.firma_jws,
+        agente_id=payload.agente_id,
+        tipo=payload.tipo,
+        sistema=payload.sistema,
+        timestamp_iso=ts,
+    )
     evento = AuditEvent(
         agente_id=payload.agente_id,
         tipo=payload.tipo,
@@ -58,7 +66,7 @@ def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(ge
         occurred_at=payload.timestamp,
         received_at=datetime.now(timezone.utc),
         firma_jws=payload.firma_jws,
-        firma_valida=None,
+        firma_valida=firma_valida,
         ip_origen=request.client.host if request.client else None,
     )
     db.add(evento)
