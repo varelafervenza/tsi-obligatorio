@@ -508,6 +508,26 @@ Hora (UTC): 02:45
 - **Incidencia / hallazgo**: Ninguna. Mailu (SPF/DKIM) queda para un commit de infra.
 - **Observaciones**: Docs `07`/`12` se pueden mencionar este canal. Siguiente: JWS.
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:52
+---
+
+## Actividad: Verificación de correo SMTP (Mailpit)
+
+- **Fase**: Prueba
+- **Duración**: 0,2 h
+- **Tarea realizada**: Tras rebuild, un POST `alta_credencial` llegó a Mailpit
+  (`http://localhost:8025`) con asunto y cuerpo de metadata (id, tipo, sistema,
+  agente, timestamps). Sin secretos. Formato correcto.
+- **Herramienta / comando**: UI Mailpit :8025
+- **Resultado**: Éxito. RF-07 demostrable en el prototipo H2 (canal Mailpit).
+- **Evidencia anexa**: (captura de Mailpit en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna. Mailu (SPF/DKIM) sigue pendiente.
+- **Observaciones**: Espejar en `04-bitacora-planilla.xlsx`. Siguiente: verificación JWS.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

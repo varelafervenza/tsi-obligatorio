@@ -37,5 +37,11 @@ Respuesta:
 
 
 
+# 03
+# - Verificación de notificacion por SMTP -
+# En terminal, desde /infra:
 
+start http://localhost:8025
 
+# Al ejecutar Alta de credencial desde terminal se envia un mail avisando el evento sucedido
+# Se puede chequear en mailpit
