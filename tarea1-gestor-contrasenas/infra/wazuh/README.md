@@ -21,8 +21,20 @@ Después:
    - Cambio de contraseña maestra (regla de severidad alta, dispara notificación).
 4. Documentar las reglas y capturas de alertas en `docs/07-Monitoreo-Logs-SIEM.md`.
 
+## Formato de log (ya emitido por control-central)
+
+Cada `POST /api/events/` agrega **una línea JSON** en
+`infra/logs/audit-events.jsonl` (dentro del contenedor:
+`/var/log/control-central/audit-events.jsonl`). Campos: `programa`, `event_id`,
+`tipo`, `sistema`, `agente_id`, `occurred_at`, `received_at`, `ip_origen`,
+`firma_valida`. Sin secretos ni `firma_jws`.
+
+Cuando exista el manager, configurar `localfile` apuntando a ese path (o copiar
+el JSONL al agente). Las 3 reglas RF-10 se escriben después, leyendo `tipo`:
+`intento_fallido_maestra`, `borrado_credencial`, `cambio_maestra`.
+
 ## Pendiente
 
-- [ ] Definir el formato de log que `control-central/app/siem/wazuh_forwarder.py` envía.
+- [x] Formato de log del forwarder (`wazuh_forwarder.py` → JSONL).
 - [ ] Crear y probar las 3 reglas custom de RF-10.
 - [ ] Configurar retención ≥ 90 días (RNF-07).

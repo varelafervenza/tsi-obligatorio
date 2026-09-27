@@ -15,5 +15,9 @@ venv/
 *.vault
 keys/
 
+# Logs SIEM generados en runtime (el directorio sí se versiona con .gitkeep)
+infra/logs/*.jsonl
+infra/logs/*.log
+
 # Evidencias grandes (videos) opcionalmente fuera de git si se usa almacenamiento externo
 # docs/evidencias/*.mp4

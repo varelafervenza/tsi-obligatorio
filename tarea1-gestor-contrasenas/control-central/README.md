@@ -20,9 +20,10 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 ## Pendiente (no implementado aún)
 
 - [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`). Firma JWS se guarda, no se verifica todavía.
+- [x] Forwarder JSONL a `infra/logs/audit-events.jsonl` (Wazuh lo consume después).
 - [ ] Verificación JWS con clave pública por agente (no HMAC compartida global).
 - [ ] Disparo de correo (Mailu/Postfix) en alta/mod/borrado/cambio de maestra. RF-07.
-- [ ] Reglas de detección reenviadas a Wazuh: fuerza bruta de maestra, borrado masivo, cambio de maestra. RF-10.
+- [ ] Reglas de detección en Wazuh (RF-10) sobre ese JSONL.
 - [ ] RBAC de usuarios del panel + enroll TOTP/WebAuthn/Windows Hello. RF-11.
 - [ ] Retención de eventos ≥ 90 días (RNF-07) y purga programada.
 
@@ -39,6 +40,7 @@ curl http://localhost:8000/healthz
 # Evento de prueba (Git Bash / WSL). En PowerShell usar el mismo JSON con Invoke-RestMethod.
 bash ../scripts/generar_evento_prueba.sh
 curl http://localhost:8000/api/events/
+# Una línea JSON nueva en infra/logs/audit-events.jsonl (Get-Content).
 ```
 
 Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):

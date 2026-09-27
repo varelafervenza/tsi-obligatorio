@@ -18,6 +18,8 @@ services:
     env_file: ./control-central.env.example
     ports:
       - "8000:8000"
+    volumes:
+      - ./logs:/var/log/control-central
     depends_on:
       postgres:
         condition: service_healthy

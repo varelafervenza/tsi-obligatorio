@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     smtp_host: str = "mailu"
     smtp_port: int = 587
     hash_algorithm: str = "argon2id"  # o "bcrypt", elegible desde RF-11
+    siem_log_path: str = "./logs/audit-events.jsonl"
 
     class Config:
         env_file = ".env"

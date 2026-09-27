@@ -441,6 +441,30 @@ Hora (UTC): 02:02
 - **Observaciones**: Espejar esta fila en `04-bitacora-planilla.xlsx`. Siguiente parte H2:
   verificar JWS o forwarder/correo (no ambos en el mismo commit).
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:15
+---
+
+## Actividad: Parte 3 H2 — forwarder JSONL para el SIEM
+
+- **Fase**: Implementación
+- **Duración**: 0,5 h
+- **Tarea realizada**: Cada `POST /api/events/` escribe una línea JSON (sin secretos ni
+  `firma_jws`) en `infra/logs/audit-events.jsonl`, montado en el contenedor como
+  `/var/log/control-central/`. Si el disco falla, el 201 no se revierte: Postgres
+  sigue siendo la fuente de verdad. Wazuh y las 3 reglas RF-10 no se levantan en
+  este commit; el formato queda documentado en `infra/wazuh/README.md`.
+- **Herramienta / comando**: `app/siem/wazuh_forwarder.py`, `SIEM_LOG_PATH`, volumen
+  `./logs` en `docker-compose.yml`.
+- **Resultado**: Código listo. Verificar con un POST y `Get-Content infra/logs/audit-events.jsonl`.
+- **Evidencia anexa**: (captura de la línea JSONL en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Docs `07` se pueden empezar a diseñar sobre este formato. Siguiente:
+  correo o JWS (un commit cada uno).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
