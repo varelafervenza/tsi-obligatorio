@@ -398,6 +398,28 @@ Hora (UTC): 23:00
 - **Observaciones**: Docs `07`/`06` no se tocan en este commit. Siguiente parte: persistir
   eventos en Postgres.
 
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 01:15
+---
+
+## Actividad: Parte 2 H2 — persistir POST /api/events en Postgres
+
+- **Fase**: Implementación
+- **Duración**: 0,8 h
+- **Tarea realizada**: Se agregó el modelo `audit_events` y `POST /api/events/` (201)
+  guarda tipo, sistema, agente, timestamp, firma JWS e IP. `GET /api/events/` lista
+  los últimos 20. La firma se almacena con `firma_valida=null` (verificación JWS y
+  SIEM/correo quedan para el siguiente commit). `create_all` al arrancar crea la tabla.
+- **Herramienta / comando**: `app/models/event.py`, `app/api/events.py`, `app/main.py`;
+  prueba: `bash scripts/generar_evento_prueba.sh` y `GET /api/events/`.
+- **Resultado**: Código listo. Verificar en el host tras `docker compose up --build`.
+- **Evidencia anexa**: (captura del 201 + listado cuando corra, en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna nueva. JWS sigue sin verificar a propósito.
+- **Observaciones**: Docs `07`/`06` siguen pendientes (diseño). No mezclar Mailu/Wazuh acá.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

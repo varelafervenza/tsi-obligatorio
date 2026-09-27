@@ -19,7 +19,7 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 
 ## Pendiente (no implementado aún)
 
-- [ ] Modelo de datos definitivo de `Event` (tipo, sistema, agente, timestamp, firma, resultado de verificación).
+- [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`). Firma JWS se guarda, no se verifica todavía.
 - [ ] Verificación JWS con clave pública por agente (no HMAC compartida global).
 - [ ] Disparo de correo (Mailu/Postfix) en alta/mod/borrado/cambio de maestra. RF-07.
 - [ ] Reglas de detección reenviadas a Wazuh: fuerza bruta de maestra, borrado masivo, cambio de maestra. RF-10.
@@ -35,6 +35,10 @@ cd ../infra
 docker compose up --build -d
 curl http://localhost:8000/healthz
 # esperado: {"status":"ok","database":"up"}
+
+# Evento de prueba (Git Bash / WSL). En PowerShell usar el mismo JSON con Invoke-RestMethod.
+bash ../scripts/generar_evento_prueba.sh
+curl http://localhost:8000/api/events/
 ```
 
 Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):

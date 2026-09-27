@@ -1,11 +1,22 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api import dashboard, events, users
-from app.db.session import ping_db
+from app.db.base import Base
+from app.db.session import engine, ping_db
+from app.models.event import AuditEvent  # noqa: F401 — registra el modelo en Base
 
-app = FastAPI(title="Control Central - Gestor de Contraseñas")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(title="Control Central - Gestor de Contraseñas", lifespan=lifespan)
 
 app.include_router(events.router, prefix="/api/events", tags=["events"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])

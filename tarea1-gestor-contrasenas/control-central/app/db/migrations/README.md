@@ -1,3 +1,4 @@
 # migrations
 
-Migraciones Alembic. `alembic init .` cuando el esquema de `app/models/` esté definido.
+El prototipo H2 crea tablas con `Base.metadata.create_all` al arrancar (`app/main.py`).
+`alembic init` queda para cuando el esquema deje de cambiar en cada commit.
