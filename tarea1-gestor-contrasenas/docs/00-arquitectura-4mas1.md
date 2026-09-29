@@ -1,6 +1,15 @@
 # Modelo de arquitectura 4+1 — Gestor de Contraseñas con Control Centralizado
 
 > Basado en `plantilla/plantilla-arquitectura-4más1.md`. Borrador para hito **H1 (21/09/2026)**.
+## Encabezado de mapeo normativo
+
+| Marco | Ítem de referencia |
+|---|---|
+| **MCU 5.0** | Aporta evidencia a **Identificar** (ID-01 inventario de activos), **Gobernar** (GV-01) y **Proteger** (PR-01). |
+| **BCU (GSI)** | Sustenta requerimientos de inventario, arquitecturas de acceso y continuidad. |
+| **ISO/IEC 27001:2022** | A.5.9 Inventario, A.5.29 Continuidad, A.8.16 Monitoreo. |
+| **COBIT 2019** | APO03 (Activos), BAI02 (Definir arquitectura), BAI06 (Cambios). |
+| **Plantillas asociadas** | `02-registro-activos`, `07-monitoreo-logs`, `06-plan-continuidad`. |
 
 ---
 
@@ -30,7 +39,11 @@
 | SIEM (Wazuh) | Correlación de eventos, reglas de detección (fuerza bruta de maestra, borrado masivo, cambio de maestra), FIM | Syslog/API desde `control-central`; agentes en clientes | — |
 | Mail (Mailu) | Envío de notificaciones ante alta/mod/borrado/cambio de maestra | SMTP desde `control-central` | — |
 | Dashboard (Grafana) | Visualización de KPIs/alertas/incidentes/funcionamiento | Lee de PostgreSQL / Wazuh | `control-central`, Wazuh |
+<<<<<<< HEAD
 | SOAR/casos (TheHive o tabla `Incident` propia — **decisión abierta**, ver bitácora 15/09) | Registro y ciclo de vida de incidentes | REST / interno en `control-central` | Wazuh (alertas) |
+=======
+| Gestión de incidentes (`Incident` propia) | Crear incidentes a partir de alertas, asignarlos y gestionar los estados `abierto`, `en análisis` y `resuelto` (RF-13) | Interno en `control-central`; API del dashboard para consulta/actualización | Wazuh (alertas), PostgreSQL |
+>>>>>>> main
 
 **Patrón**: event-driven entre cliente y control central (el cliente nunca es consultado por el
 servidor; solo empuja eventos firmados cuando hay red). Dentro de `control-central`, arquitectura
@@ -46,6 +59,10 @@ para la escala de RNF-05).
 | **Cambio de contraseña maestra** (evento crítico) | `cliente-gestor`, `control-central`, SIEM, Mail | 1. Usuario cambia maestra → 2. Se re-deriva y re-cifra toda la bóveda → 3. Evento firmado de severidad alta → 4. `control-central` lo marca crítico → 5. Notificación **inmediata** por correo → 6. Wazuh dispara alerta de alta severidad | Notificación inmediata (RF-07) |
 | Detección de fuerza bruta de maestra | `cliente-gestor` (delay adaptativo), Wazuh, Mail | 1. Intentos fallidos repetidos localmente → 2. Delay adaptativo local (RF-16) → 3. Si se supera umbral, evento de intento fallido al control central → 4. Regla Wazuh correlaciona N intentos en ventana T → 5. Alerta + notificación | MTTD como KPI (sección 6.4 LETRA.md) |
 | Import/export de bóveda | Usuario, `cliente-gestor` | 1. Exportar bóveda con contraseña de transporte propia (RF-12) → 2. Archivo cifrado portable → 3. Import en otro equipo revalida MFA antes de descifrar | — |
+<<<<<<< HEAD
+=======
+| Gestión del ciclo de vida de un incidente | Wazuh, `control-central`, RSI/auditor | 1. Wazuh genera una alerta → 2. `control-central` crea un registro `Incident` en estado `abierto` y conserva la alerta de origen → 3. RSI lo asigna y pasa a `en análisis` → 4. Se documentan acciones y evidencias → 5. Al contener y verificar la solución, RSI lo pasa a `resuelto` con fecha y responsable → 6. El incidente queda consultable en el dashboard | MTTD desde la alerta hasta la creación; MTTR desde `abierto` hasta `resuelto` |
+>>>>>>> main
 
 ## 3. Vista de Desarrollo
 
@@ -79,6 +96,10 @@ para la escala de RNF-05).
 | ESC-04 | Ataque de fuerza bruta contra la maestra local activa el delay adaptativo y luego la regla Wazuh | Procesos, Física | Es también RT-01/RT-08 del Red Team; debe quedar cubierto antes de la entrega |
 | ESC-05 | Exportación de bóveda con contraseña de transporte y reimportación en otro cliente | Lógica, Desarrollo | Validar RF-12 y que el archivo exportado no sea descifrable sin la contraseña de transporte |
 | ESC-06 | Falsificación de un evento con clave de otro agente es rechazada por `control-central` | Lógica, Procesos | Mitigación directa de RT-02 |
+<<<<<<< HEAD
+=======
+| ESC-07 | Una alerta de Wazuh genera un incidente que el RSI asigna, analiza y cierra con estado `resuelto` | Lógica, Procesos | Validar RF-13: comprobar los estados `abierto` → `en análisis` → `resuelto`, el vínculo con la alerta, responsable, fechas y evidencias en el dashboard |
+>>>>>>> main
 
 ---
 

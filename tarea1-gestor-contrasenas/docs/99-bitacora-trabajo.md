@@ -574,6 +574,58 @@ Hora (UTC): 20:29
 - **Incidencia / hallazgo**: Compose no busca el YAML en carpetas padre.
 - **Observaciones**: Postgres/Grafana de ejemplo usan `changeme`. Credenciales
   reales fuera del repo. Copiar `*.example` y editar la copia local.
+Responsable: Horacio Duarte
+Hora (UTC): 10:34
+---
+
+## Actividad: Revisión y actualización de arquitecturas 4+1 y C4
+
+- **Fase**: Diseño / Documentación
+- **Duración**: (completar)
+- **Tarea realizada**: Se contrastaron `docs/00-arquitectura-4mas1.md` y
+  `docs/00-arquitectura-c4.md` contra `LETRA.md` y se corrigieron omisiones de RF-13 y RNF-06.
+  Se decidió documentar la gestión de incidentes mediante un modelo `Incident` interno en
+  `control-central`, implementado conceptualmente con FastAPI + SQLAlchemy + PostgreSQL, con
+  estados `abierto`, `en análisis` y `resuelto`, y flujo alerta Wazuh → incidente → asignación →
+  evidencias → cierre. TheHive queda registrado como integración futura, no como alternativa
+  del despliegue actual.
+  También se documentaron los flujos de protección en tránsito: TLS 1.2+, reverse proxy para
+  el acceso a FastAPI, validación de certificados, conexión API/PostgreSQL, SMTP submission/TLS
+  hacia Mailu, comunicación TLS del agente con Wazuh y acceso protegido de Grafana. En el Nivel 1
+  del C4 se separaron los actores humanos (RSI/auditor) de los sistemas Grafana, Wazuh y Mailu.
+- **Resultado**: Éxito documental. La arquitectura queda alineada con RF-13 y RNF-06, pero la
+  implementación de `Incident`, los endpoints de gestión, TLS productivo y la integración real
+  con Wazuh siguen pendientes de implementación y evidencia.
+- **Evidencia anexa**: Documentos actualizados `docs/00-arquitectura-4mas1.md` y
+  `docs/00-arquitectura-c4.md`. Capturas de despliegue y pruebas: pendientes.
+- **Incidencia / hallazgo**: Se detectó que el C4 mantenía TheHive como decisión abierta y que
+  no describía con suficiente precisión TLS ni separaba personas de sistemas externos. Se corrigió
+  en la documentación; queda pendiente reflejar la decisión en cualquier documento antiguo que
+  todavía mencione TheHive como alternativa actual.
+- **Observaciones**: Espejar esta entrada en `docs/mcu5/excel/04-bitacora-planilla.xlsx` cuando
+  se actualice la planilla.
+
+---
+Fecha: 27/09/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 15:45
+---
+
+## Actividad: Elaboración del diagrama de arquitectura
+
+- **Fase**: Diseño / Documentación
+- **Duración**: (completar)
+- **Tarea realizada**: Se elaboró el diagrama general de arquitectura del Gestor de
+  Contraseñas con Control Centralizado, tomando como base las vistas 4+1 y C4. Se representaron
+  el cliente offline, `control-central`, PostgreSQL, Wazuh, Mailu, Grafana y la gestión de
+  incidentes mediante `Incident` interno, junto con los principales flujos de eventos, alertas y
+  notificaciones.
+- **Resultado**: Éxito documental. El diseño del diagrama queda alineado con la arquitectura
+  4+1/C4 y preparado para la presentación inicial de la demo. La exportación o incorporación de
+  `docs/diagrama-arquitectura.png` 
+- **Evidencia anexa**: `docs/00-arquitectura-4mas1.md` y `docs/00-arquitectura-c4.md`; imagen
+  `docs/diagrama-arquitectura.png`
 
 ## Check de aceptación (repetir por período de entrega)
 

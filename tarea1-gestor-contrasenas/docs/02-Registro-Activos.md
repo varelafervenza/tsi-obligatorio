@@ -12,8 +12,8 @@
 | Marco | Ítem | Detalle / aporte |
 |---|---|---|
 | **MCU 5.0** | **Identificar** (ID-01, ID-02), **Proteger** (PR-01) | Catálogo de activos y priorización de críticos. |
-| **COBIT 2019** | APO03, APO12 | Gestión de activos de TI y de riesgo. |
-| **ISO/IEC 27001:2022** | A.5.9, A.5.10, A.5.12 | Inventario, propiedad, clasificación. |
+| **COBIT 2019** | APO13, APO12 | Gestión de seguridad, activos de TI y riesgo. |
+| **ISO/IEC 27001:2022** | A.5.9, A.5.10, A.5.12 | Inventario, propiedad y clasificación. |
 | **BCU — GSI** | Inventario de activos críticos | Activos que soportan operaciones de negocio. |
 | **URCDP — Ley 18.331, Art. 9** | Inventario de datos personales | Activos marcados con `Dato personal = S`. |
 
@@ -24,15 +24,16 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-ACT-02 |
-| Versión | 0.1 (borrador — hito H1, 21/09/2026) |
+| Versión | 0.2 (borrador — revisión 27/09/2026) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
-| Fecha | 22/09/2026 |
+| Fecha | 27/09/2026 |
 
 ### Historial de versiones
 
 | Versión | Fecha | Autor | Cambios |
 |---|---|---|---|
 | 0.1 | 22/09/2026 | Blue Team | Primera versión, 14 activos alineados a `docs/00-arquitectura-4mas1.md` y `docs/00-arquitectura-c4.md`. |
+| 0.2 | 27/09/2026 | Blue Team | Se actualiza A12 para reflejar la gestión de incidentes mediante `Incident` interno; TheHive queda como integración futura. |
 
 ## 1. Objetivo
 
@@ -73,9 +74,9 @@ el riesgo (`03-analisis-riesgos`) y demostrar cumplimiento en la auditoría del 
 | A07 | Base de usuarios del panel (RBAC) | Dato | PostgreSQL control-central | RSI | Secreto | Alta | S | Proteger |
 | A08 | Servidor Wazuh (manager+indexer+dashboard) | HW/SW | VLAN Seguridad | RSI | Confidencial | Alta | N | Detectar |
 | A09 | Agentes Wazuh (en clientes) | SW | Estaciones de usuario | RSI | Interno | Media | N | Detectar |
-| A10 | Servidor de correo Mailu | HW/SW | VLAN Servicios | RSI | Interno | Media | S | Responder |
+| A10 | Servidor de correo Mailu (Mailpit en prototipo H2) | HW/SW | VLAN Servicios / red Docker H2 | RSI | Interno | Media | S | Responder |
 | A11 | Dashboard Grafana | HW/SW | Servidor control-central | RSI | Interno | Media | N | Detectar/Gobernar |
-| A12 | Gestión de incidentes (TheHive o tabla interna) | HW/SW | Servidor control-central | RSI | Interno | Media | N | Responder |
+| A12 | Gestión de incidentes (`Incident` interno) | SW/Dato | `control-central` / PostgreSQL | RSI | Interno | Media | N | Responder |
 | A13 | Repositorio Git (código fuente) | SW/Dato | GitHub `varelafervenza/tsi-obligatorio` | Blue Team | Interno | Alta | N | Gobernar |
 | A14 | Segmentación de red del laboratorio | HW | Perímetro del laboratorio | RSI | Confidencial | Alta | N | Proteger |
 
