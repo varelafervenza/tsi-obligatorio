@@ -32,11 +32,18 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 Stack del H2 (API + Postgres + Grafana + Mailpit; TheHive no arranca):
 
 ```bash
-cd ../infra
-docker compose up --build -d
-curl http://localhost:8000/healthz
-# esperado: {"status":"ok","database":"up"}
+# Primera vez, en infra/:
+copy .env.example .env
+copy control-central.env.example control-central.env
 
+# Desde la raíz de tarea1-gestor-contrasenas:
+docker compose up --build -d
+# o: cd infra && docker compose up --build -d
+
+curl http://localhost:8000/healthz
+# Grafana: http://localhost:3000  (claves: tu copia local de .env, no el example)
+# Mailpit: http://localhost:8025
+```
 # Una vez (en la raíz de tarea1-gestor-contrasenas); la privada no se commitea:
 #   pip install python-jose[cryptography]
 #   python scripts/generar_par_agente.py

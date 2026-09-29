@@ -551,6 +551,30 @@ Hora (UTC): 18:46
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Grafana (paso 2) es el siguiente commit; la UI ya está en :3000.
 
+---
+Fecha: 29/09/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 20:29
+---
+
+## Actividad: Compose — cwd y archivos .env de laboratorio
+
+- **Fase**: Implementación
+- **Duración**: 0,3 h
+- **Tarea realizada**: El error `no configuration file provided` era el directorio
+  de trabajo, no un compose borrado (`infra/docker-compose.yml` sigue ahí). Se
+  agregó `compose.yaml` en la raíz de la tarea (include). Las plantillas
+  `infra/.env.example` y `infra/control-central.env.example` se versionan (solo
+  placeholders). Las copias `.env` / `control-central.env` quedan gitignored.
+- **Herramienta / comando**: `docker compose up --build -d` desde
+  `tarea1-gestor-contrasenas/` o `infra/`.
+- **Resultado**: Pendiente verificar en el host.
+- **Evidencia anexa**: (ninguna).
+- **Incidencia / hallazgo**: Compose no busca el YAML en carpetas padre.
+- **Observaciones**: Postgres/Grafana de ejemplo usan `changeme`. Credenciales
+  reales fuera del repo. Copiar `*.example` y editar la copia local.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

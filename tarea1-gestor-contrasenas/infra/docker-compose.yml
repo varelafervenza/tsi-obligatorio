@@ -1,5 +1,11 @@
 version: "3.8"
 
+# Levantar desde ESTA carpeta:
+#   cd infra
+#   docker compose up --build -d
+# O desde la raíz de la tarea (compose.yaml con include):
+#   docker compose up --build -d
+#
 # Stack del control central. Wazuh y Mailu se despliegan con sus propios
 # instaladores/compose oficiales (ver infra/wazuh/README.md e infra/mailu/README.md)
 # y se conectan a esta misma red `blue-team-net`.
@@ -15,7 +21,7 @@ volumes:
 services:
   control-central:
     build: ../control-central
-    env_file: ./control-central.env.example
+    env_file: ./control-central.env
     ports:
       - "8000:8000"
     volumes:
@@ -30,9 +36,9 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: control_central
-      POSTGRES_USER: gestor
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: ${POSTGRES_DB:-control_central}
+      POSTGRES_USER: ${POSTGRES_USER:-gestor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     ports:
       - "5432:5432"
     volumes:
@@ -55,6 +61,10 @@ services:
 
   grafana:
     image: grafana/grafana-oss:11.2.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
+      GF_USERS_ALLOW_SIGN_UP: "false"
     ports:
       - "3000:3000"
     volumes:

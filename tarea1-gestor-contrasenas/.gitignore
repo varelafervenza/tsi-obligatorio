@@ -7,11 +7,18 @@ cliente-gestor/src-tauri/target/
 __pycache__/
 *.pyc
 venv/
+# Copias locales con secretos (nunca versionar)
 .env
-
-# Secretos y bóvedas de prueba (nunca versionar)
 *.env
+infra/.env
+infra/control-central.env
+
+# Plantillas para copiar y editar (SÍ van al repo)
+!.env.example
 !*.env.example
+!**/*.env.example
+
+# Secretos y bóvedas de prueba
 *.vault
 keys/
 
