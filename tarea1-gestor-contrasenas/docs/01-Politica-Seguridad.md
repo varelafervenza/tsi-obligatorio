@@ -28,11 +28,7 @@
 |---|---|
 | Nombre del documento | Política de Seguridad de la Información — Gestor de Contraseñas |
 | Código | SI-POL-01 |
-<<<<<<< HEAD
-| Versión | 0.1 (borrador) |
-=======
 | Versión | 0.2 (borrador) |
->>>>>>> main
 | Fecha de aprobación | Pendiente — a formalizar en la auditoría del 14/10/2026 |
 | Aprobado por | Pendiente (RSI del equipo / docente en la auditoría) |
 | Autor | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
@@ -43,10 +39,7 @@
 | Versión | Fecha | Autor | Descripción de cambios |
 |---|---|---|---|
 | 0.1 | 22/09/2026 | Blue Team | Primera versión, alineada a la arquitectura, activos y riesgos ya documentados. |
-<<<<<<< HEAD
-=======
 | 0.2 | 27/09/2026 | Blue Team | Se actualiza la gestión de incidentes a `Incident` interno, se deja TheHive como integración futura y se explicitan los estados de implementación de controles. |
->>>>>>> main
 
 ## 1. Objetivo
 
@@ -91,13 +84,8 @@ ataque fuera de las VMs del laboratorio del curso (ver reglas de compromiso, sec
 | Confidencialidad | Zero-knowledge: la bóveda se cifra y descifra solo en `cliente-gestor`; `control-central` nunca recibe ni puede reconstruir una contraseña, solo metadata firmada (RF-08). |
 | Integridad | Cifrado AEAD (XChaCha20-Poly1305) en la bóveda y firma JWS por agente en cada evento de auditoría; cualquier alteración se detecta antes de aceptarse. |
 | Disponibilidad | El gestor funciona 100% offline (RNF-01); la caída del control central no interrumpe el uso diario, solo retrasa la sincronización de eventos. |
-<<<<<<< HEAD
-| Mínimo privilegio | RBAC en `control-central` (roles por usuario del panel); las claves de firma son una por agente, nunca compartidas entre clientes. |
-| Defensa en profundidad / Zero Trust | Cada evento se verifica como si viniera de un origen hostil (NIST SP 800-207); MFA tanto en el cliente (desbloqueo de bóveda) como en el panel del control central. |
-=======
 | Mínimo privilegio | El diseño prevé RBAC en `control-central` (roles por usuario del panel); las claves de firma deben ser una por agente, nunca compartidas entre clientes. RBAC y la gestión de claves siguen pendientes de implementación. |
 | Defensa en profundidad / Zero Trust | El diseño exige verificar cada evento como si viniera de un origen hostil (NIST SP 800-207) y usar MFA en el cliente y en el panel del control central. Los flujos MFA todavía están pendientes de implementación y evidencia. |
->>>>>>> main
 
 ## 5. Estructura de la política
 
@@ -159,8 +147,4 @@ configuración real desplegada (`infra/`, `control-central/`, `cliente-gestor/`)
 - [ ] Aprobada formalmente con fecha y firmas (falta: hoy es borrador sin aprobación real).
 - [x] Menciona MCU 5.0, BCU, ISO y Ley 18.331.
 - [x] Define roles y responsabilidades.
-<<<<<<< HEAD
-- [x] Referencia el resto de las políticas de la carpeta `docs/` (todas, con su estado real: la mayoría **Pendiente**).
-=======
 - [x] Referencia los documentos existentes y previstos de la carpeta `docs/`, indicando su estado real.
->>>>>>> main

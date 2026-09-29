@@ -38,16 +38,10 @@ El sistema como una sola caja: **"Gestor de Contraseñas con Control Centralizad
 | Actor/Sistema externo | Relación con el sistema | Datos intercambiados |
 |---|---|---|
 | Usuario final | Usa el gestor local para crear/consultar/gestionar credenciales | Ninguno sale de su equipo salvo eventos de auditoría |
-<<<<<<< HEAD
-| RSI / Auditor (Grafana + correo) | Recibe notificaciones y monitorea el dashboard | Eventos de auditoría (metadata), alertas, KPIs — nunca secretos |
-| SIEM (Wazuh) | Recibe eventos normalizados y agentes reportan integridad de archivos | Eventos, logs, resultado de reglas |
-| Servidor de correo (Mailu) | Recibe solicitudes de envío desde el control central | Correos de notificación (alta/mod/borrado/cambio de maestra) |
-=======
 | RSI / Auditor | Consulta el dashboard y recibe notificaciones para supervisar la seguridad y gestionar incidentes | Alertas, incidentes, KPIs y metadatos de auditoría — nunca secretos |
 | Dashboard (Grafana) | Visualiza KPIs, alertas, incidentes y funcionamiento para el RSI/auditor | Datos agregados de eventos, alertas, incidentes y agentes |
 | SIEM (Wazuh) | Recibe eventos normalizados, recibe reportes de agentes, correlaciona reglas y genera alertas | Eventos, logs, integridad de archivos y resultados de reglas |
 | Servidor de correo (Mailu) | Entrega notificaciones enviadas por el control central | Correos de alta, modificación, borrado y cambio de contraseña maestra |
->>>>>>> main
 | Red Team (Parte 2, fuera del límite de confianza) | Ataca el sistema una vez congelado | N/A — es un actor adversarial, no un integrador |
 
 **Límite de confianza clave**: todo lo que cruza de `cliente-gestor` hacia el resto del sistema
@@ -64,9 +58,6 @@ de una bóveda (zero-knowledge, sección 1.1 de `LETRA.md`).
 | SIEM | Wazuh (manager + indexer + dashboard) | Correlación, reglas de detección, FIM | VM dedicada (stack oficial `wazuh-docker`) | Syslog / API Wazuh |
 | Servidor de correo | Mailu | Envío de notificaciones | VM dedicada (stack oficial Mailu) | SMTP/TLS |
 | Dashboard de KPIs | Grafana | Visualización de alertas/incidentes/KPIs | Contenedor Docker | HTTP, lee de Postgres/Wazuh |
-<<<<<<< HEAD
-| Gestión de casos (decisión abierta) | TheHive, o tabla `Incident` interna | Ciclo de vida de incidentes | Contenedor Docker (si se usa TheHive) | REST |
-=======
 | Gestión de incidentes (`Incident` interno) | FastAPI + SQLAlchemy + PostgreSQL | Registra incidentes derivados de alertas Wazuh y gestiona su ciclo de vida | Componente de `control-central` y PostgreSQL | REST/HTTPS |
 
 La gestión de incidentes se implementa inicialmente dentro de `control-central`, sin desplegar
@@ -84,7 +75,6 @@ actual.
 | API → Mailu | SMTP submission/TLS | Puerto 587, autenticación SMTP y validación del certificado del servidor |
 | Agente → Wazuh manager | TLS | Puertos 1514/1515 según el modo de comunicación configurado; certificados y claves gestionados fuera del código |
 | Grafana → API/BD | HTTPS o red interna restringida | Acceso mediante RBAC; no se exponen credenciales de PostgreSQL al navegador |
->>>>>>> main
 
 ## Nivel 3 — Componentes
 
@@ -104,13 +94,9 @@ actual.
 |---|---|---|
 | `api.events` | Recibe y verifica eventos JWS | `core.security`, `models.event` |
 | `api.users` | RBAC, MFA de usuarios del panel, elección Argon2id/bcrypt | `core.mfa`, `core.security`, `models.user` |
-<<<<<<< HEAD
-| `api.dashboard` | KPIs, alertas, incidentes, estado de agentes | `models.event`, `models.incident` |
-=======
 | `api.dashboard` | KPIs, alertas, incidentes, estado de agentes y última sincronización | `models.event`, `models.incident` |
 | `api.incidents` | Crea un incidente desde una alerta Wazuh, permite asignarlo, adjuntar evidencias y cambiarlo entre `abierto`, `en análisis` y `resuelto` | `models.incident`, `api.dashboard`, PostgreSQL |
 | `models.incident` | Persistencia del incidente, alerta de origen, responsable, estado, evidencias, fecha de creación y fecha de resolución | SQLAlchemy, PostgreSQL |
->>>>>>> main
 | `core.security` | Verificación de firma JWS con clave pública por agente; hashing de contraseñas de usuarios del panel | Claves públicas de agentes (`keys/agentes/`) |
 | `core.mfa` | TOTP/WebAuthn/Windows Hello para usuarios del control central | `api.users` |
 | `siem.wazuh_forwarder` | Normaliza y reenvía eventos a Wazuh | `api.events` |

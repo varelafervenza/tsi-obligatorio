@@ -51,7 +51,6 @@ class EventoOut(BaseModel):
 
 @router.post("/", response_model=EventoOut, status_code=201)
 def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(get_db)):
-<<<<<<< HEAD
     ts = payload.timestamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     firma_valida = verificar_jws(
         payload.firma_jws,
@@ -60,9 +59,6 @@ def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(ge
         sistema=payload.sistema,
         timestamp_iso=ts,
     )
-=======
-    # firma_valida=None: todavía no se verifica JWS (RF-08, siguiente parte).
->>>>>>> main
     evento = AuditEvent(
         agente_id=payload.agente_id,
         tipo=payload.tipo,
@@ -70,11 +66,7 @@ def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(ge
         occurred_at=payload.timestamp,
         received_at=datetime.now(timezone.utc),
         firma_jws=payload.firma_jws,
-<<<<<<< HEAD
         firma_valida=firma_valida,
-=======
-        firma_valida=None,
->>>>>>> main
         ip_origen=request.client.host if request.client else None,
     )
     db.add(evento)
