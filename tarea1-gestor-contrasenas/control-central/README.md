@@ -19,9 +19,9 @@ dashboard. Es **zero-knowledge**: nunca puede descifrar una bóveda de cliente.
 
 ## Pendiente (no implementado aún)
 
-- [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`). Firma JWS se guarda, no se verifica todavía.
+- [x] Modelo y persistencia de `audit_events` (`POST/GET /api/events/`).
+- [x] Verificación JWS RS256 con `keys/agentes/{agente_id}.pub.pem` (una clave por agente). Si falla, se persiste con `firma_valida=false`.
 - [x] Forwarder JSONL a `infra/logs/audit-events.jsonl` (Wazuh lo consume después).
-- [ ] Verificación JWS con clave pública por agente (no HMAC compartida global).
 - [x] Correo SMTP en alta/mod/borrado/cambio de maestra (Mailpit en H2; Mailu después).
 - [ ] Reglas de detección en Wazuh (RF-10) sobre ese JSONL.
 - [ ] RBAC de usuarios del panel + enroll TOTP/WebAuthn/Windows Hello. RF-11.

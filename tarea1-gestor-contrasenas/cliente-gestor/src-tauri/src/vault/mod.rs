@@ -1,4 +1,7 @@
-//! Apertura/cierre de bóveda, CRUD de credenciales, historial e import/export cifrado.
-//! RF-02, RF-03, RF-04, RF-12.
+//! Apertura/cierre de bóveda y CRUD de credenciales. RF-02, RF-03.
+//! Historial, políticas por sistema e import/export quedan para el paso siguiente.
 
+pub mod commands;
 pub mod store;
+
+pub use commands::EstadoBoveda;

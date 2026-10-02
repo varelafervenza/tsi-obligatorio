@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "Ventana principal del gestor",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

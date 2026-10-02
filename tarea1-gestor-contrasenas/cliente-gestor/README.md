@@ -15,16 +15,82 @@ App de escritorio (Tauri: Rust + frontend web) que corre 100% local. No requiere
 
 ## Pendiente (no implementado aún)
 
-- [ ] Definir esquema SQLite/SQLCipher de la bóveda.
-- [ ] Implementar Argon2id con parámetros configurables (memoria/iteraciones).
-- [ ] Implementar cifrado XChaCha20-Poly1305 de cada entrada.
+- [x] Esquema SQLite y CRUD: crear, abrir, cerrar, alta, consulta, modificación y borrado. `vault/store.rs`. El historial se usa para rechazar reuso; la pantalla no lo lista.
+- [x] Argon2id con parámetros configurables (por defecto 19 MiB / 2 iteraciones). `crypto/kdf.rs`.
+- [x] Cifrado XChaCha20-Poly1305 de cada entrada (nonce nuevo, tag verificado). `crypto/cipher.rs`.
 - [ ] Flujo de enroll TOTP + WebAuthn (Windows Hello como authenticator de plataforma).
-- [ ] Cliente HTTP para POST de eventos firmados a `control-central` (con cola local si no hay red).
-- [ ] UI: alta/consulta/edición/borrado, definición de regex por sistema, vencimientos, categorías, favoritos.
+- [x] Cliente HTTP: firma JWS RS256 y POST al control central, con cola local si no hay red. `events/`.
+- [x] Cambio de la maestra: reencripta secretos, notas e historial y emite `cambio_maestra`. `vault/store.rs`.
+- [x] Pantalla mínima: crear/abrir bóveda y alta, consulta, edición y borrado. `src/App.tsx`.
+- [x] Generador (contraseña y frase) y política por sistema: longitud, caracteres, regex, historial y vencimiento. `generator/` y `vault/store.rs`.
+- [x] Buscador (sistema, usuario, categoría), filtro de favoritos y de vencidas, y marca de favorito. `src/App.tsx`.
+- [x] Exportar e importar la bóveda en un archivo cifrado con contraseña de transporte (`.gex`). `vault/store.rs`.
+- [ ] Aviso de vencimiento como evento al control central (RF-17). La lista ya muestra “vencida”; la API todavía no tiene ese tipo de evento.
 
-## Cómo correr (una vez implementado)
+## Cómo levantar
 
-```bash
+Hace falta Node y Rust (`rustc` / `cargo`). En Windows, si `cargo` no se reconoce, abrí una terminal nueva después de instalar Rust.
+
+Desde `cliente-gestor`, cada comando en su propia línea:
+
+```powershell
+$env:NODE_OPTIONS = "--use-system-ca"
 npm install
 npm run tauri dev
 ```
+
+Si las dos primeras quedan pegadas en una sola línea, Windows responde que el nombre de archivo no es válido. `NODE_OPTIONS` evita el error `UNABLE_TO_VERIFY_LEAF_SIGNATURE` contra el registry de npm en esta red. Vite queda en 5.4 (el plugin de React de este proyecto no acepta Vite 8). La ventana es el gestor. El archivo de la bóveda, si no cambiás la ruta, es `boveda.sqlite` en la carpeta de datos de la app.
+
+Si `cargo` responde `Acceso denegado` al crear `src-tauri\target`, creá esa carpeta a mano y volvé a correr `npm run tauri dev`. Un aviso de "incremental compilation" en una ruta con `ñ` no frena el ejecutable.
+
+Tests automáticos de cripto y bóveda:
+
+```powershell
+cd src-tauri
+cargo test
+```
+
+## Cómo probar la ventana
+
+1. Dejá la ruta del archivo. Poné una contraseña maestra y tocá **Crear bóveda**. Puede tardar cerca de un segundo.
+2. En **Alta**, cargá sistema, usuario y contraseña. **Agregar**. Tiene que aparecer en la lista.
+3. Elegí la credencial. **Ver** muestra la contraseña. Cambiala y **Guardar cambios**. Volvé a elegirla y confirmá el valor nuevo.
+4. **Cerrar** y **Abrir bóveda** con la misma maestra. La credencial sigue ahí.
+5. Cerrá y abrí con otra maestra. Tiene que rechazarla y no mostrar credenciales.
+6. Abrí `boveda.sqlite` con un editor de texto y buscá la contraseña que cargaste. No tiene que aparecer en claro.
+7. Con una credencial seleccionada, **Borrar** la saca de la lista.
+
+## Política y generador
+
+Abrí **Política de este sistema** en el formulario. Elegí modo contraseña o frase, longitud, caracteres y, si hace falta, una expresión regular. **Generar** llena el campo de contraseña. **Guardar política** hace que las próximas altas de ese sistema respeten la regla, el historial y los días de validez. Si vence, la lista lo muestra al lado del usuario.
+
+## Eventos al control central
+
+Docker Desktop tiene que estar abierto (el ícono de la ballena en marcha). Si el motor está apagado, `docker compose` dice que no encuentra `dockerDesktopLinuxEngine`.
+
+Desde `tarea1-gestor-contrasenas\infra`:
+
+```powershell
+docker compose up --build -d
+```
+
+La API queda en el puerto 8000 y Mailpit en `http://localhost:8025`. Comprobación: `http://localhost:8000/healthz` tiene que responder `status: ok`. En esta red el build de la imagen necesita `--trusted-host` de pip; ya está en `control-central/Dockerfile`.
+
+En la ventana:
+
+1. Abrí **Control central**.
+2. Dejá la URL `http://localhost:8000/api/events/`.
+3. En la carpeta de claves poné la ruta absoluta a `tarea1-gestor-contrasenas\keys\agentes`.
+4. **Guardar y copiar clave pública**. El aviso tiene que decir que copió `{agente-id}.pub.pem`. Docker monta esa carpeta en solo lectura: no hace falta reiniciar el contenedor.
+5. Abrí la bóveda y agregá una credencial. El aviso tiene que decir que el evento se envió.
+6. En Mailpit tiene que llegar el correo de alta. En `http://localhost:8000/api/events/` el último evento tiene que traer `firma_valida: true`.
+
+Si Docker está apagado, el alta igual se guarda. El aviso dice que el evento quedó en cola. Al volver a haber red, el próximo alta, cambio o borrado reintenta la cola.
+
+Una maestra incorrecta al abrir (el archivo ya existe) emite `intento_fallido_maestra`. **Cambiar contraseña maestra**, con la bóveda abierta, reencripta las credenciales y emite `cambio_maestra`.
+
+## Buscador, favoritos y copia
+
+Con la bóveda abierta, el cuadro **Buscar** filtra por sistema, usuario o categoría. El filtro **Favoritos** o **Vencidas** achica la lista. La estrella al lado de cada credencial la marca o la saca.
+
+**Copia cifrada** exporta un `.gex` con una contraseña de transporte (no es la maestra). En otra bóveda, la misma ruta y la misma contraseña de transporte con **Importar** trae las credenciales. El archivo no tiene que contener el secreto en claro.

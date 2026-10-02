@@ -11,9 +11,10 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Gestor de Contraseñas",
         "width": 1000,
-        "height": 700
+        "height": 720
       }
     ],
     "security": {

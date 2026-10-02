@@ -16,10 +16,14 @@ chacha20poly1305 = "0.10"
 rand = "0.8"
 # Almacenamiento local (bóveda en archivo único)
 rusqlite = { version = "0.31", features = ["bundled"] }
+regex = "1"
 # MFA local (RF-11)
 totp-rs = "5"
 # Firma de eventos de auditoría (RF-08)
-jsonwebtoken = "9"
+jsonwebtoken = { version = "9", features = ["use_pem"] }
+rsa = { version = "0.9", features = ["pem"] }
+chrono = "0.4"
+ureq = { version = "2", features = ["json"] }
 
 [[bin]]
 name = "cliente-gestor"

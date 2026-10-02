@@ -627,6 +627,60 @@ Hora (UTC): 15:45
 - **Evidencia anexa**: `docs/00-arquitectura-4mas1.md` y `docs/00-arquitectura-c4.md`; imagen
   `docs/diagrama-arquitectura.png`
 
+---
+Fecha: 02/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 02:10
+---
+
+## Actividad: Bóveda local cifrada y primera ventana del gestor
+
+- **Fase**: Implementación / Prueba
+- **Duración**: 2 h
+- **Tarea realizada**: Se implementó la cripto de la bóveda (Argon2id, 19 MiB / 2 iteraciones, y XChaCha20-Poly1305) y el archivo SQLite: crear, abrir, cerrar, alta, consulta, modificación y borrado. La contraseña y las notas se guardan cifradas. La pantalla mínima quedó en `cliente-gestor/src/App.tsx`. `cargo test` en `src-tauri`: 11 pruebas ok (cripto + bóveda, incluido que el secreto no queda en texto plano en el archivo).
+- **Herramienta / comando**: `cargo test` en `cliente-gestor/src-tauri`. Luego, en `cliente-gestor`: `npm install` y `npm run tauri dev`.
+- **Resultado**: Éxito. La ventana del gestor abre en el host. La prueba manual (crear bóveda, alta, ver, editar, cerrar, abrir con la misma maestra, rechazar otra maestra, y comprobar que el secreto no está en claro en `boveda.sqlite`) quedó escrita en `cliente-gestor/README.md`.
+- **Evidencia anexa**: (pendiente — captura de la ventana abierta y del rechazo de maestra incorrecta en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Tres cortes antes de abrir la ventana, todos corregidos. (1) `npm install` falló con `UNABLE_TO_VERIFY_LEAF_SIGNATURE`; se reintentó con `NODE_OPTIONS=--use-system-ca`. (2) `vite` 8 no convive con `@vitejs/plugin-react` 4; se fijó Vite 5.4. (3) `cargo` no podía crear `src-tauri/target` (`Acceso denegado`, os error 5). Se creó la carpeta y `cargo build` terminó. Queda un aviso de caché incremental en rutas con `ñ` (`contraseñas`); no impide generar el ejecutable.
+- **Observaciones**: El cliente todavía no emite eventos al control central. Siguiente paso: generador y política por sistema (RF-04, RF-05). Espejar esta fila en `docs/mcu5/excel/04-bitacora-planilla.xlsx`. Rust quedó instalado en el host (`rustc` 1.99); hace falta una terminal nueva para que `cargo` esté en el PATH.
+
+---
+Fecha: 02/10/2026
+Equipo: Blue
+Responsable: (firmar: integrante que ejecutó la prueba)
+Hora (UTC): 02:40
+---
+
+## Actividad: Eventos firmados al control central y cambio de maestra
+
+- **Fase**: Implementación / Prueba
+- **Duración**: 2 h
+- **Tarea realizada**: El cliente firma cada alta, modificación, borrado, cambio de maestra e intento fallido de apertura con JWS RS256 (una clave por agente, guardada en los datos de la app) y hace POST a `http://localhost:8000/api/events/`. Si no hay red, el evento queda en `cola-eventos.jsonl` y el próximo envío reintenta la cola. Un 4xx no se encola. El JWS incluye `exp` porque python-jose lo exige; el central sigue comparando agente, tipo, sistema y timestamp. El cambio de maestra reencripta secretos, notas e historial con un salt nuevo. También quedó el generador (contraseña y frase) y la política por sistema (longitud, caracteres, regex, historial y vencimiento).
+- **Herramienta / comando**: `cargo test` en `cliente-gestor/src-tauri` (23 pruebas ok, contando la copia cifrada del paso siguiente). `npx tsc --noEmit` ok. `docker compose up --build -d` desde `infra/`. `GET http://localhost:8000/healthz` respondió `{"status":"ok","database":"up"}`.
+- **Resultado**: Éxito de código y de stack. La ventana del gestor levantó con `npm run tauri dev`. La prueba manual del correo en Mailpit y de `firma_valida: true` está escrita en `cliente-gestor/README.md`; la captura sigue pendiente.
+- **Evidencia anexa**: (pendiente — Mailpit con el alta y la respuesta de `/api/events/` en `docs/evidencias/`).
+- **Incidencia / hallazgo**: (1) Docker Desktop estaba instalado y el motor apagado: `open //./pipe/dockerDesktopLinuxEngine` no existe hasta abrir la app. El puerto 8080 lo usa el propio `com.docker.backend`; la API va al 8000. (2) Pegar en PowerShell el prompt `PS C:\...>` o el texto del error anterior hace que `PS` se ejecute como `Get-Process`. (3) El build de la imagen falló con `CERTIFICATE_VERIFY_FAILED` al bajar paquetes de PyPI (la misma red que cortó npm). Se agregó `--trusted-host` en `control-central/Dockerfile` y el compose terminó. (4) Aviso de caché incremental por la `ñ` en la ruta; el ejecutable igual arranca.
+- **Observaciones**: Espejar esta fila en `docs/mcu5/excel/04-bitacora-planilla.xlsx`. La clave pública hay que copiarla a `keys/agentes` desde la ventana antes del primer alta, si se quiere `firma_valida: true`.
+
+---
+Fecha: 02/10/2026
+Equipo: Blue
+Responsable: (firmar: integrante que ejecutó la prueba)
+Hora (UTC): 02:55
+---
+
+## Actividad: Buscador, favoritos y copia cifrada de la bóveda
+
+- **Fase**: Implementación
+- **Duración**: 0,5 h
+- **Tarea realizada**: La lista filtra por texto (sistema, usuario, categoría), por favoritos y por vencidas (RF-15). Cada credencial se puede marcar favorita; la columna se agrega al abrir una bóveda vieja. Exportar e importar escriben un archivo `.gex` cifrado con contraseña de transporte distinta de la maestra (RF-12). El secreto no queda en claro en ese archivo.
+- **Herramienta / comando**: `cargo test vault::store::tests::favorito_y_copia_cifrada_viajan_a_otra_boveda` ok. Suite completa: 23 pruebas ok.
+- **Resultado**: Éxito automático. La ventana en `tauri dev` recompiló y quedó con el buscador y **Copia cifrada**. Falta la prueba manual en la ventana y la captura.
+- **Evidencia anexa**: (pendiente).
+- **Incidencia / hallazgo**: Ninguna en el test. El aviso de vencimiento al control central (RF-17) no se envía: la API solo acepta alta, modificación, borrado, cambio de maestra e intento fallido. Hace falta un tipo nuevo en el central si se quiere ese correo.
+- **Observaciones**: Cerrar y volver a abrir la bóveda para que aparezca la columna `favorito`. Espejar en la planilla Excel.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
