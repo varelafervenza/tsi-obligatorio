@@ -1,7 +1,9 @@
 //! Comandos que llama la ventana. La clave de la bóveda vive solo en este proceso.
 
+use std::collections::HashMap;
 use std::path::Path;
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
+use std::time::Duration;
 
 use tauri::{AppHandle, Manager, State};
 
@@ -25,7 +27,7 @@ pub struct EstadoSesion {
 pub fn ruta_por_defecto(app: AppHandle) -> Result<String, String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    Ok(dir.join("boveda.sqlite").to_string_lossy().into_owned())
+    Ok(dir.join("boveda-prueba.sqlite").to_string_lossy().into_owned())
 }
 
 #[tauri::command]
@@ -46,19 +48,54 @@ pub fn abrir_boveda(
     estado: State<'_, EstadoBoveda>,
     ruta: String,
     maestra: String,
-) -> Result<(), String> {
-    match Boveda::abrir(Path::new(&ruta), &maestra) {
+    codigo: Option<String>,
+) -> Result<Vec<String>, String> {
+    let codigo = codigo.as_deref().map(str::trim).filter(|valor| !valor.is_empty());
+    match Boveda::abrir_con(Path::new(&ruta), &maestra, codigo) {
         Ok(boveda) => {
+            limpiar_fallos(&ruta);
+            let sistemas = boveda.sistemas_vencidos().unwrap_or_default();
+            for sistema in &sistemas {
+                auditar(&app, "vencimiento_credencial", sistema);
+            }
             let mut guard = bloqueo(&estado);
             *guard = Some(boveda);
-            Ok(())
+            Ok(sistemas)
         }
         Err(ErrorBoveda::MaestraIncorrecta) => {
             auditar(&app, "intento_fallido_maestra", "boveda");
+            let espera = registrar_fallo(&ruta);
+            std::thread::sleep(Duration::from_secs(espera));
             Err(ErrorBoveda::MaestraIncorrecta.to_string())
+        }
+        Err(ErrorBoveda::TotpInvalido) => {
+            let espera = registrar_fallo(&ruta);
+            std::thread::sleep(Duration::from_secs(espera));
+            Err(ErrorBoveda::TotpInvalido.to_string())
         }
         Err(error) => Err(error.to_string()),
     }
+}
+
+#[derive(serde::Serialize)]
+pub struct EnrollTotp {
+    pub secreto: String,
+    pub otpauth_uri: String,
+}
+
+#[tauri::command]
+pub fn enrolar_totp(estado: State<'_, EstadoBoveda>) -> Result<EnrollTotp, String> {
+    con_boveda(&estado, |boveda| {
+        boveda.enrolar_totp().map(|(secreto, otpauth_uri)| EnrollTotp {
+            secreto,
+            otpauth_uri,
+        })
+    })
+}
+
+#[tauri::command]
+pub fn confirmar_totp(estado: State<'_, EstadoBoveda>, codigo: String) -> Result<(), String> {
+    con_boveda(&estado, |boveda| boveda.confirmar_totp(&codigo))
 }
 
 #[tauri::command]
@@ -258,6 +295,31 @@ fn auditar(app: &AppHandle, tipo: &str, sistema: &str) {
     let _ = std::fs::write(dir.join("ultimo.txt"), mensaje);
 }
 
+fn fallos() -> &'static Mutex<HashMap<String, u32>> {
+    static FALLOS: OnceLock<Mutex<HashMap<String, u32>>> = OnceLock::new();
+    FALLOS.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+/// 1 s, 2 s, 4 s y después 8 s. RF-16. Argon2id ya es el costo memory-hard.
+pub(crate) fn segundos_de_demora(intentos: u32) -> u64 {
+    if intentos == 0 {
+        return 0;
+    }
+    1u64 << (intentos - 1).min(3)
+}
+
+fn registrar_fallo(ruta: &str) -> u64 {
+    let mut mapa = fallos().lock().unwrap_or_else(|e| e.into_inner());
+    let n = mapa.entry(ruta.to_string()).or_insert(0);
+    *n = n.saturating_add(1);
+    segundos_de_demora(*n)
+}
+
+fn limpiar_fallos(ruta: &str) {
+    let mut mapa = fallos().lock().unwrap_or_else(|e| e.into_inner());
+    mapa.remove(ruta);
+}
+
 fn bloqueo(estado: &EstadoBoveda) -> std::sync::MutexGuard<'_, Option<Boveda>> {
     estado.0.lock().unwrap_or_else(|e| e.into_inner())
 }
@@ -278,4 +340,19 @@ fn con_boveda_mut<T>(
     let mut guard = bloqueo(estado);
     let boveda = guard.as_mut().ok_or("No hay una bóveda abierta.")?;
     accion(boveda).map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::segundos_de_demora;
+
+    #[test]
+    fn la_demora_crece_y_se_frena_en_ocho_segundos() {
+        assert_eq!(segundos_de_demora(0), 0);
+        assert_eq!(segundos_de_demora(1), 1);
+        assert_eq!(segundos_de_demora(2), 2);
+        assert_eq!(segundos_de_demora(3), 4);
+        assert_eq!(segundos_de_demora(4), 8);
+        assert_eq!(segundos_de_demora(9), 8);
+    }
 }

@@ -161,6 +161,15 @@ button:disabled {
   align-items: center;
 }
 
+.qr-totp {
+  margin: 12px 0;
+  padding: 8px;
+  width: fit-content;
+  background: #fff;
+  border: 1px solid #e2d9cc;
+  border-radius: 8px;
+}
+
 @media (max-width: 720px) {
   .layout {
     grid-template-columns: 1fr;

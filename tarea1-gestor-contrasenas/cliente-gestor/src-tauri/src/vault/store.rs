@@ -60,6 +60,8 @@ pub enum ErrorBoveda {
     YaExiste,
     NoExiste,
     MaestraIncorrecta,
+    TotpRequerido,
+    TotpInvalido,
     NoEncontrada,
     DatoInvalido(&'static str),
     ArchivoInvalido,
@@ -77,6 +79,8 @@ impl std::fmt::Display for ErrorBoveda {
             Self::MaestraIncorrecta => {
                 write!(f, "Contraseña maestra incorrecta, o el archivo fue alterado.")
             }
+            Self::TotpRequerido => write!(f, "Esta bóveda pide el código TOTP."),
+            Self::TotpInvalido => write!(f, "Código TOTP inválido."),
             Self::NoEncontrada => write!(f, "Esa credencial no está en la bóveda."),
             Self::DatoInvalido(msg) => write!(f, "{msg}"),
             Self::ArchivoInvalido => write!(f, "El archivo no tiene el formato de una bóveda."),
@@ -147,6 +151,10 @@ impl Boveda {
     }
 
     pub fn abrir(ruta: &Path, maestra: &str) -> Result<Self, ErrorBoveda> {
+        Self::abrir_con(ruta, maestra, None)
+    }
+
+    pub fn abrir_con(ruta: &Path, maestra: &str, codigo: Option<&str>) -> Result<Self, ErrorBoveda> {
         validar_maestra(maestra)?;
         if !ruta.exists() {
             return Err(ErrorBoveda::NoExiste);
@@ -157,6 +165,10 @@ impl Boveda {
         match cipher::descifrar(&clave, &verificador) {
             Ok(plano) if plano == VERIFICADOR => {
                 asegurar_esquema(&conn)?;
+                if let Err(error) = exigir_totp(&conn, &clave, codigo) {
+                    clave.fill(0);
+                    return Err(error);
+                }
                 Ok(Self {
                     conn,
                     clave,
@@ -228,6 +240,22 @@ impl Boveda {
             })
         })?;
         filas.collect::<Result<Vec<_>, _>>().map_err(ErrorBoveda::from)
+    }
+
+    /// Sistemas con al menos una credencial ya vencida. RF-17.
+    pub fn sistemas_vencidos(&self) -> Result<Vec<String>, ErrorBoveda> {
+        let ahora_ts = ahora();
+        let mut sistemas = Vec::new();
+        for item in self.listar()? {
+            let Some(vence) = item.vence_en else {
+                continue;
+            };
+            if vence >= ahora_ts || sistemas.iter().any(|sistema| sistema == &item.sistema) {
+                continue;
+            }
+            sistemas.push(item.sistema);
+        }
+        Ok(sistemas)
     }
 
     pub fn obtener(&self, id: i64) -> Result<CredencialDetalle, ErrorBoveda> {
@@ -476,6 +504,33 @@ impl Boveda {
         }
     }
 
+    /// Deja el secreto cifrado y el TOTP inactivo hasta `confirmar_totp`. RF-02.
+    pub fn enrolar_totp(&self) -> Result<(String, String), ErrorBoveda> {
+        let (secreto, uri) = crate::auth::totp::generar().map_err(|_| ErrorBoveda::Cripto)?;
+        let blob = cifrar_texto(&self.clave, &secreto)?;
+        self.conn.execute(
+            "UPDATE meta SET totp_secreto = ?1, totp_activo = 0 WHERE id = 1",
+            params![blob],
+        )?;
+        Ok((secreto, uri))
+    }
+
+    pub fn confirmar_totp(&self, codigo: &str) -> Result<(), ErrorBoveda> {
+        let blob: Option<Vec<u8>> = self
+            .conn
+            .query_row("SELECT totp_secreto FROM meta WHERE id = 1", [], |row| row.get(0))?;
+        let Some(blob) = blob else {
+            return Err(ErrorBoveda::DatoInvalido("No hay un TOTP pendiente."));
+        };
+        let secreto = descifrar_texto(&self.clave, &blob)?;
+        if !crate::auth::totp::verificar(&secreto, codigo) {
+            return Err(ErrorBoveda::TotpInvalido);
+        }
+        self.conn
+            .execute("UPDATE meta SET totp_activo = 1 WHERE id = 1", [])?;
+        Ok(())
+    }
+
     pub fn cambiar_maestra(&mut self, actual: &str, nueva: &str) -> Result<(), ErrorBoveda> {
         validar_maestra(nueva)?;
         if nueva == actual {
@@ -508,6 +563,16 @@ impl Boveda {
             let plano = descifrar_texto(&self.clave, &secreto)?;
             historial_nuevo.push((id_hist, cifrar_texto(&clave_nueva, &plano)?));
         }
+        let totp_actual: Option<Vec<u8>> = self
+            .conn
+            .query_row("SELECT totp_secreto FROM meta WHERE id = 1", [], |row| row.get(0))?;
+        let totp_nuevo = match totp_actual {
+            Some(blob) => Some(cifrar_texto(
+                &clave_nueva,
+                &descifrar_texto(&self.clave, &blob)?,
+            )?),
+            None => None,
+        };
         let tx = self.conn.transaction()?;
         for (id_cred, secreto, notas) in &credenciales_nuevas {
             tx.execute(
@@ -525,6 +590,12 @@ impl Boveda {
             "UPDATE meta SET salt = ?1, verificador = ?2 WHERE id = 1",
             params![salt_nueva.as_slice(), verificador],
         )?;
+        if let Some(blob) = &totp_nuevo {
+            tx.execute(
+                "UPDATE meta SET totp_secreto = ?1 WHERE id = 1",
+                params![blob],
+            )?;
+        }
         tx.commit()?;
         self.clave = clave_nueva;
         Ok(())
@@ -686,6 +757,7 @@ fn inicializar(
             verificador
         ],
     )?;
+    asegurar_esquema(conn)?;
     Ok(clave)
 }
 
@@ -842,7 +914,43 @@ fn asegurar_esquema(conn: &Connection) -> Result<(), ErrorBoveda> {
             [],
         )?;
     }
+    let mut meta = conn.prepare("PRAGMA table_info(meta)")?;
+    let columnas: Vec<String> = meta
+        .query_map([], |row| row.get::<_, String>(1))?
+        .collect::<Result<_, _>>()?;
+    if !columnas.iter().any(|n| n == "totp_secreto") {
+        conn.execute("ALTER TABLE meta ADD COLUMN totp_secreto BLOB", [])?;
+    }
+    if !columnas.iter().any(|n| n == "totp_activo") {
+        conn.execute(
+            "ALTER TABLE meta ADD COLUMN totp_activo INTEGER NOT NULL DEFAULT 0",
+            [],
+        )?;
+    }
     Ok(())
+}
+
+fn exigir_totp(conn: &Connection, clave: &[u8; 32], codigo: Option<&str>) -> Result<(), ErrorBoveda> {
+    let (activo, blob): (i64, Option<Vec<u8>>) = conn.query_row(
+        "SELECT totp_activo, totp_secreto FROM meta WHERE id = 1",
+        [],
+        |row| Ok((row.get(0)?, row.get(1)?)),
+    )?;
+    if activo == 0 {
+        return Ok(());
+    }
+    let Some(blob) = blob else {
+        return Err(ErrorBoveda::TotpRequerido);
+    };
+    let Some(codigo) = codigo.map(str::trim).filter(|valor| !valor.is_empty()) else {
+        return Err(ErrorBoveda::TotpRequerido);
+    };
+    let secreto = descifrar_texto(clave, &blob)?;
+    if crate::auth::totp::verificar(&secreto, codigo) {
+        Ok(())
+    } else {
+        Err(ErrorBoveda::TotpInvalido)
+    }
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -1035,5 +1143,57 @@ mod tests {
         let _ = fs::remove_file(&ruta);
         let _ = fs::remove_file(&copia);
         let _ = fs::remove_file(&destino);
+    }
+
+    #[test]
+    fn sistemas_vencidos_avisa_solo_los_que_ya_pasaron() {
+        let ruta = ruta_tmp("vence");
+        {
+            let boveda = Boveda::crear_con(&ruta, "maestra-de-prueba", params_rapidos()).unwrap();
+            boveda.alta("Banco", "ana", "secreto-uno", "", "finanzas").unwrap();
+            boveda.alta("Correo", "ana", "secreto-dos", "", "trabajo").unwrap();
+        }
+        {
+            let conn = rusqlite::Connection::open(&ruta).unwrap();
+            conn.execute(
+                "UPDATE credenciales SET vence_en = 1 WHERE sistema = 'Banco'",
+                [],
+            )
+            .unwrap();
+            conn.execute(
+                "UPDATE credenciales SET vence_en = ?1 WHERE sistema = 'Correo'",
+                [super::ahora() + 86_400],
+            )
+            .unwrap();
+        }
+        let boveda = Boveda::abrir(&ruta, "maestra-de-prueba").unwrap();
+        assert_eq!(boveda.sistemas_vencidos().unwrap(), vec!["Banco".to_string()]);
+        drop(boveda);
+        let _ = fs::remove_file(&ruta);
+    }
+
+    #[test]
+    fn el_totp_pide_el_codigo_para_volver_a_abrir() {
+        let ruta = ruta_tmp("totp");
+        let secreto = {
+            let boveda = Boveda::crear_con(&ruta, "maestra-de-prueba", params_rapidos()).unwrap();
+            let (secreto, _) = boveda.enrolar_totp().unwrap();
+            let codigo = crate::auth::totp::codigo_actual(&secreto).unwrap();
+            boveda.confirmar_totp(&codigo).unwrap();
+            secreto
+        };
+        assert!(matches!(
+            Boveda::abrir(&ruta, "maestra-de-prueba"),
+            Err(ErrorBoveda::TotpRequerido)
+        ));
+        let codigo = crate::auth::totp::codigo_actual(&secreto).unwrap();
+        let malo = if codigo == "000000" { "111111" } else { "000000" };
+        assert!(matches!(
+            Boveda::abrir_con(&ruta, "maestra-de-prueba", Some(malo)),
+            Err(ErrorBoveda::TotpInvalido)
+        ));
+        assert!(Boveda::abrir_con(&ruta, "maestra-de-prueba", Some(&codigo)).is_ok());
+        drop(Boveda::abrir_con(&ruta, "maestra-de-prueba", Some(&codigo)).unwrap());
+        let _ = fs::remove_file(&ruta);
     }
 }

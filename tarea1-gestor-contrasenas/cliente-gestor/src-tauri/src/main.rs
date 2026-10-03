@@ -30,6 +30,8 @@ fn main() {
             vault::commands::marcar_favorito,
             vault::commands::exportar_boveda,
             vault::commands::importar_boveda,
+            vault::commands::enrolar_totp,
+            vault::commands::confirmar_totp,
         ])
         .run(tauri::generate_context!())
         .expect("error al iniciar la aplicacion");

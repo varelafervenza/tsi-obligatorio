@@ -9,23 +9,24 @@ App de escritorio (Tauri: Rust + frontend web) que corre 100% local. No requiere
 | `src-tauri/src/crypto/` | KDF (Argon2id) y cifrado AEAD (XChaCha20-Poly1305) de la bóveda. RF-01, RF-16. |
 | `src-tauri/src/vault/` | Apertura/cierre de bóveda, CRUD de credenciales, historial, import/export cifrado. RF-02, RF-03, RF-12. |
 | `src-tauri/src/auth/` | MFA local: TOTP (RFC 6238) y WebAuthn/Windows Hello. RF-11 (elección de hash se define en control-central). |
-| `src-tauri/src/events/` | Construcción y firma JWS de eventos de auditoría (alta/mod/borrado/cambio de maestra). RF-07, RF-08. |
+| `src-tauri/src/events/` | Firma JWS de alta, modificación, borrado, cambio de maestra, intento fallido y vencimiento. RF-07, RF-08, RF-17. |
 | `src-tauri/src/generator/` | Generador de contraseñas/passphrase + validación por regex definida por sistema. RF-04, RF-05. |
 | `src/` | Frontend (React + TypeScript): UI de bóveda, definición de políticas por sistema, buscador/filtros. RF-15. |
 
-## Pendiente (no implementado aún)
+## Estado
 
 - [x] Esquema SQLite y CRUD: crear, abrir, cerrar, alta, consulta, modificación y borrado. `vault/store.rs`. El historial se usa para rechazar reuso; la pantalla no lo lista.
 - [x] Argon2id con parámetros configurables (por defecto 19 MiB / 2 iteraciones). `crypto/kdf.rs`.
 - [x] Cifrado XChaCha20-Poly1305 de cada entrada (nonce nuevo, tag verificado). `crypto/cipher.rs`.
-- [ ] Flujo de enroll TOTP + WebAuthn (Windows Hello como authenticator de plataforma).
+- [x] TOTP local: la bóveda muestra un QR, se confirma con el código de la app y la próxima apertura lo exige. `auth/totp.rs` y `src/App.tsx`. WebAuthn/Windows Hello siguen sin implementar.
 - [x] Cliente HTTP: firma JWS RS256 y POST al control central, con cola local si no hay red. `events/`.
 - [x] Cambio de la maestra: reencripta secretos, notas e historial y emite `cambio_maestra`. `vault/store.rs`.
 - [x] Pantalla mínima: crear/abrir bóveda y alta, consulta, edición y borrado. `src/App.tsx`.
 - [x] Generador (contraseña y frase) y política por sistema: longitud, caracteres, regex, historial y vencimiento. `generator/` y `vault/store.rs`.
 - [x] Buscador (sistema, usuario, categoría), filtro de favoritos y de vencidas, y marca de favorito. `src/App.tsx`.
 - [x] Exportar e importar la bóveda en un archivo cifrado con contraseña de transporte (`.gex`). `vault/store.rs`.
-- [ ] Aviso de vencimiento como evento al control central (RF-17). La lista ya muestra “vencida”; la API todavía no tiene ese tipo de evento.
+- [x] Aviso de vencimiento local y evento `vencimiento_credencial` al abrir la bóveda (RF-17). `vault/commands.rs`.
+- [x] Delay al fallar la maestra: 1 s, 2 s, 4 s y después 8 s (RF-16). Se pone en cero si la apertura es correcta.
 
 ## Cómo levantar
 
@@ -39,7 +40,7 @@ npm install
 npm run tauri dev
 ```
 
-Si las dos primeras quedan pegadas en una sola línea, Windows responde que el nombre de archivo no es válido. `NODE_OPTIONS` evita el error `UNABLE_TO_VERIFY_LEAF_SIGNATURE` contra el registry de npm en esta red. Vite queda en 5.4 (el plugin de React de este proyecto no acepta Vite 8). La ventana es el gestor. El archivo de la bóveda, si no cambiás la ruta, es `boveda.sqlite` en la carpeta de datos de la app.
+Si las dos primeras quedan pegadas en una sola línea, Windows responde que el nombre de archivo no es válido. `NODE_OPTIONS` evita el error `UNABLE_TO_VERIFY_LEAF_SIGNATURE` contra el registry de npm en esta red. Vite queda en 5.4 (el plugin de React de este proyecto no acepta Vite 8). La ventana es el gestor. El archivo de la bóveda, si no cambiás la ruta, es `boveda-prueba.sqlite` en la carpeta de datos de la app.
 
 Si `cargo` responde `Acceso denegado` al crear `src-tauri\target`, creá esa carpeta a mano y volvé a correr `npm run tauri dev`. Un aviso de "incremental compilation" en una ruta con `ñ` no frena el ejecutable.
 
@@ -57,7 +58,7 @@ cargo test
 3. Elegí la credencial. **Ver** muestra la contraseña. Cambiala y **Guardar cambios**. Volvé a elegirla y confirmá el valor nuevo.
 4. **Cerrar** y **Abrir bóveda** con la misma maestra. La credencial sigue ahí.
 5. Cerrá y abrí con otra maestra. Tiene que rechazarla y no mostrar credenciales.
-6. Abrí `boveda.sqlite` con un editor de texto y buscá la contraseña que cargaste. No tiene que aparecer en claro.
+6. Abrí `boveda-prueba.sqlite` con un editor de texto y buscá la contraseña que cargaste. No tiene que aparecer en claro.
 7. Con una credencial seleccionada, **Borrar** la saca de la lista.
 
 ## Política y generador
@@ -87,7 +88,11 @@ En la ventana:
 
 Si Docker está apagado, el alta igual se guarda. El aviso dice que el evento quedó en cola. Al volver a haber red, el próximo alta, cambio o borrado reintenta la cola.
 
-Una maestra incorrecta al abrir (el archivo ya existe) emite `intento_fallido_maestra`. **Cambiar contraseña maestra**, con la bóveda abierta, reencripta las credenciales y emite `cambio_maestra`.
+Una maestra incorrecta al abrir (el archivo ya existe) emite `intento_fallido_maestra` y la ventana espera 1 s la primera vez, 2 s la segunda, 4 s la tercera y 8 s de ahí en más. Abrir con la maestra correcta pone esa espera en cero. **Cambiar contraseña maestra**, con la bóveda abierta, reencripta las credenciales y emite `cambio_maestra`.
+
+Si al abrir hay credenciales vencidas, la lista lo dice y sale un evento `vencimiento_credencial` por cada sistema vencido. Mailpit recibe ese correo igual que un alta.
+
+Con la bóveda abierta, **TOTP de esta bóveda** y **Generar TOTP** muestran un QR. Escanealo con una app de autenticación y escribí el código de 6 dígitos en **Código para confirmar**. La próxima apertura pide ese código además de la maestra. La pantalla de inicio no lo calcula. Si la cámara no lee el QR, **No puedo escanear** muestra el secreto para cargarlo a mano. El secreto no sale hacia el control central.
 
 ## Buscador, favoritos y copia
 

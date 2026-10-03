@@ -681,10 +681,100 @@ Hora (UTC): 02:55
 - **Incidencia / hallazgo**: Ninguna en el test. El aviso de vencimiento al control central (RF-17) no se envía: la API solo acepta alta, modificación, borrado, cambio de maestra e intento fallido. Hace falta un tipo nuevo en el central si se quiere ese correo.
 - **Observaciones**: Cerrar y volver a abrir la bóveda para que aparezca la columna `favorito`. Espejar en la planilla Excel.
 
+---
+Fecha: 03/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 16:50
+---
+
+## Actividad: Aviso de vencimiento al control central e incidentes (RF-17, RF-13)
+
+- **Fase**: Implementación
+- **Duración**: 1,0 h
+- **Tarea realizada**: Se cruzó la letra (sección 3) con el código. El aviso local de vencimiento ya existía; faltaba el evento. El central acepta `vencimiento_credencial`, lo persiste, lo escribe en el JSONL y manda el correo. Al abrir la bóveda, si hay credenciales vencidas, la ventana lo dice y el cliente firma un evento por sistema, con la misma cola offline que el resto. Quedó el registro de incidentes: tabla `incidents` y `POST/GET /api/incidents/` más `PATCH /api/incidents/{id}`. El alta exige un evento ya guardado, arranca en `abierto` y al pasar a `resuelto` guarda la fecha. El estado `en_analisis` es el «en análisis» de RF-13. Severidad `S0`–`S3`, la de `docs/04-gestion-incidentes.md`.
+- **Herramienta / comando**: `python -m py_compile` de la API. `cargo test sistemas_vencidos_avisa_solo_los_que_ya_pasaron` en `cliente-gestor/src-tauri`: 1 prueba ok (solo entra el sistema ya vencido).
+- **Resultado**: Éxito de código. No se reconstruyó el compose en esta sesión: la tabla `incidents` aparece al arrancar de nuevo el control central.
+- **Evidencia anexa**: (pendiente — captura del aviso en la ventana, del 201 del evento y de un incidente en `docs/evidencias/`).
+- **Incidencia / hallazgo**: `cargo test` no pudo crear `src-tauri/target` (`Acceso denegado`, os error 5), el mismo corte del 02/10. Se creó la carpeta y la prueba terminó. Queda el aviso de caché incremental; no impide el ejecutable. `npx tsc --noEmit` intentó bajar `tsc` del registry y falló con `UNABLE_TO_VERIFY_LEAF_SIGNATURE`; en esta máquina no está el TypeScript local. La prueba de Rust sí corrió.
+- **Observaciones**: Espejar esta fila en `docs/mcu5/excel/04-bitacora-planilla.xlsx`. TheHive no se usa.
+
+---
+Fecha: 03/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 17:15
+---
+
+## Actividad: Panel de KPIs y Grafana (RF-09, RF-14, sección 6.4)
+
+- **Fase**: Implementación
+- **Duración**: 0,4 h
+- **Tarea realizada**: `GET /api/dashboard/kpis` deja de lanzar `NotImplementedError`. Calcula agentes con evento en las últimas 24 h, última recepción, prueba SMTP sin mandar correo, volumen por tipo, firmas inválidas, intentos fallidos de maestra e incidentes por estado. MTTD es el promedio desde `occurred_at` del evento hasta `creado_en` del incidente. MTTR es el promedio hasta `resuelto_en`. La cobertura cuenta cuántos de los cuatro tipos de RF-07 ya llegaron al menos una vez. El uptime es el del proceso. Grafana provisiona el datasource Postgres y el tablero **Control central** (eventos, incidentes abiertos, agentes, última sincronización, volumen y listado). El compose pasa al contenedor de Grafana el usuario y la clave de Postgres.
+- **Herramienta / comando**: `python -m py_compile app/api/dashboard.py app/core/runtime.py app/main.py`.
+- **Resultado**: Éxito de código. Hay que `docker compose up --build` para ver el endpoint y el tablero en el puerto 3000.
+- **Evidencia anexa**: (pendiente — respuesta de `/api/dashboard/kpis` y captura del tablero en `docs/evidencias/`).
+- **Incidencia / hallazgo**: La tasa de falsos positivos queda en null. No hay alertas del manager de Wazuh todavía; poner 0 hubiera dicho que la detección no falla.
+- **Observaciones**: Espejar en la planilla Excel.
+
+---
+Fecha: 03/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 17:30
+---
+
+## Actividad: Usuarios del panel, delay de la maestra y reglas Wazuh (RF-11, RF-16, RF-10)
+
+- **Fase**: Implementación
+- **Duración**: 0,5 h
+- **Tarea realizada**: Usuarios del panel en `panel_users`. El primer `POST /api/users/` no pide token y queda como admin; los siguientes los crea un admin. El hash es `argon2id` o `bcrypt`, a elección. El login devuelve un token. El listado no muestra la contraseña ni el secreto TOTP. El enroll es `POST /api/users/{id}/totp/enroll` y se activa con `POST /api/users/{id}/totp/confirmar`; después el login exige el código de 6 dígitos. Los eventos del agente siguen entrando por JWS, sin esta sesión. Una maestra incorrecta espera 1 s, luego 2 s, 4 s y se queda en 8 s; una apertura correcta pone el contador en cero. Argon2id sigue siendo el costo memory-hard. Las reglas de RF-10 quedaron en `infra/wazuh/local_rules.xml`: 5 intentos fallidos del mismo agente en 2 minutos, 5 borrados en 2 minutos, y cambio de maestra en el primer evento. `localfile-audit.xml` apunta al JSONL.
+- **Herramienta / comando**: vector TOTP de RFC 6238 (tiempo 59, secreto de la RFC, código `287082`). `cargo test la_demora_crece_y_se_frena_en_ocho_segundos`: ok. `xml.etree` leyó los cinco `rule id` del archivo de Wazuh.
+- **Resultado**: Éxito de código. WebAuthn y Windows Hello siguen sin endpoint. Las reglas no se dispararon contra un manager levantado.
+- **Evidencia anexa**: (pendiente — login con TOTP, la espera al fallar la maestra, y una alerta de Wazuh en `docs/evidencias/`).
+- **Incidencia / hallazgo**: El mismo aviso de caché incremental de `cargo` (os error 5 al cerrar la sesión incremental). La prueba igual terminó en 5 s porque `target/` ya existía.
+- **Observaciones**: Falta despliegue, no lógica nueva de estos tres RF: manager Wazuh, retención de 90 días, Mailu (SPF/DKIM) y TLS. Espejar las tres entradas del 03/10 en `docs/mcu5/excel/04-bitacora-planilla.xlsx`.
+
+---
+Fecha: 03/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 17:45
+---
+
+## Actividad: Alertas de las reglas, retención de 90 días y TOTP local (RF-10, RNF-07, RF-02)
+
+- **Fase**: Implementación
+- **Duración**: 0,6 h
+- **Tarea realizada**: Cada evento que cumple las reglas de `local_rules.xml` abre una fila en `alerts`: cambio de maestra en el acto, y 5 intentos fallidos o 5 borrados del mismo agente en 2 minutos. `GET /api/alerts/` las lista y `PATCH /api/alerts/{id}` marca si es falso positivo; el panel calcula la tasa solo sobre las ya clasificadas. Al arrancar, el central borra eventos con más de 90 días que no sean origen de un incidente o de una alerta. En la bóveda, **TOTP de esta bóveda** genera el secreto, lo guarda cifrado con la maestra y, una vez confirmado, la próxima apertura lo exige. Un código TOTP inválido usa la misma espera que una maestra incorrecta, pero no se registra como `intento_fallido_maestra`.
+- **Herramienta / comando**: `cargo test totp` en `cliente-gestor/src-tauri`: 2 pruebas ok (el código actual verifica, y sin código la bóveda no abre).
+- **Resultado**: Éxito de código. El manager de Wazuh no se levantó; las alertas de esta sesión son las de la API.
+- **Evidencia anexa**: (pendiente — una alerta en `/api/alerts/` y la ventana pidiendo TOTP, en `docs/evidencias/`).
+- **Incidencia / hallazgo**: `totp-rs` 5.7 no trae `generate_secret` ni `get_url` sin features extra. El secreto se genera con `OsRng` (20 bytes) y la URL otpauth se arma en el módulo. El aviso de caché incremental de `cargo` se repitió; las pruebas terminaron igual.
+- **Observaciones**: WebAuthn/Windows Hello, Mailu y TLS siguen fuera. Espejar esta fila en el Excel de bitácora.
+
+---
+Fecha: 03/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 18:40
+---
+
+## Actividad: QR de enrolamiento TOTP y ruta inicial de la bóveda (RF-02)
+
+- **Fase**: Implementación
+- **Duración**: 0,5 h
+- **Tarea realizada**: El alta de TOTP de la bóveda muestra un QR de la URI `otpauth`, para escanearlo con una app de autenticación. El código de 6 dígitos de esa app confirma el alta y es el que pide la próxima apertura. Se sacó de la pantalla de inicio el cálculo del código: la misma ventana no puede ser el segundo factor. Si la cámara no lee el QR, **No puedo escanear** deja el secreto para carga manual. El archivo que propone el login pasó de `boveda.sqlite` a `boveda-prueba.sqlite`, en la carpeta de datos de la app (`uy.tsi.gestor-contrasenas`).
+- **Herramienta / comando**: `npm install qrcode.react` con `NODE_OPTIONS=--use-system-ca`. `npx tsc --noEmit` en `cliente-gestor`: sin errores.
+- **Resultado**: Éxito de código. Hay que volver a correr `npm run tauri dev` para ver el QR, porque entró una dependencia nueva.
+- **Evidencia anexa**: (pendiente — captura del QR y de la apertura con el código de la app, en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Una primera versión mostraba el código de 6 dígitos también en el login. Se quitó: con el secreto a la vista, ese número no agrega un factor.
+- **Observaciones**: WebAuthn/Windows Hello, Mailu y TLS siguen fuera. Espejar esta fila en el Excel de bitácora.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
 - [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09; Pablo Morales el
-  25/09–26/09 UTC; Horacio Duarte firma las suyas cuando corresponda).
+  25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10 y el 03/10).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

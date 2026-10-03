@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { QRCodeSVG } from "qrcode.react";
 
 type Resumen = {
   id: number;
@@ -42,6 +43,16 @@ const politicaInicial: Politica = {
   dias_validez: 90,
   categoria: "",
 };
+
+function contarVencidas(lista: Resumen[]): number {
+  const ahora = Math.floor(Date.now() / 1000);
+  return lista.filter((item) => item.vence_en != null && item.vence_en < ahora).length;
+}
+
+function textoVencidas(cantidad: number): string {
+  if (cantidad === 1) return "Hay 1 credencial vencida.";
+  return `Hay ${cantidad} credenciales vencidas.`;
+}
 
 function textoVence(vence: number | null): string | null {
   if (vence == null) return null;
@@ -98,6 +109,10 @@ function mensaje(error: unknown): string {
 export default function App() {
   const [ruta, setRuta] = useState("");
   const [maestra, setMaestra] = useState("");
+  const [codigoTotp, setCodigoTotp] = useState("");
+  const [secretoTotp, setSecretoTotp] = useState("");
+  const [uriTotp, setUriTotp] = useState("");
+  const [codigoEnroll, setCodigoEnroll] = useState("");
   const [abierta, setAbierta] = useState(false);
   const [lista, setLista] = useState<Resumen[]>([]);
   const [form, setForm] = useState<Formulario>(formularioVacio);
@@ -157,7 +172,20 @@ export default function App() {
     return (evento: { preventDefault: () => void }) => {
       evento.preventDefault();
       void conBoveda(async () => {
-        await invoke(comando, { ruta, maestra });
+        if (comando === "abrir_boveda") {
+          const vencidos = await invoke<string[]>("abrir_boveda", {
+            ruta,
+            maestra,
+            codigo: codigoTotp.trim() === "" ? null : codigoTotp.trim(),
+          });
+          setMaestra("");
+          setAbierta(true);
+          setForm(formularioVacio);
+          await refrescar();
+          if (vencidos.length > 0) await anotarEvento();
+          return;
+        }
+        await invoke("crear_boveda", { ruta, maestra });
         setMaestra("");
         setAbierta(true);
         setForm(formularioVacio);
@@ -338,7 +366,17 @@ export default function App() {
               autoComplete="new-password"
             />
           </label>
-          <p className="ayuda">Argon2id. Abrir puede tardar un segundo.</p>
+          <label className="fila">
+            <span>Código TOTP</span>
+            <input
+              value={codigoTotp}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="solo si la bóveda lo tiene activo"
+              onChange={(e) => setCodigoTotp(e.target.value)}
+            />
+          </label>
+          <p className="ayuda">Argon2id. Abrir puede tardar un segundo. El código solo hace falta si enrolaste TOTP.</p>
           <div className="acciones">
             <button type="submit" disabled={ocupado || ruta === "" || maestra === ""}>
               Abrir bóveda
@@ -370,6 +408,66 @@ export default function App() {
           Cerrar
         </button>
       </header>
+      <details className="politica">
+        <summary>TOTP de esta bóveda</summary>
+        <div className="panel">
+          <p className="ayuda">
+            El segundo factor queda en este equipo, cifrado con la maestra. No se envía al control central.
+          </p>
+          <button
+            type="button"
+            className="secundario"
+            disabled={ocupado}
+            onClick={() => {
+              void conBoveda(async () => {
+                const alta = await invoke<{ secreto: string; otpauth_uri: string }>("enrolar_totp");
+                setSecretoTotp(alta.secreto);
+                setUriTotp(alta.otpauth_uri);
+                setAviso("QR listo. Confirmalo con el código de la app antes de cerrar la bóveda.");
+              });
+            }}
+          >
+            Generar TOTP
+          </button>
+          {uriTotp ? (
+            <>
+              <div className="qr-totp">
+                <QRCodeSVG value={uriTotp} size={180} includeMargin />
+              </div>
+              <p className="ayuda">
+                Escanealo con la app de autenticación del celular. El código de 6 dígitos de esa app es el que confirma y el que pide la próxima apertura.
+              </p>
+              <details>
+                <summary>No puedo escanear</summary>
+                <p className="ayuda">Secreto para carga manual: {secretoTotp}</p>
+              </details>
+              <label className="fila">
+                <span>Código para confirmar</span>
+                <input
+                  value={codigoEnroll}
+                  inputMode="numeric"
+                  onChange={(e) => setCodigoEnroll(e.target.value)}
+                />
+              </label>
+              <button
+                type="button"
+                disabled={ocupado || codigoEnroll.trim().length < 6}
+                onClick={() => {
+                  void conBoveda(async () => {
+                    await invoke("confirmar_totp", { codigo: codigoEnroll.trim() });
+                    setAviso("TOTP activo. La próxima apertura pide el código de la app.");
+                    setCodigoEnroll("");
+                    setUriTotp("");
+                    setSecretoTotp("");
+                  });
+                }}
+              >
+                Confirmar TOTP
+              </button>
+            </>
+          ) : null}
+        </div>
+      </details>
       <details className="politica">
         <summary>Cambiar contraseña maestra</summary>
         <div className="panel">
@@ -488,6 +586,7 @@ export default function App() {
       <div className="layout">
         <section className="panel">
           <h2>Credenciales</h2>
+          {contarVencidas(lista) > 0 ? <p className="ayuda">{textoVencidas(contarVencidas(lista))}</p> : null}
           <label className="fila">
             <span>Buscar</span>
             <input
@@ -748,7 +847,10 @@ function Auditoria({
     <details className="politica">
       <summary>Control central</summary>
       <div className="panel">
-        <p className="ayuda">Agente {agenteId || "…"}. La bóveda no se envía: solo el aviso de alta, cambio o borrado.</p>
+        <p className="ayuda">
+          Agente {agenteId || "…"}. La bóveda no se envía: solo el aviso de alta, cambio, borrado o
+          vencimiento.
+        </p>
         <label className="fila">
           <span>URL de eventos</span>
           <input value={urlCentral} spellCheck={false} onChange={(e) => onUrl(e.target.value)} />

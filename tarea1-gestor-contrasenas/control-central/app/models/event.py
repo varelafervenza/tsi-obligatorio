@@ -12,6 +12,7 @@ TIPOS_EVENTO = (
     "borrado_credencial",
     "cambio_maestra",
     "intento_fallido_maestra",
+    "vencimiento_credencial",
 )
 
 

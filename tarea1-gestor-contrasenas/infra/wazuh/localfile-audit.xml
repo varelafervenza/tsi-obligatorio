@@ -1,0 +1,6 @@
+<!-- Fragmento para ossec.conf del agente o del manager.
+     Apunta al JSONL que escribe control-central. Sin secretos en ese archivo. -->
+<localfile>
+  <log_format>json</log_format>
+  <location>/var/log/control-central/audit-events.jsonl</location>
+</localfile>

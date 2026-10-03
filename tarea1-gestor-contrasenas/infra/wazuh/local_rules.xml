@@ -1,0 +1,39 @@
+<!-- Reglas custom RF-10. Copiar a /var/ossec/etc/rules/local_rules.xml del manager.
+     El localfile tiene que usar log_format json sobre audit-events.jsonl.
+     IDs en el rango libre de Wazuh (100000+). -->
+<group name="control_central,">
+
+  <rule id="100100" level="3">
+    <decoded_as>json</decoded_as>
+    <field name="programa">^control-central$</field>
+    <field name="tipo">^intento_fallido_maestra$</field>
+    <description>Intento fallido de contraseña maestra</description>
+  </rule>
+
+  <rule id="100101" level="10" frequency="5" timeframe="120">
+    <if_matched_sid>100100</if_matched_sid>
+    <same_field>agente_id</same_field>
+    <description>Fuerza bruta de contraseña maestra: 5 intentos del mismo agente en 2 minutos</description>
+  </rule>
+
+  <rule id="100110" level="3">
+    <decoded_as>json</decoded_as>
+    <field name="programa">^control-central$</field>
+    <field name="tipo">^borrado_credencial$</field>
+    <description>Borrado de credencial</description>
+  </rule>
+
+  <rule id="100111" level="10" frequency="5" timeframe="120">
+    <if_matched_sid>100110</if_matched_sid>
+    <same_field>agente_id</same_field>
+    <description>Borrado masivo de credenciales: 5 borrados del mismo agente en 2 minutos</description>
+  </rule>
+
+  <rule id="100120" level="12">
+    <decoded_as>json</decoded_as>
+    <field name="programa">^control-central$</field>
+    <field name="tipo">^cambio_maestra$</field>
+    <description>Cambio de contraseña maestra</description>
+  </rule>
+
+</group>

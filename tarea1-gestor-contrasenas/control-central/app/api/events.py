@@ -15,6 +15,7 @@ from app.core.security import verificar_jws
 from app.db.session import get_db
 from app.models.event import AuditEvent
 from app.notify.mailer import enviar_notificacion_segura
+from app.siem.reglas import evaluar_reglas
 from app.siem.wazuh_forwarder import reenviar_evento_seguro
 
 router = APIRouter()
@@ -25,6 +26,7 @@ TipoEvento = Literal[
     "borrado_credencial",
     "cambio_maestra",
     "intento_fallido_maestra",
+    "vencimiento_credencial",
 ]
 
 
@@ -74,6 +76,7 @@ def recibir_evento(payload: EventoIn, request: Request, db: Session = Depends(ge
     db.refresh(evento)
     reenviar_evento_seguro(evento)
     enviar_notificacion_segura(evento)
+    evaluar_reglas(db, evento)
     return evento
 
 

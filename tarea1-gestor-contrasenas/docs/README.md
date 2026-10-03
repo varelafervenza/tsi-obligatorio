@@ -13,14 +13,14 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `00-arquitectura-4mas1.md` | `plantilla/plantilla-arquitectura-4más1.md` | ☑ borrador 0.1 |
 | `00-arquitectura-c4.md` | `plantilla/plantilla-arquitectura-C4.md` | ☑ borrador 0.1 |
 | `diagrama-arquitectura.png` | diagrama usado en la LETRA | ☐ |
-| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (actualizar a diario) |
+| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (entradas de Horacio Duarte del 03/10, hasta el QR de TOTP a las 18:40 UTC; falta espejarlas en el Excel) |
 | `01-Politica-Seguridad.md` | `plantilla/isaca/01-politica-seguridad.md` | ☑ borrador 0.1 (sin aprobación formal aún) |
 | `02-Registro-Activos.md` | `plantilla/isaca/02-registro-activos.md` | ☑ borrador 0.1 (+ Excel `docs/mcu5/excel/02-registro-activos-mcu5.xlsx` cargado) |
 | `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 0.1 (12 riesgos, de RT-01..RT-12) |
 | `04-Gestion-Incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☐ |
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☐ |
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☐ |
-| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (evidencia real pendiente de implementación) |
+| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (el QR de TOTP ya está en el cliente; falta la captura) |
 | `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☐ |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |

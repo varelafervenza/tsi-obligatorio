@@ -20,6 +20,7 @@ TIPOS_CON_CORREO = frozenset(
         "modificacion_credencial",
         "borrado_credencial",
         "cambio_maestra",
+        "vencimiento_credencial",
     }
 )
 
@@ -28,6 +29,7 @@ ASUNTO = {
     "modificacion_credencial": "Modificación de credencial",
     "borrado_credencial": "Borrado de credencial",
     "cambio_maestra": "CRÍTICO — Cambio de contraseña maestra",
+    "vencimiento_credencial": "Vencimiento de contraseña",
 }
 
 
