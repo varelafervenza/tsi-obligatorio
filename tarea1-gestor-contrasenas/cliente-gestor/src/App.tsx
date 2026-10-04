@@ -109,10 +109,16 @@ function mensaje(error: unknown): string {
 function InterruptorHello({ onAviso }: { onAviso: (texto: string) => void }) {
   const [activo, setActivo] = useState<boolean | null>(null);
   const [disponible, setDisponible] = useState<boolean | null>(null);
+  const [motivo, setMotivo] = useState("");
 
   useEffect(() => {
     invoke<boolean>("estado_windows_hello").then(setActivo).catch(() => setActivo(false));
-    invoke<boolean>("windows_hello_disponible").then(setDisponible).catch(() => setDisponible(false));
+    invoke("windows_hello_disponible")
+      .then(() => setDisponible(true))
+      .catch((error) => {
+        setDisponible(false);
+        setMotivo(mensaje(error));
+      });
   }, []);
 
   async function cambiar(nuevo: boolean) {
@@ -126,7 +132,7 @@ function InterruptorHello({ onAviso }: { onAviso: (texto: string) => void }) {
   }
 
   if (disponible === false) {
-    return <p className="ayuda">Windows Hello no está configurado en este equipo.</p>;
+    return <p className="ayuda">{motivo}</p>;
   }
 
   return (

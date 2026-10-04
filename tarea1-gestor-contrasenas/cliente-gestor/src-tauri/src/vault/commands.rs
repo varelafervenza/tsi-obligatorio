@@ -117,8 +117,8 @@ pub fn estado_windows_hello(estado: State<'_, EstadoBoveda>) -> Result<bool, Str
 
 #[tauri::command]
 pub fn configurar_windows_hello(estado: State<'_, EstadoBoveda>, activar: bool) -> Result<(), String> {
-    if activar && !crate::auth::webauthn::disponible()? {
-        return Err("Windows Hello no está configurado en este equipo.".into());
+    if activar {
+        crate::auth::webauthn::registrar()?;
     }
     con_boveda(&estado, |boveda| boveda.configurar_hello(activar))
 }
