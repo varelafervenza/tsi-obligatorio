@@ -10,6 +10,8 @@ mod imp {
     use windows::core::{factory, HSTRING};
     use windows::Security::Credentials::{
         KeyCredentialCreationOption, KeyCredentialManager, KeyCredentialStatus,
+    };
+    use windows::Security::Credentials::UI::{
         UserConsentVerificationResult, UserConsentVerifier, UserConsentVerifierAvailability,
     };
     use windows::Security::Cryptography::CryptographicBuffer;
