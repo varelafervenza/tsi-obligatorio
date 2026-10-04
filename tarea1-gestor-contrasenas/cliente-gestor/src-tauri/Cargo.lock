@@ -439,6 +439,7 @@ dependencies = [
  "totp-rs",
  "ureq",
  "windows",
+ "windows-future",
 ]
 
 [[package]]

@@ -5,12 +5,12 @@
 #[cfg(windows)]
 mod imp {
     use windows::core::{factory, HSTRING};
-    use windows::Foundation::IAsyncOperation;
     use windows::Security::Credentials::UI::{
         UserConsentVerificationResult, UserConsentVerifier, UserConsentVerifierAvailability,
     };
     use windows::Win32::Foundation::HWND;
     use windows::Win32::System::WinRT::IUserConsentVerifierInterop;
+    use windows_future::IAsyncOperation;
 
     pub fn disponible() -> Result<bool, String> {
         let operacion = UserConsentVerifier::CheckAvailabilityAsync().map_err(|e| e.to_string())?;
