@@ -51,6 +51,22 @@
 > permite, porque TOTP es phishable (RT-06 del Red Team apunta justo a esto — ver `R06` en
 > `03-Analisis-Riesgos.md`) y WebAuthn no.
 
+### Windows Hello implementado en la bóveda (alcance real)
+
+- Activable por bóveda desde la UI. Se guarda en `meta.hello_activo`, sin cifrar, para poder
+  saber antes de derivar la clave que hace falta el segundo factor.
+- Cuando está activo, `abrir_boveda` (en Rust) muestra el diálogo de Windows Hello sobre la
+  ventana antes de derivar la clave. Si no se confirma, no se abre. El frontend no puede
+  saltearlo porque la verificación vive en el comando.
+- Usa las APIs `UserConsentVerifier` de Windows (`windows` 0.62 + `windows-future`).
+- **Limitación honesta:** es una verificación de presencia/biometría del usuario en este equipo.
+  No es una credencial FIDO: no agrega fuerza criptográfica a la clave de la bóveda, que sigue
+  derivada solo de la maestra con Argon2id. Un atacante con código modificado en el propio
+  equipo podría saltearla.
+- **Fuera de alcance por ahora:** WebAuthn en el navegador (requiere HTTPS con RP ID, que no
+  existe todavía) y Windows Hello en el panel de `control-central` (requiere login con HTML
+  y TLS). Se documenta como N.A. justificado hasta que haya TLS en el borde.
+
 ## 2. Gestión de identidades (provisión / desprovisión)
 
 En `cliente-gestor` no hay "usuarios" en el sentido tradicional: cada bóveda pertenece a una

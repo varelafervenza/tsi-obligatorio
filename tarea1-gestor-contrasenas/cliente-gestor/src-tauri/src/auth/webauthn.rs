@@ -41,13 +41,15 @@ mod imp {
     }
 }
 
-#[tauri::command]
-pub fn windows_hello_disponible() -> Result<bool, String> {
+pub fn disponible() -> Result<bool, String> {
     imp::disponible()
 }
 
+pub fn verificar(hwnd: isize) -> Result<bool, String> {
+    imp::verificar(hwnd, "Confirme su identidad para abrir la bóveda")
+}
+
 #[tauri::command]
-pub fn verificar_windows_hello(window: tauri::WebviewWindow) -> Result<bool, String> {
-    let hwnd = window.hwnd().map_err(|e| e.to_string())?;
-    imp::verificar(hwnd.0 as isize, "Confirme su identidad para abrir la bóveda")
+pub fn windows_hello_disponible() -> Result<bool, String> {
+    disponible()
 }

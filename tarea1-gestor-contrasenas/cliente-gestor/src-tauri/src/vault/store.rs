@@ -504,6 +504,28 @@ impl Boveda {
         }
     }
 
+    /// Lee la marca sin pedir la maestra: hace falta saberlo antes de derivar la clave. RF-02.
+    pub fn hello_requerido(ruta: &Path) -> Result<bool, ErrorBoveda> {
+        if !ruta.exists() {
+            return Ok(false);
+        }
+        let conn = Connection::open(ruta)?;
+        Ok(conn
+            .query_row("SELECT hello_activo FROM meta WHERE id = 1", [], |row| {
+                row.get::<_, i64>(0)
+            })
+            .map(|valor| valor == 1)
+            .unwrap_or(false))
+    }
+
+    pub fn configurar_hello(&self, activar: bool) -> Result<(), ErrorBoveda> {
+        self.conn.execute(
+            "UPDATE meta SET hello_activo = ?1 WHERE id = 1",
+            params![activar as i64],
+        )?;
+        Ok(())
+    }
+
     /// Deja el secreto cifrado y el TOTP inactivo hasta `confirmar_totp`. RF-02.
     pub fn enrolar_totp(&self) -> Result<(String, String), ErrorBoveda> {
         let (secreto, uri) = crate::auth::totp::generar().map_err(|_| ErrorBoveda::Cripto)?;
@@ -927,6 +949,12 @@ fn asegurar_esquema(conn: &Connection) -> Result<(), ErrorBoveda> {
             [],
         )?;
     }
+    if !columnas.iter().any(|n| n == "hello_activo") {
+        conn.execute(
+            "ALTER TABLE meta ADD COLUMN hello_activo INTEGER NOT NULL DEFAULT 0",
+            [],
+        )?;
+    }
     Ok(())
 }
 
@@ -1169,6 +1197,18 @@ mod tests {
         let boveda = Boveda::abrir(&ruta, "maestra-de-prueba").unwrap();
         assert_eq!(boveda.sistemas_vencidos().unwrap(), vec!["Banco".to_string()]);
         drop(boveda);
+        let _ = fs::remove_file(&ruta);
+    }
+
+    #[test]
+    fn hello_activo_se_guarda_y_se_lee_sin_la_maestra() {
+        let ruta = ruta_tmp("hello");
+        {
+            let boveda = Boveda::crear_con(&ruta, "maestra-de-prueba", params_rapidos()).unwrap();
+            assert!(!Boveda::hello_requerido(&ruta).unwrap());
+            boveda.configurar_hello(true).unwrap();
+        }
+        assert!(Boveda::hello_requerido(&ruta).unwrap());
         let _ = fs::remove_file(&ruta);
     }
 

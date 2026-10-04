@@ -106,6 +106,46 @@ function mensaje(error: unknown): string {
   return "No se pudo completar la operación.";
 }
 
+function InterruptorHello({ onAviso }: { onAviso: (texto: string) => void }) {
+  const [activo, setActivo] = useState<boolean | null>(null);
+  const [disponible, setDisponible] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    invoke<boolean>("estado_windows_hello").then(setActivo).catch(() => setActivo(false));
+    invoke<boolean>("windows_hello_disponible").then(setDisponible).catch(() => setDisponible(false));
+  }, []);
+
+  async function cambiar(nuevo: boolean) {
+    try {
+      await invoke("configurar_windows_hello", { activar: nuevo });
+      setActivo(nuevo);
+      onAviso(nuevo ? "Windows Hello activo: la próxima apertura lo pide." : "Windows Hello desactivado.");
+    } catch (error) {
+      onAviso(mensaje(error));
+    }
+  }
+
+  if (disponible === false) {
+    return <p className="ayuda">Windows Hello no está configurado en este equipo.</p>;
+  }
+
+  return (
+    <div className="panel">
+      <p className="ayuda">
+        Segundo factor local para abrir la bóveda. Protege el uso del equipo desbloqueado; no reemplaza la maestra.
+      </p>
+      <button
+        type="button"
+        className="secundario"
+        disabled={activo === null}
+        onClick={() => void cambiar(!activo)}
+      >
+        {activo ? "Desactivar Windows Hello" : "Activar Windows Hello"}
+      </button>
+    </div>
+  );
+}
+
 export default function App() {
   const [ruta, setRuta] = useState("");
   const [maestra, setMaestra] = useState("");
@@ -467,6 +507,10 @@ export default function App() {
             </>
           ) : null}
         </div>
+      </details>
+      <details className="politica">
+        <summary>Windows Hello de esta bóveda</summary>
+        <InterruptorHello onAviso={setAviso} />
       </details>
       <details className="politica">
         <summary>Cambiar contraseña maestra</summary>
