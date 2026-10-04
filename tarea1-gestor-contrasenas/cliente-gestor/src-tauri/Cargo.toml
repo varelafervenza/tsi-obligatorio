@@ -26,7 +26,7 @@ chrono = "0.4"
 ureq = { version = "2", features = ["json"] }
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.62", features = ["Security_Credentials_UI", "Foundation", "Win32_Foundation"] }
+windows = { version = "0.62", features = ["Security_Credentials_UI", "Foundation", "Win32_Foundation", "Win32_System_WinRT"] }
 
 [[bin]]
 name = "cliente-gestor"

@@ -5,27 +5,27 @@
 #[cfg(windows)]
 mod imp {
     use windows::core::{factory, HSTRING};
+    use windows::Foundation::IAsyncOperation;
     use windows::Security::Credentials::UI::{
-        IUserConsentVerifierInterop, UserConsentVerificationResult, UserConsentVerifier,
-        UserConsentVerifierAvailability,
+        UserConsentVerificationResult, UserConsentVerifier, UserConsentVerifierAvailability,
     };
     use windows::Win32::Foundation::HWND;
+    use windows::Win32::System::WinRT::IUserConsentVerifierInterop;
 
     pub fn disponible() -> Result<bool, String> {
-        let estado = UserConsentVerifier::CheckAvailabilityAsync()
-            .and_then(|op| op.get())
-            .map_err(|e| e.to_string())?;
+        let operacion = UserConsentVerifier::CheckAvailabilityAsync().map_err(|e| e.to_string())?;
+        let estado = operacion.GetResults().map_err(|e| e.to_string())?;
         Ok(estado == UserConsentVerifierAvailability::Available)
     }
 
     pub fn verificar(hwnd: isize, mensaje: &str) -> Result<bool, String> {
         let interop = factory::<UserConsentVerifier, IUserConsentVerifierInterop>()
             .map_err(|e| e.to_string())?;
-        let operacion = unsafe {
+        let operacion: IAsyncOperation<UserConsentVerificationResult> = unsafe {
             interop.RequestVerificationForWindowAsync(HWND(hwnd as *mut _), &HSTRING::from(mensaje))
         }
         .map_err(|e| e.to_string())?;
-        let resultado = operacion.get().map_err(|e| e.to_string())?;
+        let resultado = operacion.GetResults().map_err(|e| e.to_string())?;
         Ok(resultado == UserConsentVerificationResult::Verified)
     }
 }
