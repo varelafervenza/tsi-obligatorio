@@ -1,0 +1,71 @@
+name: cliente-gestor
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "tarea1-gestor-contrasenas/cliente-gestor/**"
+      - ".github/workflows/cliente-gestor.yml"
+  pull_request:
+    paths:
+      - "tarea1-gestor-contrasenas/cliente-gestor/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: tarea1-gestor-contrasenas/cliente-gestor
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tarea1-gestor-contrasenas/cliente-gestor/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tarea1-gestor-contrasenas/cliente-gestor/src-tauri
+
+      - name: Tests de la lógica (cripto, bóveda, generador, TOTP, exportación)
+        working-directory: tarea1-gestor-contrasenas/cliente-gestor/src-tauri
+        run: cargo test
+
+  instalador:
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tarea1-gestor-contrasenas/cliente-gestor/package-lock.json
+
+      - run: npm ci
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tarea1-gestor-contrasenas/cliente-gestor/src-tauri
+
+      - name: Generar instalador NSIS
+        run: npx tauri build --bundles nsis
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cliente-gestor-instalador
+          path: tarea1-gestor-contrasenas/cliente-gestor/src-tauri/target/release/bundle/nsis/*.exe

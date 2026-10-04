@@ -25,6 +25,9 @@ rsa = { version = "0.9", features = ["pem"] }
 chrono = "0.4"
 ureq = { version = "2", features = ["json"] }
 
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Security_Credentials_UI", "Foundation", "Win32_Foundation"] }
+
 [[bin]]
 name = "cliente-gestor"
 path = "src/main.rs"
