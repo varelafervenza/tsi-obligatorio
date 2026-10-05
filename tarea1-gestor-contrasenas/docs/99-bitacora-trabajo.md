@@ -951,6 +951,24 @@ Hora (UTC): 17:05
 - **Incidencia / hallazgo**: El contenedor levantaba bien, pero `http://localhost:8000` respondía un 404 de Windows. El proceso `System` (PID 4, HTTP.sys) tenía tomado el puerto 8000, así que Docker no podía publicarlo. Se cambió el puerto del host a 8001 en `infra/docker-compose.yml` y en las URLs de la app, los scripts y los READMEs. El puerto dentro del contenedor sigue siendo 8000.
 - **Observaciones**: La URL por defecto del cliente pasó a `http://localhost:8001/api/events/` (`events/mod.rs` y `App.tsx`), así que el CI del cliente tiene que volver a correr. Las claves generadas quedan en `keys/` (ignorado por git). Pendiente: capturas para `docs/evidencias/` y revisar el tablero de Grafana.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Corregir el panel de última sincronización en el tablero de Grafana
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: La captura del tablero mostraba "No data" en "Última sincronización". El panel es de tipo *stat* y la consulta devolvía una fecha (`MAX(received_at)`), que no es un número. Se cambió la consulta a epoch en milisegundos (`EXTRACT(EPOCH FROM MAX(received_at))*1000`) y se le puso la unidad `dateTimeFromNow` para que muestre "hace X". Se verificó la consulta por la API de Grafana: devuelve un valor numérico.
+- **Herramienta / comando**: edición de `infra/grafana/provisioning/dashboards/control-central.json`, `docker compose restart grafana`, `POST /api/ds/query` de Grafana.
+- **Resultado**: Éxito. El tablero debe refrescarse para ver el cambio; la captura queda pendiente de repetir.
+- **Evidencia anexa**: (pendiente — captura `04-grafana.png` en `docs/evidencias/`, después del cambio).
+- **Incidencia / hallazgo**: Ninguna más allá del "No data" que motivó el cambio.
+- **Observaciones**: El panel de incidentes muestra "No data" porque todavía no hay incidentes; es correcto.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
