@@ -771,6 +771,168 @@ Hora (UTC): 18:40
 - **Incidencia / hallazgo**: Una primera versión mostraba el código de 6 dígitos también en el login. Se quitó: con el secreto a la vista, ese número no agrega un factor.
 - **Observaciones**: WebAuthn/Windows Hello, Mailu y TLS siguen fuera. Espejar esta fila en el Excel de bitácora.
 
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: CI del cliente en Windows y spike de Windows Hello (commit dc6301c)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se agregó `.github/workflows/cliente-gestor.yml`: job `test` en `windows-latest` (npm ci, npm run build, cargo test) y job `instalador` que genera el NSIS en push a master. Se agregó el spike de Windows Hello en `auth/webauthn.rs`, con la dependencia `windows` 0.62 sólo para Windows.
+- **Herramienta / comando**: GitHub Actions, `dtolnay/rust-toolchain`, `Swatinem/rust-cache`; `cargo` local bloqueado por Smart App Control.
+- **Resultado**: CI compiló las dependencias de Tauri en Windows, pero el spike falló en los imports (ver siguientes commits).
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Smart App Control bloquea los binarios sin firma del equipo local. No se firma ni se desactiva (decisión del equipo).
+- **Observaciones**: Corregir el spike y validar el job `test`.
+
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 20:05
+---
+
+## Actividad: Corregir imports y lectura async de Windows Hello en el spike (commit 2ed6847)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se movió `IUserConsentVerifierInterop` a `Win32::System::WinRT` (feature `Win32_System_WinRT`) y se reemplazó `.get()` por `GetResults()`.
+- **Herramienta / comando**: Lectura del código fuente de `windows` 0.62.2 en el registro de Cargo.
+- **Resultado**: CI volvió a fallar por un import que no existía.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Error de API corregido a partir de la fuente de `windows` 0.62.2.
+- **Observaciones**: Validar en CI.
+
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 20:11
+---
+
+## Actividad: Usar windows-future para IAsyncOperation (commit acc9214)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: `IAsyncOperation` vive en `windows-future` 0.3.2, que no se re-exporta bajo `Foundation`. Se agregó como dependencia directa con la misma versión que usa `windows`, y se actualizó `Cargo.lock`.
+- **Herramienta / comando**: `cargo metadata` para resolver el lockfile sin enlazar.
+- **Resultado**: CI quedó con un único error de import.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Validar en CI.
+
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 20:28
+---
+
+## Actividad: Exigir Windows Hello al abrir la bóveda cuando está activado (commit 8867a01)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se agregó la columna `meta.hello_activo` y `Boveda::hello_requerido`, que lee la marca sin la maestra. `abrir_boveda` pasó a `async` y verifica Hello en `spawn_blocking` antes de derivar la clave. Se agregó `configurar_windows_hello` y la sección de UI con el switch. Se actualizó `09-Gestion-Accesos.md`. Test nuevo: `hello_activo_se_guarda_y_se_lee_sin_la_maestra`.
+- **Herramienta / comando**: `rustfmt --check` para parseo local; CI para tipos.
+- **Resultado**: CI: los tests pasaron. El `.exe` del artefacto fue bloqueado por Smart App Control al ejecutarlo.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Smart App Control bloquea el instalador sin firma. No se firma (costo) ni se desactiva.
+- **Observaciones**: Verificar Hello con PIN en una PC compatible.
+
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 21:18
+---
+
+## Actividad: Usar clave de Windows Hello (acepta PIN) con respaldo biométrico (commit 53d21bf)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se cambió el camino principal a `KeyCredentialManager` (acepta PIN): crea la clave al activar, la abre y firma un desafío al abrir. `UserConsentVerifier` queda como respaldo. Se agregaron mensajes específicos según el motivo (sin PIN, sin sensor, política, ocupado, cancelado). La PC de desarrollo tiene PIN pero no sensor biométrico, y eso no se pudo validar con la API anterior.
+- **Herramienta / comando**: Consulta de las variantes de `KeyCredentialStatus` y `UserConsentVerificationResult` en `windows` 0.62.2.
+- **Resultado**: CI falló: el enum `UserConsentVerifierAvailability` se importó desde un módulo que no lo contiene.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Error de ruta corregido en el commit siguiente.
+- **Observaciones**: Validar en CI.
+
+---
+Fecha: 04/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 21:23
+---
+
+## Actividad: Corregir ruta de imports de UserConsentVerifier (commit ede6a81)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Los tipos `UserConsentVerifier*` viven en `Security::Credentials::UI`, no en `Security::Credentials`.
+- **Herramienta / comando**: Lectura del código fuente de `windows` 0.62.2.
+- **Resultado**: Corrección de imports. CI pendiente.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Validar en CI.
+
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 16:15
+---
+
+## Actividad: Documentar como limitaciones de alcance Windows Hello y TLS (commit 144418a)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Acordado con el docente: Windows Hello y TLS quedan fuera de la entrega. Se documentó la decisión, las razones y el riesgo residual en `09-Gestion-Accesos.md` (Hello) y `00-arquitectura-c4.md` (TLS). Se actualizaron R05 y R06 en `03-Analisis-Riesgos.md`.
+- **Herramienta / comando**: Redacción manual.
+- **Resultado**: Documentación completa.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Ninguna.
+
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 16:27
+---
+
+## Actividad: Quitar Windows Hello de la app (commit 932fcb9)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se eliminaron `auth/webauthn.rs`, los comandos `estado_windows_hello` y `configurar_windows_hello`, la columna y los métodos `hello_activo`/`hello_requerido`/`configurar_hello`, el componente de UI, y la dependencia `windows`/`windows-future`. `abrir_boveda` vuelve a ser sincrónica y sólo pide la maestra y, si está activo, el TOTP. Se actualizó `Cargo.lock`.
+- **Herramienta / comando**: `cargo metadata` y `rustfmt --check` para parseo local.
+- **Resultado**: Código sin Hello. CI pendiente.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Validar en CI que `test` pase sin la dependencia de Windows.
+
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 16:27
+---
+
+## Actividad: Marcar limitaciones documentadas en el Excel de controles (commit 0400396)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: En `docs/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx`, las filas de autenticación multifactor y de protección de datos quedan en Sí, con la limitación de WebAuthn/Hello y de TLS remitiendo a sus secciones en la documentación. Se normalizó el valor a Si para mantener el formato de las demás filas. Quedan 45 Si y 2 N.A. justificados.
+- **Herramienta / comando**: Python + `openpyxl`.
+- **Resultado**: Excel actualizado.
+- **Evidencia anexa**: (pendiente — captura del paso en `docs/evidencias/`).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Espejar esta entrada en `04-bitacora-planilla.xlsx`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
