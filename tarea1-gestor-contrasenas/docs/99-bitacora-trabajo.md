@@ -995,6 +995,34 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente: espejar en `04-bitacora-planilla.xlsx` y el video de la demo (máximo
   5 minutos).
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Prueba del cliente de escritorio contra el control central y requisitos de evaluación
+
+- **Fase**: Prueba / Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se creó una bóveda desde la app instalada, se dieron de alta dos credenciales y
+  se configuró la carpeta de claves del central desde la sección Control central. El primer alta
+  llegó con `firma_valida: false` (antes de instalar la clave) y el segundo con `firma_valida: true`.
+  Se verificó en la API, en Mailpit (5 correos) y en Grafana (5 eventos, 2 agentes). Se agregó a
+  `README.md` la sección "Requisitos y cómo evaluar", con la limitación de Smart App Control, y la
+  sección 05 a `20-Evidencias.md`.
+- **Herramienta / comando**: instalador NSIS del artefacto de CI, con Smart App Control desactivado en
+  el equipo de prueba; `curl` a `http://localhost:8001/api/events/`.
+- **Resultado**: Éxito. El cliente real firma eventos y el central los verifica.
+- **Evidencia anexa**: sección 05 de `docs/20-Evidencias.md`. Captura de la app pendiente en
+  `docs/evidencias/`.
+- **Incidencia / hallazgo**: Smart App Control bloquea el instalador sin firma. Para ejecutarlo en
+  Windows 11 hay que desactivarlo, lo que reduce la protección del equipo. Queda registrado como
+  requisito en el README de evaluación.
+- **Observaciones**: Pendiente: capturar la app en `docs/evidencias/` y espejar en
+  `04-bitacora-planilla.xlsx`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

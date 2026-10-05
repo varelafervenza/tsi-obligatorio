@@ -77,3 +77,23 @@ start http://localhost:8025
   "Última sincronización: hace 7 minutos" y el volumen por tipo (alta_credencial = 3).
 - Qué demuestra: RF-09 y RF-14. El panel de incidentes dice "No data" porque todavía no hay
   incidentes. El panel de sincronización se corrigió en el commit aa247e2 (ver bitácora).
+
+# 05
+# 05/10/26 - Prueba del cliente de escritorio contra el control central -
+# Desde la app instalada en Windows (con Smart App Control desactivado en el equipo de prueba).
+# Bóveda de prueba creada, dos altas de credencial, carpeta de claves del central configurada.
+
+## 05-01 — Alta antes de instalar la clave del agente
+- Evento 4, sistema `sistema-app`, agente `agente-f3815a26`, `firma_valida: false`.
+- Qué demuestra: el central rechaza una firma que no puede verificar, porque la clave pública del
+  agente todavía no está en `keys/agentes/`.
+
+## 05-02 — Alta con la clave instalada
+- Evento 5, sistema `sistema-app-2`, agente `agente-f3815a26`, `firma_valida: true`.
+- Qué demuestra: el cliente real firma el evento con su clave privada y el central lo verifica
+  con la clave pública que la app copió con el botón "Guardar" de la sección Control central.
+
+## 05-03 — Correos y tablero
+- Mailpit: 5 correos de alta en total (tres de la demo anterior y dos de la app).
+- Grafana: Eventos = 5, Agentes = 2, "Última sincronización: hace un minuto".
+- Capturas: pendientes de guardar en `docs/evidencias/` (ver la captura del tablero de la app).

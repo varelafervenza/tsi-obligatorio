@@ -39,3 +39,43 @@ Sigue afuera del código, como despliegue o evidencia: levantar el manager de Wa
 
 - **Equipo A (Blue Team):** desarrolla la solución y rinde la auditoría (semana del 14/09 al 14/10).
 - **Equipo B (Red Team):** ataca la solución entregada (28/10 → 09/11) y emite informe.
+
+## Requisitos y cómo evaluar
+
+### 1. Backend (`control-central`) — cualquier máquina con Docker
+
+Requisito: Docker Desktop abierto. Desde `infra/`:
+
+```powershell
+copy .env.example .env
+copy control-central.env.example control-central.env
+docker compose up --build -d
+curl http://localhost:8001/healthz
+```
+
+Esperado: `{"status":"ok","database":"up"}`. La API queda en el puerto **8001** del host
+(`http://localhost:8001/docs`); dentro del contenedor escucha en 8000. Grafana en
+`http://localhost:3000` y Mailpit en `http://localhost:8025`.
+
+### 2. Tests del cliente — Linux o Windows con Rust
+
+Los tests de la lógica de la bóveda (cripto, TOTP, generador, exportación) corren en el CI
+(`.github/workflows/cliente-gestor.yml`). Para correrlos localmente hace falta Rust y, en
+Windows, Visual Studio Build Tools con el workload de C++.
+
+### 3. Aplicación de escritorio — Windows
+
+Requisitos: Node 20 y Rust (sólo si se compila) o el instalador `.exe` del artefacto
+`cliente-gestor-instalador` del workflow de GitHub Actions.
+
+**Limitación de Windows 11 con Smart App Control:** el instalador no está firmado digitalmente.
+Smart App Control lo bloquea mientras está activo. El equipo decidió no firmar el instalador
+(costo) y el evaluador tiene que desactivar Smart App Control para ejecutarlo, o usar un Windows
+sin esa función (por ejemplo Windows 10).
+
+### 4. Limitaciones de alcance (acordadas con el docente)
+
+- **Windows Hello y WebAuthn** no forman parte de la entrega. Ver `docs/09-Gestion-Accesos.md`.
+- **TLS** no se usa en el laboratorio. Ver `docs/00-arquitectura-c4.md`.
+
+Las limitaciones y sus riesgos residuales están en `docs/03-Analisis-Riesgos.md` (R05 y R06).
