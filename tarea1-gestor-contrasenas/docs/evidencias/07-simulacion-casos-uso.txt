@@ -1,0 +1,25 @@
+# NOTA: el script se ejecutó DOS veces el 05/10/2026. La primera corrida generó las alertas 1
+# (fuerza_bruta_maestra), 2 (borrado_masivo) y 3 (cambio_maestra). La segunda corrida, que es la
+# que quedó guardada en este archivo, agregó la alerta 4 (cambio_maestra) y más eventos.
+# Simulación de casos de uso CU-01, CU-02 y CU-03 — 05/10/2026
+# Comando: python scripts/simular_casos_uso.py
+# Resultado de cada evento enviado (201 = aceptado):
+CU-01: intentos fallidos de maestra
+intento_fallido_maestra    boveda             -> 201
+intento_fallido_maestra    boveda             -> 201
+intento_fallido_maestra    boveda             -> 201
+intento_fallido_maestra    boveda             -> 201
+intento_fallido_maestra    boveda             -> 201
+CU-02: borrado masivo de credenciales
+borrado_credencial         sistema-borrado-1  -> 201
+borrado_credencial         sistema-borrado-2  -> 201
+borrado_credencial         sistema-borrado-3  -> 201
+borrado_credencial         sistema-borrado-4  -> 201
+borrado_credencial         sistema-borrado-5  -> 201
+CU-03: cambio de contraseña maestra
+cambio_maestra             boveda             -> 201
+
+# GET /api/alerts/
+[{"id":4,"regla":"cambio_maestra","evento_id":27,"agente_id":"agente-dev-01","creado_en":"2026-10-05T20:30:22.092945Z","es_falso_positivo":null},{"id":3,"regla":"cambio_maestra","evento_id":16,"agente_id":"agente-dev-01","creado_en":"2026-10-05T20:29:54.939452Z","es_falso_positivo":null},{"id":2,"regla":"borrado_masivo","evento_id":15,"agente_id":"agente-dev-01","creado_en":"2026-10-05T20:29:54.346950Z","es_falso_positivo":null},{"id":1,"regla":"fuerza_bruta_maestra","evento_id":10,"agente_id":"agente-dev-01","creado_en":"2026-10-05T20:29:51.248301Z","es_falso_positivo":null}]
+# GET /api/dashboard/kpis (campo alertas)
+{'firma_invalida': 2, 'intento_fallido_maestra': 10}

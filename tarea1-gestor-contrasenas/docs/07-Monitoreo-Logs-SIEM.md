@@ -58,9 +58,9 @@
 
 | ID | Nombre | Fuente | Condición de alerta | Severidad | Estado |
 |---|---|---|---|---|---|
-| CU-01 | Fuerza bruta de la maestra | Eventos `intento_fallido_maestra` | 5 intentos del mismo agente en 2 minutos. Regla Wazuh 100101 y correlación en la API. | Alta (nivel 10) | Implementado. **Sin alertas reales todavía.** |
-| CU-02 | Borrado masivo de credenciales | Eventos `borrado_credencial` | 5 borrados del mismo agente en 2 minutos. Regla Wazuh 100111 y correlación en la API. | Alta (nivel 10) | Implementado. **Sin alertas reales todavía.** |
-| CU-03 | Cambio de contraseña maestra | Eventos `cambio_maestra` | Una alerta por evento. Regla Wazuh 100120 y correlación en la API. Además, correo inmediato al RSI. | Crítica (nivel 12) | Implementado. **Sin alerta real todavía.** |
+| CU-01 | Fuerza bruta de la maestra | Eventos `intento_fallido_maestra` | 5 intentos del mismo agente en 2 minutos. Regla Wazuh 100101 y correlación en la API. | Alta (nivel 10) | **Probado.** Alerta `fuerza_bruta_maestra` (id 1) generada al quinto intento. |
+| CU-02 | Borrado masivo de credenciales | Eventos `borrado_credencial` | 5 borrados del mismo agente en 2 minutos. Regla Wazuh 100111 y correlación en la API. | Alta (nivel 10) | **Probado.** Alerta `borrado_masivo` (id 2) generada al quinto borrado. |
+| CU-03 | Cambio de contraseña maestra | Eventos `cambio_maestra` | Una alerta por evento. Regla Wazuh 100120 y correlación en la API. Además, correo inmediato al RSI. | Crítica (nivel 12) | **Probado.** Alerta `cambio_maestra` (id 3) y correo recibido en Mailpit. |
 | CU-04 | Firma inválida repetida | Eventos con `firma_valida: false` | Se registra en el panel (`alertas.firma_invalida`). No hay regla de correlación. | Media | Parcial: visible en el panel, sin regla. |
 
 Los casos de uso típicos de SSH, root o exfiltración por TLS no aplican a esta solución: no hay
@@ -95,17 +95,21 @@ Valores leídos de `GET /api/dashboard/kpis` el 05/10/2026, después de la demo:
 
 | Indicador | Valor medido | Comentario |
 |---|---|---|
-| Eventos recibidos | 5 | Todos de tipo `alta_credencial`. |
+| Eventos recibidos | 5 (antes de la simulación) | Todos de tipo `alta_credencial`. Después de la simulación: 17 en total, con 10 `intento_fallido_maestra`, 10 `borrado_credencial` y 2 `cambio_maestra`. |
 | Agentes activos | 2 | `agente-dev-01` y `agente-f3815a26`. |
 | Firmas inválidas | 2 | Eventos sin clave instalada o sin firma, por diseño de la prueba. |
-| Alertas de las reglas | 0 | **Ninguna regla se disparó todavía.** |
+| Alertas de las reglas | 4 | fuerza_bruta_maestra (1), borrado_masivo (1), cambio_maestra (2). Incluye un cambio de maestra extra por la segunda corrida (ver nota). |
 | Incidentes abiertos | 0 | |
 | MTTD / MTTR | N/D | Sin incidentes para medir. |
 | Falsos positivos | N/D | Sin alertas clasificadas. |
 
-**Pendiente para validar la detección:** disparar CU-01, CU-02 y CU-03 con eventos reales y
-registrar la alerta, el correo y el incidente asociado. Sin esa evidencia, este documento no
-demuestra detección.
+**Evidencia de la simulación:** `docs/evidencias/07-simulacion-casos-uso.txt`, generada con
+`scripts/simular_casos_uso.py`. El script se ejecutó **dos veces** el 05/10/2026: la primera
+generó las alertas 1 a 3, y la segunda, que quedó en la evidencia, agregó la alerta 4 y más
+eventos. Los eventos son simulados (agente de prueba), no un ataque real.
+
+**Pendiente:** registrar el incidente asociado a una alerta (flujo alerta → incidente → cierre),
+y repetir la simulación con una sola corrida limpia si se quiere una evidencia sin duplicados.
 
 ---
 
@@ -123,7 +127,7 @@ demuestra detección.
 ## Check de aceptación
 
 - [x] Los eventos del cliente y del central llegan al log del SIEM (JSONL).
-- [ ] Al menos 4 casos de uso probados con alertas reales (hoy: 3 implementados, 0 probados; CU-04 es parcial).
+- [ ] Al menos 4 casos de uso probados con alertas reales (hoy: 3 probados, CU-04 es parcial).
 - [x] Retención de eventos de 90 días definida en el código.
 - [ ] Retención de logs crudos y respaldo del archivo JSONL.
-- [ ] Evidencia de alertas reales durante la validación.
+- [x] Evidencia de alertas durante la validación (simulada, ver `07-simulacion-casos-uso.txt`).

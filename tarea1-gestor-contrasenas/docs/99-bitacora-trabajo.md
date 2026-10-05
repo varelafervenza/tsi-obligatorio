@@ -1095,6 +1095,33 @@ Hora (UTC): N/D
 - **Observaciones**: Próximo paso: simular CU-01, CU-02 y CU-03 contra la API y capturar las
   alertas, el correo y el incidente.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 20:29
+---
+
+## Actividad: Simulación de casos de uso CU-01, CU-02 y CU-03 con alertas reales
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se creó `scripts/simular_casos_uso.py`, que manda eventos firmados con la clave
+  del agente `agente-dev-01`: 5 intentos fallidos de maestra (CU-01), 5 borrados de credencial (CU-02) y
+  1 cambio de maestra (CU-03). Se verificó la respuesta de la API, las alertas y los correos.
+- **Herramienta / comando**: `python scripts/simular_casos_uso.py`; `GET /api/alerts/`;
+  `GET /api/dashboard/kpis`; Mailpit.
+- **Resultado**: Éxito. Se generaron las alertas `fuerza_bruta_maestra`, `borrado_masivo` y
+  `cambio_maestra`, y el correo de cambio de maestra llegó a Mailpit. Es la primera vez que las reglas
+  se disparan.
+- **Evidencia anexa**: `docs/evidencias/07-simulacion-casos-uso.txt`.
+- **Incidencia / hallazgo**: El script se ejecutó **dos veces**: la segunda corrida se hizo para guardar la
+  salida en la evidencia y agregó una alerta extra de cambio de maestra y más eventos. Queda documentado
+  en el encabezado de la evidencia y en `07-Monitoreo-Logs-SIEM.md`. Los eventos son simulados, no un
+  ataque real.
+- **Observaciones**: Pendiente: registrar un incidente a partir de una alerta (alerta → incidente → cierre).
+  Si se quiere una evidencia sin duplicados, correr una sola vez en una base nueva.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
