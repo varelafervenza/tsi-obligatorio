@@ -574,6 +574,8 @@ Hora (UTC): 20:29
 - **Incidencia / hallazgo**: Compose no busca el YAML en carpetas padre.
 - **Observaciones**: Postgres/Grafana de ejemplo usan `changeme`. Credenciales
   reales fuera del repo. Copiar `*.example` y editar la copia local.
+Fecha: 27/09/2026
+Equipo: Blue
 Responsable: Horacio Duarte
 Hora (UTC): 10:34
 ---
@@ -1045,6 +1047,30 @@ Hora (UTC): N/D
 - **Evidencia anexa**: `docs/evidencias/05-01` a `05-04`, incluida `05-03-app-alta.png`.
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Pendiente: espejar en `04-bitacora-planilla.xlsx`.
+
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Espejo completo de la bitácora en 04-bitacora-planilla.xlsx
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se reconstruyó `docs/mcu5/excel/04-bitacora-planilla.xlsx` desde las 45 entradas
+  de este archivo `.md`, con las mismas columnas que el template (fecha, hora UTC, fase, responsable,
+  tarea, herramienta, resultado y evidencia, incidencia S/N y observaciones). Antes tenía 11 filas.
+- **Herramienta / comando**: Python + `openpyxl`, extracción de las secciones `## Actividad:` de este
+  archivo.
+- **Resultado**: Éxito. La planilla tiene 45 filas que coinciden con la bitácora.
+- **Evidencia anexa**: `docs/mcu5/excel/04-bitacora-planilla.xlsx`.
+- **Incidencia / hallazgo**: La entrada de Horacio "Revisión y actualización de arquitecturas 4+1 y C4"
+  no tiene campo `Fecha:` en este archivo; en la planilla queda como `N/D`. Hay que completarla con su
+  fecha real. Otras entradas tampoco tienen hora UTC.
+- **Observaciones**: Cada vez que se agregue una entrada a esta bitácora hay que espejarla en la
+  planilla. Si la entrada es nueva, la planilla se puede regenerar con el mismo procedimiento.
 
 ## Check de aceptación (repetir por período de entrega)
 
