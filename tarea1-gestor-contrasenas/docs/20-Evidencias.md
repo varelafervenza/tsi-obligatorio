@@ -96,4 +96,12 @@ start http://localhost:8025
 ## 05-03 — Correos y tablero
 - Mailpit: 5 correos de alta en total (tres de la demo anterior y dos de la app).
 - Grafana: Eventos = 5, Agentes = 2, "Última sincronización: hace un minuto".
-- Capturas: pendientes de guardar en `docs/evidencias/` (ver la captura del tablero de la app).
+- Capturas guardadas en `docs/evidencias/`:
+  - `05-01-eventos-firma.png`: `http://localhost:8001/api/events/` con el evento 5 (`firma_valida: true`)
+    y el evento 4 (`firma_valida: false`).
+  - `05-02-app-control-central.png`: la app en la sección Control central, con la URL de eventos,
+    la carpeta de claves configurada y el mensaje "Evento enviado al control central".
+  - `05-03-app-alta.png`: la app con la bóveda abierta y la lista de credenciales con `sistema-app`
+    y `sistema-app-2`.
+  - `05-03-mailpit.png`: Mailpit con 5 correos de alta, incluidos los ids 4 y 5 de la app.
+  - `05-04-grafana.png`: tablero con Eventos = 5, Agentes = 2 y "Última sincronización: hace 18 minutos".

@@ -1023,6 +1023,29 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente: capturar la app en `docs/evidencias/` y espejar en
   `04-bitacora-planilla.xlsx`.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Capturas de la prueba de la app y documentación en 20-Evidencias (sección 05)
+
+- **Fase**: Prueba / Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se guardaron cuatro capturas de la prueba del cliente de escritorio en
+  `docs/evidencias/` (`05-01-eventos-firma.png`, `05-02-app-control-central.png`,
+  `05-03-mailpit.png`, `05-04-grafana.png`) y se documentaron en la sección 05 de
+  `docs/20-Evidencias.md`. Se revisó cada captura antes de documentarla.
+- **Herramienta / comando**: Win+Shift+S para las capturas; edición manual de `20-Evidencias.md`.
+- **Resultado**: Éxito. Las capturas muestran el evento firmado aceptado, la configuración de la
+  carpeta de claves en la app, la lista de credenciales, los correos en Mailpit y el tablero con
+  5 eventos y 2 agentes.
+- **Evidencia anexa**: `docs/evidencias/05-01` a `05-04`, incluida `05-03-app-alta.png`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Pendiente: espejar en `04-bitacora-planilla.xlsx`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
