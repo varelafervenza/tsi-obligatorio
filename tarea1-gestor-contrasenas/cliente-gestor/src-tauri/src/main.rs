@@ -32,9 +32,6 @@ fn main() {
             vault::commands::importar_boveda,
             vault::commands::enrolar_totp,
             vault::commands::confirmar_totp,
-            auth::webauthn::windows_hello_disponible,
-            vault::commands::estado_windows_hello,
-            vault::commands::configurar_windows_hello,
         ])
         .run(tauri::generate_context!())
         .expect("error al iniciar la aplicacion");

@@ -43,25 +43,13 @@ pub fn crear_boveda(
 }
 
 #[tauri::command]
-pub async fn abrir_boveda(
+pub fn abrir_boveda(
     app: AppHandle,
-    window: tauri::WebviewWindow,
     estado: State<'_, EstadoBoveda>,
     ruta: String,
     maestra: String,
     codigo: Option<String>,
 ) -> Result<Vec<String>, String> {
-    if Boveda::hello_requerido(Path::new(&ruta)).map_err(|e| e.to_string())? {
-        let hwnd = window.hwnd().map_err(|e| e.to_string())?.0 as isize;
-        let confirmado = tauri::async_runtime::spawn_blocking(move || {
-            crate::auth::webauthn::verificar(hwnd)
-        })
-        .await
-        .map_err(|e| e.to_string())??;
-        if !confirmado {
-            return Err("Windows Hello no fue confirmado.".into());
-        }
-    }
     let codigo = codigo.as_deref().map(str::trim).filter(|valor| !valor.is_empty());
     match Boveda::abrir_con(Path::new(&ruta), &maestra, codigo) {
         Ok(boveda) => {
@@ -108,19 +96,6 @@ pub fn enrolar_totp(estado: State<'_, EstadoBoveda>) -> Result<EnrollTotp, Strin
 #[tauri::command]
 pub fn confirmar_totp(estado: State<'_, EstadoBoveda>, codigo: String) -> Result<(), String> {
     con_boveda(&estado, |boveda| boveda.confirmar_totp(&codigo))
-}
-
-#[tauri::command]
-pub fn estado_windows_hello(estado: State<'_, EstadoBoveda>) -> Result<bool, String> {
-    con_boveda(&estado, |boveda| Boveda::hello_requerido(boveda.ruta()))
-}
-
-#[tauri::command]
-pub fn configurar_windows_hello(estado: State<'_, EstadoBoveda>, activar: bool) -> Result<(), String> {
-    if activar {
-        crate::auth::webauthn::registrar()?;
-    }
-    con_boveda(&estado, |boveda| boveda.configurar_hello(activar))
 }
 
 #[tauri::command]

@@ -438,8 +438,6 @@ dependencies = [
  "tauri-build",
  "totp-rs",
  "ureq",
- "windows",
- "windows-future",
 ]
 
 [[package]]

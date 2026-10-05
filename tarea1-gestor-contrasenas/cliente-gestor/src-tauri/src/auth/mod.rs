@@ -1,5 +1,4 @@
-//! MFA local para desbloquear la bóveda: TOTP y WebAuthn/Windows Hello. RF-11 (parcial;
-//! la elección de algoritmo de hash del lado del control central vive en ese servicio).
+//! MFA local para desbloquear la bóveda: TOTP. Windows Hello y WebAuthn quedan fuera de la
+//! entrega (ver docs/09-Gestion-Accesos.md).
 
 pub mod totp;
-pub mod webauthn;

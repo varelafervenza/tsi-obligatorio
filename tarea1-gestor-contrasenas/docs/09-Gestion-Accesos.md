@@ -68,9 +68,8 @@ maestra.
 - WebAuthn en el navegador exige HTTPS con un dominio fijo (RP ID), que no existe en el
   laboratorio (ver la limitación de TLS en `00-arquitectura-c4.md`).
 
-**Qué queda en el código:** el módulo `auth/webauthn.rs` y el comando de activación de Hello
-existen, pero no forman parte de la verificación cubierta por la auditoría. No se presentan
-como control demostrable.
+**Qué queda en el código:** el código de Windows Hello se eliminó de la versión entregada. El
+segundo factor de la bóveda es sólo TOTP, y no se presenta Hello como control demostrable.
 
 **Riesgo residual:** el segundo factor depende de TOTP, que es susceptible a phishing
 (RT-06). Se acepta con la justificación anterior y se refleja en `03-Analisis-Riesgos.md`.
