@@ -19,7 +19,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 0.1 (12 riesgos, de RT-01..RT-12) |
 | `04-Gestion-Incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☐ |
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☐ |
-| `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☐ |
+| `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador 0.1 (reglas implementadas, sin alertas probadas aún) |
 | `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (el QR de TOTP ya está en el cliente; falta la captura) |
 | `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☐ |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |

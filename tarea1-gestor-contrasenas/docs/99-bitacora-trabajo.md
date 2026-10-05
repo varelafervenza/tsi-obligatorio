@@ -1072,6 +1072,29 @@ Hora (UTC): N/D
 - **Observaciones**: Cada vez que se agregue una entrada a esta bitácora hay que espejarla en la
   planilla. Si la entrada es nueva, la planilla se puede regenerar con el mismo procedimiento.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Monitoreo, logs y detección (07-Monitoreo-Logs-SIEM.md)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se escribió `docs/07-Monitoreo-Logs-SIEM.md` con la arquitectura de monitoreo
+  real, las fuentes de log, los casos de uso CU-01 a CU-04, la retención y los KPIs leídos de la API.
+  Se contrastó cada caso de uso con `infra/wazuh/local_rules.xml` y con `control-central/app/siem/reglas.py`.
+- **Herramienta / comando**: lectura de las reglas y de `GET /api/dashboard/kpis`.
+- **Resultado**: Parcial. Las reglas están implementadas, pero **ninguna alerta se disparó todavía**
+  (`alertas_reglas: 0`). Wazuh no está levantado y no hay NIDS.
+- **Evidencia anexa**: `docs/07-Monitoreo-Logs-SIEM.md` (sección 6). Captura de alertas: pendiente.
+- **Incidencia / hallazgo**: La detección de fuerza bruta, borrado masivo y cambio de maestra no se
+  probó. Antes de declararla, hay que generar eventos reales y registrar las alertas.
+- **Observaciones**: Próximo paso: simular CU-01, CU-02 y CU-03 contra la API y capturar las
+  alertas, el correo y el incidente.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
