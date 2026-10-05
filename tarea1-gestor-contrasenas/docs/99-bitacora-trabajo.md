@@ -969,6 +969,32 @@ Hora (UTC): N/D
 - **Incidencia / hallazgo**: Ninguna más allá del "No data" que motivó el cambio.
 - **Observaciones**: El panel de incidentes muestra "No data" porque todavía no hay incidentes; es correcto.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Capturas de la demo del control central y documentación en 20-Evidencias
+
+- **Fase**: Prueba / Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se guardaron cuatro capturas en `docs/evidencias/`: `01-api-docs.png`
+  (`/docs` de la API), `02-evento-firmado.png` (201 con `firma_valida: true`),
+  `03-mailpit.png` (tres correos de alta) y `04-grafana.png` (tablero con datos y la sincronización
+  corregida). Se documentaron en `docs/20-Evidencias.md` como sección 04, con qué muestra cada una
+  y qué requisito demuestra.
+- **Herramienta / comando**: Win+Shift+S para las capturas; edición manual de `20-Evidencias.md`.
+- **Resultado**: Éxito. Las cuatro capturas están verificadas visualmente y coinciden con los valores
+  de la demo.
+- **Evidencia anexa**: `docs/evidencias/01-api-docs.png`, `02-evento-firmado.png`,
+  `03-mailpit.png`, `04-grafana.png`.
+- **Incidencia / hallazgo**: El tablero mostraba "No data" en la sincronización; se corrigió antes
+  de la captura (commit aa247e2).
+- **Observaciones**: Pendiente: espejar en `04-bitacora-planilla.xlsx` y el video de la demo (máximo
+  5 minutos).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

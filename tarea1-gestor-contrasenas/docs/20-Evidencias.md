@@ -45,3 +45,35 @@ start http://localhost:8025
 
 # Al ejecutar Alta de credencial desde terminal se envia un mail avisando el evento sucedido
 # Se puede chequear en mailpit
+
+# 04
+# 05/10/26 - Demo funcional del control central (puerto 8001) -
+# Stack levantado con `docker compose up` desde /infra. Evento de prueba generado con
+# `python scripts/generar_evento_prueba.py` desde la raíz de la tarea.
+
+## 04-01 — Documentación interactiva de la API
+- Archivo: `docs/evidencias/01-api-docs.png`
+- Muestra: `http://localhost:8001/docs` con todas las rutas: events, alerts, incidents, users,
+  dashboard y healthz.
+- Qué demuestra: la API está viva y expone los endpoints que usa la demo.
+
+## 04-02 — Evento firmado aceptado
+- Archivo: `docs/evidencias/02-evento-firmado.png`
+- Comando: `python scripts/generar_evento_prueba.py`
+- Respuesta: `201` con `"firma_valida":true` (evento id 3, agente `agente-dev-01`).
+- Qué demuestra: el control central verifica la firma JWS con la clave pública del agente y
+  persiste el evento.
+
+## 04-03 — Notificaciones por correo
+- Archivo: `docs/evidencias/03-mailpit.png`
+- Muestra: Mailpit en `http://localhost:8025` con tres correos "Alta de credencial" (ids 1, 2 y 3)
+  para `rsi@correo.local`.
+- Qué demuestra: RF-07 en el prototipo (Mailpit como sustituto de Mailu, ver la limitación de
+  alcance del correo en `00-arquitectura-c4.md`).
+
+## 04-04 — Tablero de Grafana
+- Archivo: `docs/evidencias/04-grafana.png`
+- Muestra: el tablero "Control central" con Eventos = 3, Agentes = 1, Incidentes abiertos = 0,
+  "Última sincronización: hace 7 minutos" y el volumen por tipo (alta_credencial = 3).
+- Qué demuestra: RF-09 y RF-14. El panel de incidentes dice "No data" porque todavía no hay
+  incidentes. El panel de sincronización se corrigió en el commit aa247e2 (ver bitácora).
