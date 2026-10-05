@@ -933,6 +933,24 @@ Hora (UTC): 16:27
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Espejar esta entrada en `04-bitacora-planilla.xlsx`.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 17:05
+---
+
+## Actividad: Demo funcional del control central desde cero y cambio de puerto a 8001
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se levantó el stack con `docker compose up` y se verificó el pipeline completo. Se generó un par de claves del agente `agente-dev-01` (`scripts/generar_par_agente.py`) y se enviaron dos eventos: uno firmado (201, `firma_valida: true`) y uno sin firma (201, `firma_valida: false`). Se comprobaron el listado de eventos, el JSONL sin secretos, dos correos en Mailpit, `GET /api/dashboard/kpis` (1 agente activo, correo up, cobertura 25 %) y Grafana (`/api/health` 200).
+- **Herramienta / comando**: `docker compose up -d`, `curl`, `python scripts/generar_par_agente.py`, `python scripts/generar_evento_prueba.py [--sin-firma]`, `pip install python-jose[cryptography]`.
+- **Resultado**: Éxito en el backend. El tablero visual de Grafana queda pendiente de verificar en el navegador.
+- **Evidencia anexa**: (pendiente — capturas de la respuesta 201 con `firma_valida`, Mailpit, KPIs y tablero en `docs/evidencias/`).
+- **Incidencia / hallazgo**: El contenedor levantaba bien, pero `http://localhost:8000` respondía un 404 de Windows. El proceso `System` (PID 4, HTTP.sys) tenía tomado el puerto 8000, así que Docker no podía publicarlo. Se cambió el puerto del host a 8001 en `infra/docker-compose.yml` y en las URLs de la app, los scripts y los READMEs. El puerto dentro del contenedor sigue siendo 8000.
+- **Observaciones**: La URL por defecto del cliente pasó a `http://localhost:8001/api/events/` (`events/mod.rs` y `App.tsx`), así que el CI del cliente tiene que volver a correr. Las claves generadas quedan en `keys/` (ignorado por git). Pendiente: capturas para `docs/evidencias/` y revisar el tablero de Grafana.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

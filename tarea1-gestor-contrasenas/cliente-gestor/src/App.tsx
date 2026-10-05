@@ -119,7 +119,7 @@ export default function App() {
   const [verSecreto, setVerSecreto] = useState(false);
   const [politica, setPolitica] = useState<Politica>(politicaInicial);
   const [aviso, setAviso] = useState("");
-  const [urlCentral, setUrlCentral] = useState("http://localhost:8000/api/events/");
+  const [urlCentral, setUrlCentral] = useState("http://localhost:8001/api/events/");
   const [carpetaClaves, setCarpetaClaves] = useState("");
   const [agenteId, setAgenteId] = useState("");
   const [maestraActual, setMaestraActual] = useState("");

@@ -75,16 +75,16 @@ Desde `tarea1-gestor-contrasenas\infra`:
 docker compose up --build -d
 ```
 
-La API queda en el puerto 8000 y Mailpit en `http://localhost:8025`. Comprobación: `http://localhost:8000/healthz` tiene que responder `status: ok`. En esta red el build de la imagen necesita `--trusted-host` de pip; ya está en `control-central/Dockerfile`.
+La API queda en el puerto 8001 (8000 dentro del contenedor) y Mailpit en `http://localhost:8025`. Comprobación: `http://localhost:8001/healthz` tiene que responder `status: ok`. En esta red el build de la imagen necesita `--trusted-host` de pip; ya está en `control-central/Dockerfile`.
 
 En la ventana:
 
 1. Abrí **Control central**.
-2. Dejá la URL `http://localhost:8000/api/events/`.
+2. Dejá la URL `http://localhost:8001/api/events/`.
 3. En la carpeta de claves poné la ruta absoluta a `tarea1-gestor-contrasenas\keys\agentes`.
 4. **Guardar y copiar clave pública**. El aviso tiene que decir que copió `{agente-id}.pub.pem`. Docker monta esa carpeta en solo lectura: no hace falta reiniciar el contenedor.
 5. Abrí la bóveda y agregá una credencial. El aviso tiene que decir que el evento se envió.
-6. En Mailpit tiene que llegar el correo de alta. En `http://localhost:8000/api/events/` el último evento tiene que traer `firma_valida: true`.
+6. En Mailpit tiene que llegar el correo de alta. En `http://localhost:8001/api/events/` el último evento tiene que traer `firma_valida: true`.
 
 Si Docker está apagado, el alta igual se guarda. El aviso dice que el evento quedó en cola. Al volver a haber red, el próximo alta, cambio o borrado reintenta la cola.
 

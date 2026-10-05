@@ -17,7 +17,7 @@ ALGORITMO = "RS256"
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--url", default="http://localhost:8000/api/events/")
+    parser.add_argument("--url", default="http://localhost:8001/api/events/")
     parser.add_argument("--agente", default="agente-dev-01")
     parser.add_argument("--tipo", default="alta_credencial")
     parser.add_argument("--sistema", default="sistema-prueba")

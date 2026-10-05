@@ -11,7 +11,7 @@ use rsa::pkcs8::{EncodePrivateKey, EncodePublicKey, LineEnding};
 use rsa::{RsaPrivateKey, RsaPublicKey};
 use serde::{Deserialize, Serialize};
 
-const URL_DEFECTO: &str = "http://localhost:8000/api/events/";
+const URL_DEFECTO: &str = "http://localhost:8001/api/events/";
 
 #[derive(Debug)]
 pub enum ErrorEvento {

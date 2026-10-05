@@ -44,8 +44,8 @@ copy control-central.env.example control-central.env
 docker compose up --build -d
 # o: cd infra && docker compose up --build -d
 
-curl http://localhost:8000/healthz
-curl http://localhost:8000/api/dashboard/kpis
+curl http://localhost:8001/healthz
+curl http://localhost:8001/api/dashboard/kpis
 # Grafana: http://localhost:3000  (tablero Control central; claves en la copia local de .env)
 # Mailpit: http://localhost:8025
 ```
@@ -57,14 +57,14 @@ pip install python-jose[cryptography]
 python scripts/generar_par_agente.py
 python scripts/generar_evento_prueba.py
 # firma_valida true. Con --sin-firma queda false.
-curl http://localhost:8000/api/events/
+curl http://localhost:8001/api/events/
 ```
 
 El primer usuario del panel no lleva token y queda admin. El login devuelve el token para el enroll TOTP.
 
 ```bash
-curl -X POST http://localhost:8000/api/users/ -H "Content-Type: application/json" -d "{\"email\":\"rsi@correo.local\",\"password\":\"clave-panel-1\",\"algoritmo_hash\":\"argon2id\"}"
-curl -X POST http://localhost:8000/api/users/login -H "Content-Type: application/json" -d "{\"email\":\"rsi@correo.local\",\"password\":\"clave-panel-1\"}"
+curl -X POST http://localhost:8001/api/users/ -H "Content-Type: application/json" -d "{\"email\":\"rsi@correo.local\",\"password\":\"clave-panel-1\",\"algoritmo_hash\":\"argon2id\"}"
+curl -X POST http://localhost:8001/api/users/login -H "Content-Type: application/json" -d "{\"email\":\"rsi@correo.local\",\"password\":\"clave-panel-1\"}"
 ```
 
 Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):

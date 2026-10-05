@@ -23,7 +23,7 @@ services:
     build: ../control-central
     env_file: ./control-central.env
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./logs:/var/log/control-central
       - ../keys/agentes:/app/keys/agentes:ro

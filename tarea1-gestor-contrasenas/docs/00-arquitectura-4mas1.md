@@ -72,7 +72,7 @@ para la escala de RNF-05).
 | Nodo | Rol | Componentes que ejecuta | IP/VLAN | Recursos | Puertos |
 |---|---|---|---|---|---|
 | VM-Cliente | Estación del usuario final | `cliente-gestor` (binario Tauri) + agente Wazuh | `[a definir en el lab]` | 4 GB RAM (RNF-02) | Saliente 443/tcp hacia VM-ControlCentral |
-| VM-ControlCentral | Servidor de la organización | `control-central` (Docker), PostgreSQL, Grafana | `[a definir]` | `[a definir]` | 8000 (API), 3000 (Grafana), 443 (si hay reverse proxy TLS) |
+| VM-ControlCentral | Servidor de la organización | `control-central` (Docker), PostgreSQL, Grafana | `[a definir]` | `[a definir]` | 8001 (API, en el host; 8000 dentro del contenedor), 3000 (Grafana), 443 (si hay reverse proxy TLS) |
 | VM-SIEM | SIEM/HIDS | Wazuh manager + indexer + dashboard | `[a definir]` | `[a definir]` | 1514/1515 (agentes), 55000 (API Wazuh) |
 | VM-Mail | Servidor de correo | Mailu (Postfix/Dovecot/Rspamd) | `[a definir]` | `[a definir]` | 25/587 (SMTP), 993 (IMAP si aplica) |
 

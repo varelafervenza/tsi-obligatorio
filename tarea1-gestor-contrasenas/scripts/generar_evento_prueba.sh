@@ -5,7 +5,7 @@
 # cliente-gestor/src-tauri/src/events/signer.rs.
 set -euo pipefail
 
-CONTROL_CENTRAL_URL="${CONTROL_CENTRAL_URL:-http://localhost:8000}"
+CONTROL_CENTRAL_URL="${CONTROL_CENTRAL_URL:-http://localhost:8001}"
 
 curl -sS -X POST "$CONTROL_CENTRAL_URL/api/events/" \
   -H "Content-Type: application/json" \
