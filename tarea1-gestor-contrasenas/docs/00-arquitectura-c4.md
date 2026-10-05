@@ -76,6 +76,32 @@ actual.
 | Agente → Wazuh manager | TLS | Puertos 1514/1515 según el modo de comunicación configurado; certificados y claves gestionados fuera del código |
 | Grafana → API/BD | HTTPS o red interna restringida | Acceso mediante RBAC; no se exponen credenciales de PostgreSQL al navegador |
 
+### Limitación de alcance: TLS en el laboratorio
+
+**Decisión:** acordada con el docente, la entrega no usa TLS en el canal cliente → API ni en
+el correo. El diseño objetivo de la tabla de arriba (RNF-06) queda documentado, pero no
+implementado en la versión congelada.
+
+**Razones:**
+- Un certificado con validación pública (el que el navegador y el cliente aceptan sin
+  configuración) tiene costo, y el equipo decidió no pagarlo.
+- Una CA privada del laboratorio funciona sin costo, pero obliga a instalar su certificado raíz
+  en cada equipo que consuma la API: el de los integrantes y el del evaluador. Eso complica la
+  evaluación y depende de cada máquina, por lo que se acordó no exigirlo.
+- Sin TLS, el cliente y la API se comunican en texto plano dentro de la red del laboratorio.
+  Por eso el diseño objetivo sigue siendo TLS 1.2+ y la limitación queda explícita.
+
+**Qué queda en el laboratorio:**
+- La API corre detrás de la red interna de Docker. La mitigación prevista es que el puerto
+  publicado sólo escuche en `127.0.0.1` (pendiente en `infra/docker-compose.yml`).
+- El correo sigue en Mailpit, sin TLS ni autenticación, por la misma razón.
+- Las contraseñas maestras nunca viajan por la red: la bóveda se cifra y descifra en el cliente
+  (zero-knowledge). Lo que cruza el canal son eventos firmados sin secretos.
+
+**Riesgo residual:** un atacante con acceso a la red del laboratorio podría leer o alterar los
+eventos (RT-05). Se acepta con la justificación anterior, registrada como R05 en
+`03-Analisis-Riesgos.md`.
+
 ## Nivel 3 — Componentes
 
 ### Contenedor: Cliente de escritorio (`cliente-gestor`)

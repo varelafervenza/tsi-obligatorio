@@ -104,7 +104,7 @@
 | R02 | Forjado de eventos de auditoría (RT-02) | A03, A04, A06 | 2 | 4 | M | Mitigar | Blue Team (control-central) | 29/09/2026 |
 | R03 | IDOR / XSS / SQLi en el control central (RT-03) | A04, A05, A07 | 3 | 5 | **A** | Mitigar | Blue Team (control-central) | 05/10/2026 |
 | R04 | Suplantación del servidor de correo (RT-04) | A10 | 3 | 3 | M | Mitigar | Blue Team (infra/mailu) | 29/09/2026 |
-| R05 | MITM por TLS mal configurado (RT-05) | A04, A14 | 2 | 4 | M | Mitigar | Blue Team | 02/10/2026 |
+| R05 | MITM por TLS mal configurado (RT-05) | A04, A14 | 2 | 4 | M | Retener (limitación aceptada) | Blue Team | Aceptado |
 | R06 | Bypass de MFA (RT-06) | A01, A07 | 3 | 4 | **A** | Mitigar | Blue Team | 02/10/2026 |
 | R07 | XSS almacenado en el dashboard (RT-07) | A11 | 3 | 3 | M | Mitigar | Blue Team | 29/09/2026 |
 | R08 | Evasión de detección del SIEM (RT-08) | A08, A09 | 2 | 5 | M | Mitigar | Blue Team | 05/10/2026 |
@@ -124,8 +124,8 @@
 | R02 | Aislar la confianza por agente | Clave privada JWS única por agente (no HMAC compartida); alerta en `control-central` ante firma inválida repetida | Media | 29/09/2026 |
 | R03 | Endurecer la superficie de la API | ORM con queries parametrizadas (SQLAlchemy), validación Pydantic, pruebas SAST/DAST antes de H4 | Alta | 05/10/2026 |
 | R04 | Configurar correctamente el correo propio | SPF + DKIM + DMARC, sin relay abierto, TLS obligatorio en submission (587) | Media | 29/09/2026 |
-| R05 | Forzar validación de certificados | TLS 1.2+ obligatorio; CA propia del laboratorio o pinning en el cliente; rechazar certificados inválidos | Media | 02/10/2026 |
-| R06 | Preferir factores resistentes a phishing | WebAuthn/Windows Hello como opción preferida sobre TOTP; notificación por correo ante un nuevo enroll | Alta | 02/10/2026 |
+| R05 | Limitación aceptada: TLS fuera de la entrega | Canal HTTP en la red del laboratorio, documentado en `00-arquitectura-c4.md`. Mitigación prevista: puerto de la API sólo en `127.0.0.1` | Baja | Pendiente de mitigación |
+| R06 | Reducir el riesgo de phishing de TOTP | Notificación por correo ante un nuevo enroll. WebAuthn/Windows Hello fuera de la entrega (limitación en `09-Gestion-Accesos.md`) | Alta | 02/10/2026 |
 | R07 | Sanitizar toda entrada renderizada | Escapar/sanitizar campos de evento antes de mostrarlos; CSP estricta en el dashboard | Media | 29/09/2026 |
 | R08 | Proteger la integridad del SIEM | FIM sobre configuración de Wazuh; alerta de "agente desconectado" o "regla modificada"; acceso restringido al manager | Media | 05/10/2026 |
 | R09 | Fijar el formato de exportación | Formato de exportación sin downgrade de algoritmo; KDF propia para la contraseña de transporte; verificación AEAD al importar | Media | 02/10/2026 |
@@ -141,8 +141,8 @@
 | R02 | Compromiso total del endpoint del agente aún permitiría firmar eventos falsos de ese agente puntual | RSI | 07/10/2026 |
 | R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST | RSI | 07/10/2026 |
 | R04 | Ingeniería social directa al RSI (fuera del alcance técnico) | RSI | 07/10/2026 |
-| R05 | Compromiso del endpoint cliente con una CA maliciosa instalada localmente | RSI | 07/10/2026 |
-| R06 | Robo físico del segundo factor (llave FIDO2/dispositivo) | RSI | 07/10/2026 |
+| R05 | Intercepción del tráfico HTTP en la red del laboratorio, sin TLS (limitación acordada con el docente); compromiso del endpoint cliente | RSI | 07/10/2026 |
+| R06 | Phishing de TOTP al no haber factor resistente (WebAuthn/Hello fuera de alcance); robo físico del dispositivo con TOTP | RSI | 07/10/2026 |
 | R07 | XSS reflejado no cubierto si se agregan nuevos campos sin sanitizar | RSI | 07/10/2026 |
 | R08 | Un insider con acceso root al manager de Wazuh igual podría desactivarlo | RSI | 07/10/2026 |
 | R09 | Ataques de fuerza bruta contra la contraseña de transporte si es débil | RSI | 07/10/2026 |
