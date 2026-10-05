@@ -21,7 +21,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☐ |
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador 0.1 (reglas implementadas, sin alertas probadas aún) |
 | `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (el QR de TOTP ya está en el cliente; falta la captura) |
-| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☐ |
+| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ borrador 0.1 (pip-audit, bandit y npm audit; red y web pendientes) |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |

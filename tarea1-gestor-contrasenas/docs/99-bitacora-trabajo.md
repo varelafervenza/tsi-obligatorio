@@ -1122,6 +1122,33 @@ Hora (UTC): 20:29
 - **Observaciones**: Pendiente: registrar un incidente a partir de una alerta (alerta → incidente → cierre).
   Si se quiere una evidencia sin duplicados, correr una sola vez en una base nueva.
 
+---
+Fecha: 05/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Escaneo de vulnerabilidades y actualización de dependencias seguras (10-Gestion-Vulnerabilidades.md)
+
+- **Fase**: Prueba / Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se corrieron `pip-audit` sobre `control-central`, `npm audit --omit=dev` sobre
+  `cliente-gestor` y `bandit` sobre `control-central/app`. Se guardaron las salidas en
+  `docs/evidencias/10-*.txt`. Se subieron `python-jose` de 3.3.0 a 3.4.0 y `python-multipart` de 0.0.9 a
+  0.0.31 en `control-central/requirements.txt`, y se verificó que la firma válida sigue dando `true` y la
+  inválida `false`. Se redujo de 35 a 24 los avisos de `pip-audit`. Se escribió `docs/10-Gestion-Vulnerabilidades.md`.
+- **Herramienta / comando**: `pip-audit`, `npm audit --omit=dev`, `bandit`, `docker compose build control-central`,
+  `python scripts/generar_evento_prueba.py [--sin-firma]`.
+- **Resultado**: Parcial. Cliente: 0 vulnerabilidades. Código: 0 problemas con bandit. Dependencias:
+  quedan 24 avisos: 7 de `starlette` (abierta, requiere subir FastAPI) y 1 de `ecdsa` sin corrección
+  (riesgo aceptado, firma RS256).
+- **Evidencia anexa**: `docs/evidencias/10-pip-audit.txt`, `10-pip-audit-despues.txt`, `10-bandit.txt`, `10-npm-audit.txt`.
+- **Incidencia / hallazgo**: Los 7 avisos de starlette quedan abiertos. Se corrigen con FastAPI más nuevo,
+  que es un cambio de versión mayor y se hace después de la demo. Pendiente: escaneo de red y web (OpenVAS,
+  nmap, nuclei), Trivy para las imágenes y `cargo audit` para el cliente Rust.
+- **Observaciones**: Pendiente: asignar CVSS a cada ID (NVD), y decidir si `bandit` pasa a la CI.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

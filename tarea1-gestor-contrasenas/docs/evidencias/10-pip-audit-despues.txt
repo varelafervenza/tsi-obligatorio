@@ -1,0 +1,29 @@
+# pip-audit sobre control-central/requirements.txt — 05/10/2026 (después de subir python-multipart a 0.0.31 y python-jose a 3.4.0)
+# Comando: pip-audit -r control-central/requirements.txt
+Found 24 known vulnerabilities in 3 packages
+Name      Version ID              Fix Versions
+--------- ------- --------------- ------------
+pyasn1    0.4.8   PYSEC-2026-2263 0.6.3
+pyasn1    0.4.8   PYSEC-2026-2263 0.6.3
+pyasn1    0.4.8   PYSEC-2026-3456 0.6.4
+pyasn1    0.4.8   PYSEC-2026-3457 0.6.4
+pyasn1    0.4.8   PYSEC-2026-3457 0.6.4
+pyasn1    0.4.8   PYSEC-2026-3456 0.6.4
+pyasn1    0.4.8   PYSEC-2026-3455 0.6.4
+pyasn1    0.4.8   PYSEC-2026-3455 0.6.4
+starlette 0.38.6  PYSEC-2026-1943 0.40.0
+starlette 0.38.6  PYSEC-2026-1941 0.47.2
+starlette 0.38.6  PYSEC-2026-161  1.0.1
+starlette 0.38.6  PYSEC-2026-161  1.0.1
+starlette 0.38.6  PYSEC-2026-2281 1.1.0
+starlette 0.38.6  PYSEC-2026-2280 1.1.0
+starlette 0.38.6  PYSEC-2026-249  1.3.1
+starlette 0.38.6  PYSEC-2026-248  1.3.0
+starlette 0.38.6  PYSEC-2026-249  1.3.1
+starlette 0.38.6  PYSEC-2026-248  1.3.0
+starlette 0.38.6  PYSEC-2026-1943 0.40.0
+starlette 0.38.6  PYSEC-2026-1941 0.47.2
+starlette 0.38.6  PYSEC-2026-2281 1.1.0
+starlette 0.38.6  PYSEC-2026-2280 1.1.0
+ecdsa     0.19.2  PYSEC-2026-1325
+ecdsa     0.19.2  PYSEC-2026-1325
