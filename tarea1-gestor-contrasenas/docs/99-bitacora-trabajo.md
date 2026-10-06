@@ -1441,6 +1441,28 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente: que Pablo y Horacio instalen el hook en sus equipos. Quedan sin probar los tests de
   retención e incidentes (opcionales).
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Lista de pendientes versionada y CLAUDE.md para sesiones futuras
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se creó `docs/00-pendientes-entrega.md` con todo lo que falta para la pre-entrega y la defensa,
+  con su origen (letra o compromiso propio), responsable y estado. Se creó `CLAUDE.md` en la raíz del repositorio, que
+  Claude Code lee al abrir el proyecto, con el lugar de los pendientes, la bitácora y el flujo de trabajo.
+- **Herramienta / comando**: edición manual de los dos archivos.
+- **Resultado**: Éxito. Cualquier sesión que abra el repositorio ve la misma lista, sin depender de la memoria de una
+  conversación.
+- **Evidencia anexa**: `docs/00-pendientes-entrega.md`, `CLAUDE.md`.
+- **Incidencia / hallazgo**: La lista depende de que se actualice en el mismo commit que cierra cada punto. Si no se
+  hace, otra sesión va a ver pendientes que ya están cerrados.
+- **Observaciones**: Pendiente: asignar responsables a los puntos marcados "a confirmar" en la RACI.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
