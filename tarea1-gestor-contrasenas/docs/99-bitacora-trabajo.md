@@ -1365,6 +1365,31 @@ Hora (UTC): 19:10
 - **Observaciones**: `docs/12-Notificacion-Incidentes.md` y `docs/28-Informe-Blue-Team.md` ya dicen S2; no requieren cambio.
   Pendiente: repetir las pruebas de firma JWS, retención e incidentes.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Revisión 2 del análisis de riesgos (03-Analisis-Riesgos.md)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se verificó en el código y la infraestructura el estado de cada control de los 12 riesgos.
+  Se corrigió el conteo de riesgos Alto: son 5 (R01, R03, R06, R10 y R11), no 4 como decía la v1. Ninguno está tratado
+  por completo al 06/10. Se agregó R13 (PostgreSQL publicado en el puerto 5432 del host). Se actualizaron las fechas
+  vencidas y el plan de tratamiento, con prioridades para el 07/10.
+- **Herramienta / comando**: lectura de `cliente-gestor/src-tauri/src/vault/commands.rs` y `store.rs`,
+  `control-central/app/api/users.py`, `infra/docker-compose.yml`, `infra/wazuh/local_rules.xml`, y búsquedas de
+  `traceback`, `gitleaks`, `ratelimit` y CSP.
+- **Resultado**: Borrador 2.0. Tratamientos Alto pendientes: gitleaks (R11), barrido de logs y errores (R10), aviso de
+  enroll (R06), medidor de fortaleza (R01) y pruebas de IDOR (R03).
+- **Evidencia anexa**: `docs/03-Analisis-Riesgos.md`, sección 4 (estado verificado).
+- **Incidencia / hallazgo**: La v1 contaba mal los riesgos Alto. Además, la mitigación de R05 ("API solo en 127.0.0.1")
+  no estaba aplicada. Y el puerto 5432 de la base está publicado en el host.
+- **Observaciones**: Pendiente: la firma del RSI, y decidir si se implementan las acciones Alto antes del 07/10.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
