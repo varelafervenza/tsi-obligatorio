@@ -1,7 +1,7 @@
 """Panel del control central. RF-09, RF-14 y KPIs de la sección 6.4 de LETRA.md.
 
 MTTD: promedio de la primera alerta del evento de origen (creado_en) menos occurred_at de ese evento.
-MTTR: promedio de resuelto_en menos creado_en, solo casos en estado resuelto.
+MTTR: promedio de resuelto_en menos la primera alerta del evento de origen, solo casos resueltos con alerta.
 Cobertura: cuántos de los cuatro tipos de RF-07 ya llegaron al menos una vez.
 La tasa de falsos positivos queda vacía hasta que el SIEM emita alertas (RF-10).
 """
@@ -159,14 +159,18 @@ def obtener_kpis(db: Session = Depends(get_db)):
         if detectado_en is not None and occurred_at is not None
     ]
     respuestas = [
-        (resuelto_en, creado_en)
-        for resuelto_en, creado_en in db.execute(
-            select(Incident.resuelto_en, Incident.creado_en).where(
+        (resuelto_en, detectado_en)
+        for resuelto_en, detectado_en in db.execute(
+            select(Incident.resuelto_en, func.min(Alert.creado_en))
+            .select_from(Incident)
+            .join(Alert, Alert.evento_id == Incident.evento_origen_id)
+            .where(
                 Incident.estado == "resuelto",
                 Incident.resuelto_en.is_not(None),
             )
+            .group_by(Incident.id, Incident.resuelto_en)
         )
-        if resuelto_en is not None and creado_en is not None
+        if resuelto_en is not None and detectado_en is not None
     ]
     vistos = [tipo for tipo in TIPOS_COBERTURA if volumen.get(tipo, 0) > 0]
     firma_invalida = int(

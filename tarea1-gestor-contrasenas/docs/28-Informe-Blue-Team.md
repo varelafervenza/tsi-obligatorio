@@ -24,7 +24,7 @@ Lo que está demostrado con evidencia:
 
 Lo que no cumple todavía, y se declara abierto en la sección 6:
 
-- El MTTD del panel se corrigió el 06/10 (definición A, ver sección 4.2). El MTTR todavía mide creado → resuelto, no desde la alerta.
+- El MTTD y el MTTR del panel se corrigieron el 06/10 (ver sección 4.2): el MTTD mide desde el evento hasta la alerta y el MTTR desde la alerta hasta la resolución.
 - El SIEM Wazuh está modelado y su regla escrita, pero el manager no está levantado. Por eso la tasa de falsos positivos del SIEM no se puede calcular.
 - Hay limitaciones de alcance aceptadas con la cátedra: TLS en el laboratorio, y Windows Hello y WebAuthn fuera de la entrega.
 
@@ -72,7 +72,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 | KPI | Requisito | Valor en el panel | Muestras | Cumple |
 |---|---|---|---|---|
 | MTTD | Tiempo de detección de un ataque simulado | 0.2 s (alerta 1 menos evento 10, definición A) | 1 | Sí, con la definición A (ver 4.2) |
-| MTTR | Tiempo de respuesta a incidente | 1.9 s | 1 | No medido de forma correcta (ver 4.2) |
+| MTTR | Tiempo de respuesta a incidente | 77 881.7 s (21 h 38 min), desde la alerta hasta la resolución | 1 | Sí, con la definición desde la alerta (ver 4.2). Valor alto por la espera de creación del caso |
 | Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % (evento `modificacion_credencial` enviado el 06/10, `docs/evidencias/28-cobertura-modificacion.txt`) | 4 de 4 tipos | Sí, en la base de laboratorio |
 | Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`) | 0 SIEM / 4 de reglas locales | No medido |
 | Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
@@ -90,12 +90,13 @@ Problema detectado en la revisión de este informe: el panel calcula:
 
 - **MTTD** (corregido el 06/10): primera alerta del evento de origen menos `occurred_at` de ese evento (definición A).
   Antes se calculaba contra la creación del incidente, que la abre una persona, y daba 21 h 38 min.
-- **MTTR** como `resuelto_en` menos `creado_en` del incidente. El incidente se creó y se resolvió en la misma prueba, así que da 1.9 s y no mide la respuesta real.
+- **MTTR** (corregido el 06/10): `resuelto_en` menos la primera alerta del evento de origen. Antes se calculaba
+  contra la creación del incidente, que en la prueba se creó y resolvió en 1.9 s, y no mide la respuesta real.
 
 Con la definición A, el MTTD del panel es 0.2 s y mide la latencia de la regla desde que el evento llega con su
 `occurred_at` (precisión de segundo). El tiempo desde el primer intento del ataque hasta la alerta, 3 s, es otra medida
-(definición B). El informe reporta las dos y dice cuál es cuál. El MTTR del panel (1.9 s, creado → resuelto) sigue
-sin cambiar: pendiente decidir si pasa a medirse desde la alerta (21 h 38 min en el caso 1).
+(definición B). El informe reporta las dos y dice cuál es cuál. El MTTR del panel, desde la alerta, es 21 h 38 min en
+el caso 1: incluye el tiempo entre la alerta y la creación manual del incidente, que fue al día siguiente.
 
 ### 4.3 Qué falta para cumplir 6.4
 
@@ -150,7 +151,8 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 - Firma del RSI en `01`, `06`, `11` y `12`.
 - Backup diario automático (tarea programada) y copia fuera del equipo.
 - Copia de `keys/agentes/` (decisión de custodia de la clave privada).
-- Tests automáticos en Python para `control-central` (firma, retención e incidentes): no existen.
+- Tests automáticos en Python para `control-central`: existen 5 de KPIs (MTTD, MTTR y cobertura, `tests/test_kpis.py`).
+  Faltan los de firma JWS, retención de 90 días e incidentes.
 - Medir RNF-02 (apertura en menos de 2 s) y RNF-05 (carga básica), y definir el plan de rollback (RNF-10).
 - Video de la demo de 5 min o menos.
 - Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` el 07/10.
@@ -179,5 +181,5 @@ El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, r
 - [x] Vulnerabilidades y limitaciones de alcance.
 - [x] Cobertura de eventos al 100 % (con evento de prueba; falta repetir desde el cliente).
 - [x] MTTD con la definición A (primera alerta menos evento de origen).
-- [ ] MTTR medido desde la alerta (pendiente de decisión).
+- [x] MTTR medido desde la alerta.
 - [ ] Firma del RSI.

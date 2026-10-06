@@ -102,7 +102,7 @@ Esta decisión la propone el Blue Team. La aprueba el RSI, que todavía no firm�
 | Vector de ingreso | Red del laboratorio (`ip_origen` 172.18.0.1, red Docker) |
 | Estado | `resuelto` el 06/10/2026 18:07:52 UTC |
 | Tiempo de detección | Desde el primer intento hasta la alerta: 3 s (20:29:48 → 20:29:51) |
-| Tiempo desde la alerta hasta la resolución | 21 h 38 min (05/10 20:29:51 → 06/10 18:07:52 UTC). El MTTR del tablero (1.9 s) mide solo creado → resuelto y no representa la respuesta real (ver `28-Informe-Blue-Team.md`). |
+| Tiempo desde la alerta hasta la resolución (MTTR del panel) | 21 h 38 min (05/10 20:29:51 → 06/10 18:07:52 UTC). Incluye la espera entre la alerta y la creación manual del caso (ver `28-Informe-Blue-Team.md`). |
 
 Alertas relacionadas del mismo día, que no forman parte de este incidente: 2 (`borrado_masivo`, CU-02), 3 y 4 (`cambio_maestra`, CU-03). Se pueden registrar como incidentes aparte si el RSI lo decide.
 

@@ -1339,6 +1339,32 @@ Hora (UTC): 18:55
   la API y no con un test. La precisión de `occurred_at` es de segundo, así que el MTTD tiene resolución de 1 s.
 - **Observaciones**: Pendiente: decidir si el MTTR se mide desde la alerta (21 h 38 min en el caso 1) y agregar un test.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 19:10
+---
+
+## Actividad: MTTR desde la alerta, severidad del incidente 1 y primeros tests de control-central
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: (1) El MTTR del panel pasó a medirse desde la primera alerta del evento de origen. Antes era
+  creado → resuelto. Ahora da 21 h 38 min en el caso 1. (2) La severidad del incidente 1 se cambió de S1 a S2 para
+  coincidir con los criterios de `04-Gestion-Incidentes.md`. La API no permite cambiarla, así que se hizo con un
+  `UPDATE` en la base de laboratorio. (3) Se agregaron 5 pruebas automáticas de los KPIs (`control-central/tests/test_kpis.py`)
+  y `requirements-dev.txt`. Corren contra la base `control_central_test`, con una guarda que no deja borrar tablas
+  de otra base.
+- **Herramienta / comando**: `docker compose up -d --build control-central`; `UPDATE incidents SET severidad='S2' WHERE id=1`
+  en `control_central`; `python -m pytest -q tests` dentro de la imagen `infra-control-central` en la red `infra_blue-team-net`.
+- **Resultado**: Éxito. MTTR = 77 881.7 s. Pruebas: 5 pasan. La base de laboratorio mantiene 30 eventos, 4 alertas y 1 incidente.
+- **Evidencia anexa**: `docs/evidencias/28-mttr-desde-alerta.txt`, `docs/evidencias/28-tests-control-central.txt`.
+- **Incidencia / hallazgo**: El cambio de severidad se hizo con SQL directo, sin registro de auditoría de esa edición.
+  Para la entrega queda documentado aquí. Falta el test de firma JWS, retención e incidentes.
+- **Observaciones**: `docs/12-Notificacion-Incidentes.md` y `docs/28-Informe-Blue-Team.md` ya dicen S2; no requieren cambio.
+  Pendiente: repetir las pruebas de firma JWS, retención e incidentes.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

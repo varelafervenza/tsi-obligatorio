@@ -1,0 +1,6 @@
+# MTTR desde la primera alerta del evento de origen (resuelto_en menos alerta) — 06/10/2026
+# Cambio en control-central/app/api/dashboard.py. Contenedor reconstruido: docker compose up -d --build control-central
+# GET /api/dashboard/kpis (campo kpis):
+mttd: {"segundos": 0.2, "muestras": 1}
+mttr: {"segundos": 77881.7, "muestras": 1}
+# Caso: alerta 1 creado_en 2026-10-05T20:29:51.248301Z -> incidente 1 resuelto_en 2026-10-06T18:07:52.936662Z
