@@ -1,0 +1,6 @@
+# MTTD con la definición A (primera alerta del evento de origen menos occurred_at del evento) — 06/10/2026
+# Cambio en control-central/app/api/dashboard.py. Contenedor reconstruido: docker compose up -d --build control-central
+# GET /api/dashboard/kpis (campo kpis):
+mttd: {"segundos": 0.2, "muestras": 1}
+mttr: {"segundos": 1.9, "muestras": 1}   # sin cambio; pendiente decidir si se mide desde la alerta
+# Caso: incidente 1 -> evento 10 (occurred_at 2026-10-05T20:29:51+00:00) -> alerta 1 (creado_en 2026-10-05T20:29:51.248301Z)

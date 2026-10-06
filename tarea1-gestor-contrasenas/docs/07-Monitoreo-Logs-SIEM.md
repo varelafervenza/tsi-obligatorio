@@ -100,7 +100,7 @@ Valores leídos de `GET /api/dashboard/kpis` el 05/10/2026, después de la demo:
 | Firmas inválidas | 2 | Eventos sin clave instalada o sin firma, por diseño de la prueba. |
 | Alertas de las reglas | 4 | fuerza_bruta_maestra (1), borrado_masivo (1), cambio_maestra (2). Incluye un cambio de maestra extra por la segunda corrida (ver nota). |
 | Incidentes abiertos | 0 | |
-| MTTD / MTTR | N/D | Sin incidentes para medir. |
+| MTTD / MTTR | MTTD 0.2 s; MTTR 1.9 s | MTTD: primera alerta menos `occurred_at` del evento (06/10). MTTR: creado → resuelto del incidente 1; pendiente medirlo desde la alerta. |
 | Falsos positivos | N/D | Sin alertas clasificadas. |
 
 **Evidencia de la simulación:** `docs/evidencias/07-simulacion-casos-uso.txt`, generada con

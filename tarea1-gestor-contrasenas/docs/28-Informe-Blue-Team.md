@@ -24,7 +24,7 @@ Lo que está demostrado con evidencia:
 
 Lo que no cumple todavía, y se declara abierto en la sección 6:
 
-- Los KPIs MTTD y MTTR del panel no miden lo que dice su nombre (ver sección 4.2).
+- El MTTD del panel se corrigió el 06/10 (definición A, ver sección 4.2). El MTTR todavía mide creado → resuelto, no desde la alerta.
 - El SIEM Wazuh está modelado y su regla escrita, pero el manager no está levantado. Por eso la tasa de falsos positivos del SIEM no se puede calcular.
 - Hay limitaciones de alcance aceptadas con la cátedra: TLS en el laboratorio, y Windows Hello y WebAuthn fuera de la entrega.
 
@@ -71,7 +71,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 
 | KPI | Requisito | Valor en el panel | Muestras | Cumple |
 |---|---|---|---|---|
-| MTTD | Tiempo de detección de un ataque simulado | 77 880 s (21 h 38 min) | 1 | No medido de forma correcta (ver 4.2) |
+| MTTD | Tiempo de detección de un ataque simulado | 0.2 s (alerta 1 menos evento 10, definición A) | 1 | Sí, con la definición A (ver 4.2) |
 | MTTR | Tiempo de respuesta a incidente | 1.9 s | 1 | No medido de forma correcta (ver 4.2) |
 | Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % (evento `modificacion_credencial` enviado el 06/10, `docs/evidencias/28-cobertura-modificacion.txt`) | 4 de 4 tipos | Sí, en la base de laboratorio |
 | Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`) | 0 SIEM / 4 de reglas locales | No medido |
@@ -88,10 +88,14 @@ Los tiempos de detección y respuesta reales del caso de prueba son estos, tomad
 
 Problema detectado en la revisión de este informe: el panel calcula:
 
-- **MTTD** como `creado_en` del incidente menos `occurred_at` del evento. Es el tiempo que tardó una persona en abrir el caso, no el de detección. Por eso da 21 h 38 min en vez de 3 s.
+- **MTTD** (corregido el 06/10): primera alerta del evento de origen menos `occurred_at` de ese evento (definición A).
+  Antes se calculaba contra la creación del incidente, que la abre una persona, y daba 21 h 38 min.
 - **MTTR** como `resuelto_en` menos `creado_en` del incidente. El incidente se creó y se resolvió en la misma prueba, así que da 1.9 s y no mide la respuesta real.
 
-Decisión: el informe reporta los dos tiempos reales (3 s y 21 h 38 min) y no los valores del panel como si fueran la respuesta del equipo. Ajustar la definición del MTTD en el código (usar la fecha de la alerta, no la del incidente) queda como tarea pendiente antes del 07/10. Si no se llega, se declara en la defensa.
+Con la definición A, el MTTD del panel es 0.2 s y mide la latencia de la regla desde que el evento llega con su
+`occurred_at` (precisión de segundo). El tiempo desde el primer intento del ataque hasta la alerta, 3 s, es otra medida
+(definición B). El informe reporta las dos y dice cuál es cuál. El MTTR del panel (1.9 s, creado → resuelto) sigue
+sin cambiar: pendiente decidir si pasa a medirse desde la alerta (21 h 38 min en el caso 1).
 
 ### 4.3 Qué falta para cumplir 6.4
 
@@ -174,5 +178,6 @@ El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, r
 - [x] Incidentes simulados y su resultado.
 - [x] Vulnerabilidades y limitaciones de alcance.
 - [x] Cobertura de eventos al 100 % (con evento de prueba; falta repetir desde el cliente).
-- [ ] MTTD y MTTR con la definición corregida.
+- [x] MTTD con la definición A (primera alerta menos evento de origen).
+- [ ] MTTR medido desde la alerta (pendiente de decisión).
 - [ ] Firma del RSI.

@@ -1318,6 +1318,27 @@ Hora (UTC): 18:46
   completa hay que repetir alta, modificación y borrado desde la app.
 - **Observaciones**: Pendiente: repetir la cobertura desde el cliente antes del 07/10.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 18:55
+---
+
+## Actividad: Corrección del MTTD del panel (definición A)
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: El MTTD se calculaba desde la creación del incidente, que la abre una persona. Ahora se calcula
+  desde la primera alerta del evento de origen menos el `occurred_at` de ese evento (definición A). Cambio en
+  `control-central/app/api/dashboard.py`. Se reconstruyó el contenedor. El MTTR no se cambió: sigue creado → resuelto.
+- **Herramienta / comando**: `docker compose up -d --build control-central` y `GET /api/dashboard/kpis`.
+- **Resultado**: Éxito. MTTD = 0.2 s con una muestra (incidente 1). Antes daba 77 880 s.
+- **Evidencia anexa**: `docs/evidencias/28-mttd-definicion-a.txt`. Informe 28 y `07` actualizados.
+- **Incidencia / hallazgo**: `control-central` no tiene tests automáticos de Python; este cambio se verificó contra
+  la API y no con un test. La precisión de `occurred_at` es de segundo, así que el MTTD tiene resolución de 1 s.
+- **Observaciones**: Pendiente: decidir si el MTTR se mide desde la alerta (21 h 38 min en el caso 1) y agregar un test.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
