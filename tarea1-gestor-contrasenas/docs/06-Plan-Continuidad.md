@@ -66,8 +66,10 @@ Se ejecutó el 06/10/2026 (evidencia en `docs/evidencias/06-restauracion-bd.txt`
 | 4 | Comparar conteos original y restaurada | `audit_events` 29/29, `alerts` 4/4, `incidents` 0/0, `panel_users` 0/0 | `06-restauracion-bd.txt` |
 | 5 | Copia del log JSONL y verificación de líneas y hash | 29 líneas en ambas, hash OK | `06-restauracion-bd.txt` |
 
-**Limitación de la prueba:** `incidents` y `panel_users` estaban vacías, así que esas comparaciones no
-prueban nada. Hay que repetir la prueba cuando existan incidentes y usuarios del panel.
+**Segunda corrida con datos (06/10/2026, tarde):** se cargaron un incidente (desde la alerta 1, resuelto) y
+un usuario del panel con TOTP activo. Se repitió el backup y la restauración
+(`docs/evidencias/06-restauracion-bd-con-datos.txt`): los conteos coinciden en las cuatro tablas, incluidas
+`incidents` 1/1 y `panel_users` 1/1. La restauración tardó 1 s. El dump tiene su SHA-256 verificado.
 
 **Restauración de la bóveda (`.gex`):** la restauración de la exportación se prueba en el CI con el test
 `vault::store::tests::favorito_y_copia_cifrada_viajan_a_otra_boveda`, que pasa en cada ejecución del
@@ -127,6 +129,6 @@ workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 - [x] Inventario de respaldo con ubicación.
 - [ ] Copia fuera del sitio (pendiente, requisito BCU).
 - [x] Prueba de restauración ejecutada y documentada.
-- [ ] Prueba con tablas no vacías (incidentes y usuarios del panel).
+- [x] Prueba con tablas no vacías (incidentes y usuarios del panel).
 - [ ] Backup diario automático (pendiente, requisito BCU).
 - [ ] Firma del responsable (pendiente).

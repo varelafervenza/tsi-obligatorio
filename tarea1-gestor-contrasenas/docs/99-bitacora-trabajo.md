@@ -1174,6 +1174,55 @@ Hora (UTC): 17:55
   automático del CI, no con una corrida manual.
 - **Observaciones**: Pendiente: automatizar el backup diario y decidir un medio externo al equipo.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 18:10
+---
+
+## Actividad: Incidente y usuario del panel cargados, y restauración con datos (06-Plan-Continuidad.md)
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se creó el incidente 1 desde la alerta 1 (evento 10) y se lo pasó por `en_analisis` a
+  `resuelto`. Se creó el usuario del panel `rsi@correo.local` con rol admin, se enroló su TOTP y se confirmó.
+  Se comprobó que el login sin código devuelve 401 y con código funciona. Se comprobó que el listado de
+  usuarios no expone el hash ni el secreto. Se repitió el backup y la restauración con esos datos.
+- **Herramienta / comando**: `POST/PATCH /api/incidents/`, `POST /api/users/`, `POST /api/users/{id}/totp/enroll`
+  y `/confirmar`, `POST /api/users/login`, `bash scripts/backup_bd.sh`, `bash scripts/restaurar_bd_prueba.sh`.
+- **Resultado**: Éxito. La restauración con datos coincide en las cuatro tablas: `audit_events` 29/29,
+  `alerts` 4/4, `incidents` 1/1 y `panel_users` 1/1, en 1 s.
+- **Evidencia anexa**: `docs/evidencias/06-restauracion-bd-con-datos.txt`.
+- **Incidencia / hallazgo**: Cada login emite un token nuevo y reemplaza al anterior, así que una sesión
+  vieja deja de valer al volver a entrar. Es el diseño actual, no un error. La contraseña de prueba del
+  usuario no se guarda en el repo.
+- **Observaciones**: Pendiente: el MTTD y el MTTR del tablero ahora tienen un incidente resuelto para medir.
+  Revisar que aparezcan en `GET /api/dashboard/kpis`.
+
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 18:40
+---
+
+## Actividad: Guía de pruebas paso a paso, con indicación de quién puede hacer cada una
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se escribió `docs/guia-de-pruebas.md` con todas las pruebas de la entrega (backend B-01 a
+  B-16, cliente C-01 a C-14, automáticas A-01 a A-03) y las limitaciones. Cada prueba indica si la puede hacer
+  una persona con la guía o si conviene una sesión de Claude. Se corrigió en el documento que la API no tiene
+  botón Authorize en `/docs`: las rutas de usuarios se prueban con PowerShell y encabezado `Authorization`.
+- **Herramienta / comando**: lectura de `openapi.json` (esquemas de seguridad) y de los endpoints reales.
+- **Resultado**: Éxito. La guía cubre el alcance de la entrega.
+- **Evidencia anexa**: `docs/guia-de-pruebas.md`.
+- **Incidencia / hallazgo**: Un intento de corrección usó caracteres que la consola de Windows no leyó; se
+  hizo con la herramienta de edición.
+- **Observaciones**: Pendiente: probar la guía completa en una máquina distinta de la de desarrollo, con una
+  persona que no haya armado el sistema.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

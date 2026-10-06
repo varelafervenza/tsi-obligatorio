@@ -1,0 +1,17 @@
+# Backup y restauración de la base con datos cargados (incidente y usuario del panel) — 06/10/2026
+# Comandos: bash scripts/backup_bd.sh ; bash scripts/restaurar_bd_prueba.sh
+# Estado previo: incidente 1 (desde alerta 1, resuelto) y usuario del panel rsi@correo.local (admin, TOTP activo).
+
+backup: /c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T180852Z.dump
+tamano: 20810 bytes
+sha256: e008ffa6d7f173d2b06e876f0a122d337286255226c30db986e799ba3d10f97c
+
+restaurando: /c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T180852Z.dump
+verificando sha256:
+/c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T180852Z.dump: OK
+tiempo de restauracion: 1 s
+conteos (original vs restaurada):
+  audit_events: original=29 restaurada=29 OK
+  alerts: original=4 restaurada=4 OK
+  incidents: original=1 restaurada=1 OK
+  panel_users: original=1 restaurada=1 OK
