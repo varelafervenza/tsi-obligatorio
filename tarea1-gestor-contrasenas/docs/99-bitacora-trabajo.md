@@ -1247,6 +1247,32 @@ Hora (UTC): 19:30
   Conviene avisarle al docente.
 - **Observaciones**: La madurez MCU 5.0 es una estimación del equipo que tiene que validar la auditoría del 14/10.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Notificación simulada a BCU y URCDP para el incidente 1 (12-Notificacion-Incidentes.md)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se redactó `docs/12-Notificacion-Incidentes.md` con la plantilla de la cátedra, usando el
+  incidente 1 (alerta 1, `fuerza_bruta_maestra`). Se completaron los formularios BCU y URCDP, la línea de tiempo
+  (detección 3 s después del primer intento; resolución 21 h 38 min después de la detección) y los criterios de
+  decisión. Resultado propuesto: no notificar al BCU ni a la URCDP, porque ningún intento tuvo éxito y no hubo
+  acceso a datos personales.
+- **Herramienta / comando**: lectura de `infra/logs/audit-events.jsonl`, `docs/evidencias/07-simulacion-casos-uso.txt`
+  y de la plantilla `plantilla/isaca/12-notificacion-incidentes.md`.
+- **Resultado**: Borrador 0.1. No se envió nada a ningún organismo: es un simulacro.
+- **Evidencia anexa**: `docs/12-Notificacion-Incidentes.md`, con referencia a las evidencias 06 y 07.
+- **Incidencia / hallazgo**: Los contactos oficiales de reporte (teléfono y correo) no están definidos. Quedan como
+  pendientes en el documento. La respuesta automática (bloquear el origen) no está implementada; el documento lo
+  declara como limitación.
+- **Observaciones**: Pendiente la aprobación del RSI y revisar los plazos legales contra el texto de la Ley 18.331
+  y de la guía del BCU.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
