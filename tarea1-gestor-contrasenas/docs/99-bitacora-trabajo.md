@@ -1390,6 +1390,57 @@ Hora (UTC): N/D
   no estaba aplicada. Y el puerto 5432 de la base está publicado en el host.
 - **Observaciones**: Pendiente: la firma del RSI, y decidir si se implementan las acciones Alto antes del 07/10.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Tratamiento de R11 (escaneo de secretos) y R06 (aviso al activar MFA)
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: (1) R11: se corrió `gitleaks` sobre el historial completo. Hubo 1 hallazgo, un falso positivo
+  (valor de prueba en `vault/store.rs`). Se agregaron `.gitleaks.toml` con esa excepción y `.pre-commit-config.yaml`
+  con el hook. (2) R06: al confirmar un TOTP, `control-central` envía un aviso al titular y al RSI. El aviso no lleva
+  secretos ni códigos. Si SMTP falla, la activación igual queda guardada. Se agregaron 3 pruebas de ese aviso.
+- **Herramienta / comando**: `gitleaks` en Docker sobre el repositorio; `python -m pytest -q tests` dentro de la imagen
+  `infra-control-central` (8 pruebas pasan); envío real con `enviar_aviso_mfa_seguro` a Mailpit.
+- **Resultado**: Éxito. Repositorio sin fugas después de la excepción. Aviso recibido en Mailpit con destinatarios
+  `prueba-mfa@correo.local` y `rsi@correo.local`.
+- **Evidencia anexa**: `docs/evidencias/03-r06-r11.txt`, `docs/03-Analisis-Riesgos.md` (sección 4).
+- **Incidencia / hallazgo**: La excepción de gitleaks es global por regex, porque esta versión no acepta excepciones por
+  ruta en `regexes`. Cualquier valor que empiece con `SECRET` se excusa en todo el repositorio. El hook de pre-commit
+  no se probó en un commit real, porque cada equipo tiene que instalar `pre-commit`.
+- **Observaciones**: Pendiente: instalar `pre-commit` y probarlo en un commit de prueba; decidir si el aviso también
+  se envía al generar el secreto (hoy solo al confirmar).
+
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Hook de pre-commit probado y pruebas de la firma JWS
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: (1) Se instaló `pre-commit` en este equipo y se activó el hook (`.git/hooks/pre-commit`). La
+  configuración oficial de `gitleaks` pasó sobre todo el repositorio. (2) Se probó que el hook bloquea: un archivo con
+  una clave falsa, agregado al stage, hizo fallar `git commit`. Después se sacó del stage y se borró. Nada quedó commiteado.
+  (3) Se agregaron 8 pruebas de `verificar_jws`: firma válida, y rechazo de otra clave, tipo, sistema, timestamp, agente,
+  `TODO` y agente sin clave pública. Con las pruebas anteriores, la suite tiene 16 pruebas, y todas pasan.
+- **Herramienta / comando**: `python -m pre_commit install`, `python -m pre_commit run gitleaks --all-files`,
+  `git commit` de prueba (bloqueado), `python -m pytest -q tests` dentro de `infra-control-central`.
+- **Resultado**: Éxito. El hook bloquea claves reales y no bloquea el repositorio actual.
+- **Evidencia anexa**: `docs/evidencias/28-tests-firma-jws.txt`.
+- **Incidencia / hallazgo**: El hook solo corre en los equipos donde se instaló `pre-commit`. Cada integrante tiene que
+  hacer `python -m pip install pre-commit` y `python -m pre_commit install` en su clon. Git no lo comparte.
+- **Observaciones**: Pendiente: que Pablo y Horacio instalen el hook en sus equipos. Quedan sin probar los tests de
+  retención e incidentes (opcionales).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

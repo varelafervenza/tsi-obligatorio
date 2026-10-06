@@ -1,0 +1,9 @@
+# Pruebas automáticas de la firma JWS de eventos — 06/10/2026
+# Comando (dentro de la imagen infra-control-central, en la red infra_blue-team-net, contra control_central_test):
+#   python -m pytest -q tests
+# Resultado completo de la suite (incluye KPIs, aviso MFA y firma JWS):
+................                                                         [100%]
+16 passed in 5.47s
+# Pruebas de firma (control-central/tests/test_firma_jws.py), con un par de claves RSA temporal:
+#   firma válida aceptada; firma de otra clave, tipo, sistema, timestamp o agente distintos rechazados;
+#   "TODO" rechazado; agente sin clave pública rechazado.

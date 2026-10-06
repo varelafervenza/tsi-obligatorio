@@ -18,6 +18,7 @@ from app.core.config import settings
 from app.core.mfa import generar_secreto, uri_otpauth, verificar_totp
 from app.db.session import get_db
 from app.models.user import User
+from app.notify.mailer import enviar_aviso_mfa_seguro
 
 router = APIRouter()
 
@@ -223,4 +224,5 @@ def confirmar_totp(
     usuario.mfa_tipo = "totp"
     db.commit()
     db.refresh(usuario)
+    enviar_aviso_mfa_seguro(usuario.email, usuario.id)
     return usuario

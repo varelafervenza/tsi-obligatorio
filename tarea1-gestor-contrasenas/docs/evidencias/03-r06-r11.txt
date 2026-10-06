@@ -1,0 +1,21 @@
+# Evidencias de R06 (aviso MFA) y R11 (escaneo de secretos) — 06/10/2026
+
+## R11: gitleaks sobre el historial completo del repositorio (imagen zricethezav/gitleaks:latest)
+# Sin configuración propia: 1 hallazgo
+RuleID: generic-api-key
+File: tarea1-gestor-contrasenas/cliente-gestor/src-tauri/src/vault/store.rs
+Commit: 52e81041f1228e48840e2f96fdda5cd956de300a
+Análisis: valor de prueba de un test unitario (let secreto = "SECRET…"). Falso positivo.
+# Con .gitleaks.toml (excepción ^SECRET): no leaks found, exit 0.
+# Control: clave falsa no de ejemplo (el valor no se registra) en un archivo fuera del repo: detectada (generic-api-key), exit 1.
+
+## R06: pruebas automáticas (control-central/tests, contra control_central_test)
+8 passed, 4 warnings in 2.18s
+# 5 de KPIs (test_kpis.py) y 3 del aviso MFA (test_mfa_aviso.py):
+#   test_aviso_mfa_llega_al_titular_y_al_rsi, test_aviso_mfa_no_incluye_secretos, test_si_smtp_falla_no_tumba_la_operacion
+
+## R06: aviso real por SMTP hacia Mailpit
+# docker run ... infra-control-central python -c "from app.notify.mailer import enviar_aviso_mfa_seguro; ..."
+enviado
+# GET http://localhost:8025/api/v1/messages (primer mensaje):
+Se activó un factor MFA (TOTP) | ['prueba-mfa@correo.local', 'rsi@correo.local']

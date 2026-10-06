@@ -1,0 +1,12 @@
+# Hook de pre-commit: escaneo de secretos antes de cada commit (R11 de docs/03-Analisis-Riesgos.md).
+# Instalación (una vez por equipo):
+#   pip install pre-commit
+#   pre-commit install
+# Revisión manual sobre todo el repositorio:
+#   pre-commit run gitleaks --all-files
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks

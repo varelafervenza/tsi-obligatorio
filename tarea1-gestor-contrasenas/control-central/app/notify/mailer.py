@@ -65,6 +65,30 @@ def enviar_notificacion(evento: AuditEvent) -> None:
         smtp.send_message(msg)
 
 
+def enviar_aviso_mfa_seguro(email_usuario: str, usuario_id: int) -> None:
+    """Avisa al titular y al RSI que un factor TOTP quedó activo (R06). No tumba la operación si SMTP falla."""
+    msg = EmailMessage()
+    msg["From"] = settings.smtp_from
+    msg["To"] = f"{email_usuario}, {settings.smtp_to}"
+    msg["Subject"] = "Se activó un factor MFA (TOTP)"
+    msg.set_content(
+        "Se activó un factor TOTP para el usuario del panel.\n\n"
+        f"usuario_id: {usuario_id}\n"
+        f"email: {email_usuario}\n\n"
+        "Si no fuiste vos quien lo activó, avisá al RSI de inmediato.\n"
+        "Este correo no incluye secretos ni códigos.\n"
+    )
+    try:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
+            if settings.smtp_use_tls:
+                smtp.starttls()
+            if settings.smtp_user:
+                smtp.login(settings.smtp_user, settings.smtp_password)
+            smtp.send_message(msg)
+    except OSError:
+        logger.exception("No se pudo enviar el aviso MFA del usuario %s", usuario_id)
+
+
 def enviar_notificacion_segura(evento: AuditEvent) -> None:
     """No tumba el POST si SMTP falla."""
     try:

@@ -1,0 +1,12 @@
+# Configuración de gitleaks para el repositorio (R11 de docs/03-Analisis-Riesgos.md).
+# Usa las reglas por defecto y agrega excepciones explícitas.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Excepciones revisadas por el Blue Team"
+# Falso positivo: valor de prueba de un test unitario del cliente (vault/store.rs, test de alta y recuperación).
+# No es una credencial. gitleaks compara la regex contra el valor detectado, no contra la línea.
+# Solo se excusan valores que empiecen con SECRET; cualquier otra clave se sigue detectando.
+regexes = ['''^SECRET''']
