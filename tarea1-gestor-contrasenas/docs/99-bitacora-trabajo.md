@@ -1223,6 +1223,30 @@ Hora (UTC): 18:40
 - **Observaciones**: Pendiente: probar la guía completa en una máquina distinta de la de desarrollo, con una
   persona que no haya armado el sistema.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 19:30
+---
+
+## Actividad: Declaración de aplicabilidad ISO 27001 y brecha MCU 5.0 (11-SoA-Plan-Tratamiento.md)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se escribió `docs/11-SoA-Plan-Tratamiento.md` con los 93 controles del Anexo A de
+  ISO/IEC 27001:2022, cada uno con aplicabilidad, justificación, insumos y estado. Resultado: 73 controles
+  aplican (12 implementados, 48 parciales, 13 pendientes) y 20 son N.A. justificados. También la brecha MCU
+  5.0 por función con madurez estimada, y un plan de tratamiento con 14 acciones y responsables según la RACI.
+  La plantilla indicaba 37/4/5/33 controles y decía 79; se corrigió a 37/8/14/34, que suman 93.
+- **Herramienta / comando**: lectura de la plantilla, redacción manual, y conteo de estados desde la tabla
+  con un script de verificación.
+- **Resultado**: Borrador completo. Falta la firma del RSI.
+- **Evidencia anexa**: `docs/11-SoA-Plan-Tratamiento.md`.
+- **Incidencia / hallazgo**: Corrección a la plantilla de la cátedra: el Anexo A tiene 93 controles, no 79.
+  Conviene avisarle al docente.
+- **Observaciones**: La madurez MCU 5.0 es una estimación del equipo que tiene que validar la auditoría del 14/10.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

@@ -22,7 +22,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador 0.1 (reglas implementadas, sin alertas probadas aún) |
 | `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (el QR de TOTP ya está en el cliente; falta la captura) |
 | `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ borrador 0.1 (pip-audit, bandit y npm audit; red y web pendientes) |
-| `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☐ |
+| `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☑ borrador 0.1 (93 controles, 73 aplican, 20 N.A.; falta firma del RSI) |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☐ |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |
 | _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada — reparto por componente (Horacio/Pablo/Andrés) |
