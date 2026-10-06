@@ -28,3 +28,6 @@ infra/logs/*.log
 
 # Evidencias grandes (videos) opcionalmente fuera de git si se usa almacenamiento externo
 # docs/evidencias/*.mp4
+
+# Backups de la base del control central (datos; no versionar)
+infra/backups/

@@ -1,0 +1,23 @@
+# Backup de PostgreSQL y prueba de restauracion — 06/10/2026
+# Comandos: bash scripts/backup_bd.sh ; bash scripts/restaurar_bd_prueba.sh
+
+## Backup
+backup: /c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T175615Z.dump
+tamano: 20478 bytes
+sha256: acaa3c28a43c9b60b9276fef2b85f69aa3f3116b383be3c65c37c6db78dea569
+
+## Restauracion de prueba (ultimo backup)
+restaurando: /c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T175615Z.dump
+verificando sha256:
+/c/Users/Andres/Documents/Repositorios/tsi-obligatorio/tarea1-gestor-contrasenas/infra/backups/control_central-20261006T175615Z.dump: OK
+tiempo de restauracion: 1 s
+conteos (original vs restaurada):
+  audit_events: original=29 restaurada=29 OK
+  alerts: original=4 restaurada=4 OK
+  incidents: original=0 restaurada=0 OK
+  panel_users: original=0 restaurada=0 OK
+
+## Copia del log JSONL del SIEM
+copia: infra/backups/audit-events-20261006T175613Z.jsonl
+lineas original: 29 | copia: 29
+infra/backups/audit-events-20261006T175613Z.jsonl: OK

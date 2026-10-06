@@ -1149,6 +1149,31 @@ Hora (UTC): N/D
   nmap, nuclei), Trivy para las imágenes y `cargo audit` para el cliente Rust.
 - **Observaciones**: Pendiente: asignar CVSS a cada ID (NVD), y decidir si `bandit` pasa a la CI.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 17:55
+---
+
+## Actividad: Backup y prueba de restauración de la base (06-Plan-Continuidad.md)
+
+- **Fase**: Prueba / Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se crearon `scripts/backup_bd.sh` (pg_dump comprimido con SHA-256) y
+  `scripts/restaurar_bd_prueba.sh` (restaura en una base separada y compara conteos). Se corrió el backup
+  (20 478 bytes), se verificó el hash y se restauró en `control_central_restore` en 1 s, con los conteos
+  iguales en las cuatro tablas. Se copió el log JSONL del SIEM con hash verificado. Se escribió
+  `docs/06-Plan-Continuidad.md` con RTO, RPO, inventario y escenarios. Se agregó `infra/backups/` al `.gitignore`.
+- **Herramienta / comando**: `bash scripts/backup_bd.sh`, `bash scripts/restaurar_bd_prueba.sh`, `sha256sum`.
+- **Resultado**: Parcial. Backup y restauración probados. Pendientes: copia fuera del sitio (requisito BCU),
+  backup diario automático, copia de `keys/agentes/` y firma del responsable.
+- **Evidencia anexa**: `docs/evidencias/06-restauracion-bd.txt`.
+- **Incidencia / hallazgo**: `incidents` y `panel_users` están vacías, así que su comparación no prueba
+  nada. Hay que repetir la restauración cuando haya datos. La restauración del `.gex` se prueba con el test
+  automático del CI, no con una corrida manual.
+- **Observaciones**: Pendiente: automatizar el backup diario y decidir un medio externo al equipo.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
