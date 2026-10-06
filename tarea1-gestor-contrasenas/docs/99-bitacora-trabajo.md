@@ -1273,6 +1273,30 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente la aprobación del RSI y revisar los plazos legales contra el texto de la Ley 18.331
   y de la guía del BCU.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Informe final del Blue Team con KPIs (28-Informe-Blue-Team.md)
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se escribió `docs/28-Informe-Blue-Team.md` con el cumplimiento por función del MCU 5.0, los
+  KPIs de la sección 6.4 con valores leídos de `GET /api/dashboard/kpis`, los incidentes simulados y las
+  limitaciones abiertas. Al revisar los KPIs se encontró que el panel calcula MTTD como creación del incidente menos
+  evento de origen (21 h 38 min) y MTTR como resuelto menos creado (1.9 s). Ninguno mide la detección ni la
+  respuesta real. Se corrigió la entrada de `12-Notificacion-Incidentes.md` que rotulaba las 21 h 38 min como MTTR.
+- **Herramienta / comando**: `curl` a `GET /api/dashboard/kpis` y `/healthz`, lectura de `control-central/app/api/dashboard.py`.
+- **Resultado**: Borrador 0.1. La cobertura de eventos es 75 %, no 100 %: falta `modificacion_credencial`. Los
+  falsos positivos quedan sin valor porque el manager de Wazuh no está levantado.
+- **Evidencia anexa**: `docs/28-Informe-Blue-Team.md`, valores de la API del 06/10 18:43 UTC.
+- **Incidencia / hallazgo**: Definición de MTTD y MTTR del panel incorrecta para lo que se quiere medir. Pendiente
+  corregirla en código o declararla en la defensa.
+- **Observaciones**: Pendiente: generar el evento `modificacion_credencial`, firma del RSI y tag `v1.0` el 07/10.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

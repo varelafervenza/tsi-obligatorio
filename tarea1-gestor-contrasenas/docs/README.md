@@ -28,7 +28,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 | _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada — reparto por componente (Horacio/Pablo/Andrés) |
 | _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 controles con Aplica + evidencia/pendiente (45 Sí, 2 N.A. justificados) |
 | _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ espejo de `99-bitacora-trabajo.md` (8 entradas al 23/09) |
-| `28-Informe-Blue-Team.md` | nueva | ☐ |
+| `28-Informe-Blue-Team.md` | nueva | ☑ borrador 0.1 (KPIs con valores reales; cobertura 75 % y MTTD/MTTR del panel marcados como no conformes) |
 | `evidencias/` | capturas, vídeos, logs | ☐ |
 
 > Para el **Red Team**: copie esta carpeta (o el tag de git) y genere su informe en `02-informe-red-team.md` (nuevo), completando además las plantillas de incidentes/vulnerabilidades con cada hallazgo.
