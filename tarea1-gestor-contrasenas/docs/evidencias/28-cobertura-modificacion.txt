@@ -1,0 +1,6 @@
+# Cobertura de eventos al 100 % — 06/10/2026, ~18:46 UTC
+# Comando: python scripts/generar_evento_prueba.py --tipo modificacion_credencial --sistema sistema-prueba-modificacion
+# Respuesta de la API (201, firma válida):
+201 {"id":30,"tipo":"modificacion_credencial","sistema":"sistema-prueba-modificacion","agente_id":"agente-dev-01","occurred_at":"2026-10-06T18:46:23Z","received_at":"2026-10-06T18:46:23.935936Z","firma_valida":true,"ip_origen":"172.18.0.1"}
+# GET /api/dashboard/kpis (campo kpis.cobertura_eventos):
+{"tipos_requeridos":["alta_credencial","modificacion_credencial","borrado_credencial","cambio_maestra"],"tipos_vistos":["alta_credencial","modificacion_credencial","borrado_credencial","cambio_maestra"],"porcentaje":100.0}

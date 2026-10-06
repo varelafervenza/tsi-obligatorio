@@ -24,7 +24,6 @@ Lo que está demostrado con evidencia:
 
 Lo que no cumple todavía, y se declara abierto en la sección 6:
 
-- La cobertura de eventos del RNF/RF-07 queda en 75 %, no en 100 %. Falta el tipo `modificacion_credencial`.
 - Los KPIs MTTD y MTTR del panel no miden lo que dice su nombre (ver sección 4.2).
 - El SIEM Wazuh está modelado y su regla escrita, pero el manager no está levantado. Por eso la tasa de falsos positivos del SIEM no se puede calcular.
 - Hay limitaciones de alcance aceptadas con la cátedra: TLS en el laboratorio, y Windows Hello y WebAuthn fuera de la entrega.
@@ -74,7 +73,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 |---|---|---|---|---|
 | MTTD | Tiempo de detección de un ataque simulado | 77 880 s (21 h 38 min) | 1 | No medido de forma correcta (ver 4.2) |
 | MTTR | Tiempo de respuesta a incidente | 1.9 s | 1 | No medido de forma correcta (ver 4.2) |
-| Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 75 % (faltó `modificacion_credencial`) | — | **No** |
+| Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % (evento `modificacion_credencial` enviado el 06/10, `docs/evidencias/28-cobertura-modificacion.txt`) | 4 de 4 tipos | Sí, en la base de laboratorio |
 | Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`) | 0 SIEM / 4 de reglas locales | No medido |
 | Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
 
@@ -96,7 +95,8 @@ Decisión: el informe reporta los dos tiempos reales (3 s y 21 h 38 min) y no lo
 
 ### 4.3 Qué falta para cumplir 6.4
 
-- **Cobertura del 100 %:** generar un evento `modificacion_credencial` con la guía de pruebas y repetir la medición.
+- **Cobertura del 100 %:** resuelto el 06/10 con un evento `modificacion_credencial` firmado. Falta repetirlo con una
+  alta, modificación y borrado reales desde el cliente, para que la medición no dependa solo del script.
 - **Falsos positivos:** requiere alertas de Wazuh clasificadas. Hay que levantar el manager.
 - **Uptime:** medir durante la ventana de validación con una sonda de `healthz` registrada en el tiempo.
 
@@ -173,6 +173,6 @@ El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, r
 - [x] KPIs de 6.4 con valores medidos, definición y estado.
 - [x] Incidentes simulados y su resultado.
 - [x] Vulnerabilidades y limitaciones de alcance.
-- [ ] Cobertura de eventos al 100 %.
+- [x] Cobertura de eventos al 100 % (con evento de prueba; falta repetir desde el cliente).
 - [ ] MTTD y MTTR con la definición corregida.
 - [ ] Firma del RSI.

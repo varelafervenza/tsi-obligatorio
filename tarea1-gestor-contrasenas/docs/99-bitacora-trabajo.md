@@ -1297,6 +1297,27 @@ Hora (UTC): N/D
   corregirla en código o declararla en la defensa.
 - **Observaciones**: Pendiente: generar el evento `modificacion_credencial`, firma del RSI y tag `v1.0` el 07/10.
 
+---
+Fecha: 06/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): 18:46
+---
+
+## Actividad: Cobertura de eventos al 100 % (evento modificacion_credencial)
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se envió un evento `modificacion_credencial` firmado con el script de prueba. La cobertura del
+  panel pasó de 75 % a 100 % (4 de 4 tipos requeridos). Se actualizó el informe 28 para reflejarlo.
+- **Herramienta / comando**: `python scripts/generar_evento_prueba.py --tipo modificacion_credencial --sistema sistema-prueba-modificacion`
+  y `GET /api/dashboard/kpis`.
+- **Resultado**: Éxito. Evento 30 aceptado con `firma_valida: true`.
+- **Evidencia anexa**: `docs/evidencias/28-cobertura-modificacion.txt`.
+- **Incidencia / hallazgo**: La cobertura se llenó con un script y no con el cliente. Para que cuente como prueba
+  completa hay que repetir alta, modificación y borrado desde la app.
+- **Observaciones**: Pendiente: repetir la cobertura desde el cliente antes del 07/10.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
