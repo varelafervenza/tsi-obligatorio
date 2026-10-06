@@ -1,0 +1,10 @@
+# Pruebas automáticas de control-central (KPIs MTTD, MTTR y cobertura) — 06/10/2026
+# Comando (dentro de la red Docker de infra, contra la base control_central_test; nunca contra control_central):
+#   docker run --rm --network infra_blue-team-net -e DATABASE_URL=<.../control_central_test> \
+#     -v "<control-central>/tests:/app/tests:ro" infra-control-central sh -c "pip install pytest==8.3.3 httpx==0.27.2 && python -m pytest -q tests"
+# Resultado:
+.....                                                                    [100%]
+5 passed, 4 warnings in 3.30s
+# Pruebas: test_mttd_va_desde_el_evento_hasta_la_primera_alerta, test_mttd_ignora_incidentes_sin_alerta,
+#          test_mttr_va_desde_la_alerta_hasta_la_resolucion, test_mttr_no_cuenta_incidentes_abiertos,
+#          test_cobertura_cuenta_los_tipos_requeridos_vistos
