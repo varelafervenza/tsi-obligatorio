@@ -101,8 +101,17 @@ Windows, Visual Studio Build Tools con el workload de C++.
 ### 3. Aplicación de escritorio — Windows
 
 Requisitos: Node 20 y Rust (sólo si se compila; en Windows hace falta además Visual Studio
-Build Tools con el workload de C++, igual que en la sección 2) o el instalador `.exe` del
-artefacto `cliente-gestor-instalador` del workflow de GitHub Actions.
+Build Tools con el workload de C++, igual que en la sección 2) o el instalador `.exe` ya compilado.
+
+**Dónde conseguir el instalador sin compilar**, de la forma más simple a la que depende de permisos:
+
+1. **Releases del repositorio** (`github.com/.../releases`): a partir del tag `v1.0`, el workflow
+   `release.yml` sube el `.exe` como asset del Release. Se baja con un link fijo, sin login en
+   GitHub y sin vencimiento, aunque el repo sea privado el día de mañana.
+2. **Artefacto `cliente-gestor-instalador`** del job `instalador` en la pestaña Actions del workflow
+   `cliente-gestor.yml`: vence a los 90 días y pide estar logueado en GitHub para bajarlo. Se genera
+   en cada `push` a `master` o disparando `workflow_dispatch` a mano (requiere permiso de escritura
+   sobre el repositorio).
 
 **Limitación de Windows 11 con Smart App Control:** el instalador no está firmado digitalmente.
 Smart App Control lo bloquea mientras está activo. El equipo decidió no firmar el instalador

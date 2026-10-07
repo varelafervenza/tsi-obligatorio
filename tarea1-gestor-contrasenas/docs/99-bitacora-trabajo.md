@@ -1786,6 +1786,35 @@ Hora (UTC): N/D
   privado (para que el Red Team pueda clonarlo y bajar artefactos de Actions), y si el Red Team tiene
   permiso para disparar `workflow_dispatch` y generar un instalador fresco por su cuenta.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Workflow de Release para publicar el instalador al pushear el tag
+
+- **Fase**: Implementación
+- **Duración**: N/D
+- **Tarea realizada**: Se creó `.github/workflows/release.yml`, separado de `cliente-gestor.yml`, que
+  corre solo con `push` de un tag `v*`. Compila el instalador NSIS y lo sube como asset de un GitHub
+  Release con `gh release create`, usando `GITHUB_TOKEN` y `permissions: contents: write`. A diferencia
+  del artefacto de `cliente-gestor.yml` (vence a los 90 días, pide login), el asset de un Release tiene
+  link fijo y se baja sin login, sea el repo público o privado. Se separó del workflow existente porque
+  combinar un disparador por `tags` con un filtro `paths` en el mismo evento puede no disparar el
+  workflow cuando el tag apunta a un commit que ya estaba en el remoto. Se actualizó el README (sección 3,
+  con las dos formas de conseguir el instalador) y el pendiente #1.
+- **Herramienta / comando**: `python -c "import yaml; yaml.safe_load(...)"` para validar la sintaxis.
+- **Resultado**: Sintaxis válida. **No se corrió en GitHub Actions todavía**: no se puede ejecutar un
+  workflow desde esta sesión sin pushear un tag real.
+- **Evidencia anexa**: `.github/workflows/release.yml`.
+- **Incidencia / hallazgo**: Ninguna detectable sin correrlo.
+- **Observaciones**: Antes de confiar en esto para el tag `v1.0` real, probarlo con un tag descartable
+  (ej. `v0.0-test`) y confirmar que el Release se crea con el `.exe` adjunto. Si `gh release create`
+  no expande el glob `*.exe` como se espera en el runner de Windows, va a fallar visiblemente en el log
+  del job, no en silencio.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
