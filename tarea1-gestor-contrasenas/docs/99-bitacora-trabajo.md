@@ -1694,6 +1694,41 @@ Hora (UTC): 21:50
 - **Incidencia / hallazgo**: El primer intento de regenerar la bóveda de 22 sistemas falló con `YaExiste` porque Windows no dejó borrar el sqlite anterior (acceso denegado). Se borró con `del /f` y el test pasó.
 - **Observaciones**: Sin commit todavía.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Revisión del commit de Wazuh; corrección de `escribir_atomico` y R08
+
+- **Fase**: Revisión y corrección
+- **Duración**: N/D
+- **Tarea realizada**: Se revisó el commit `1c4b4fb` ("se agrega wazhu", Horacio) tras un `git pull`
+  manual del usuario. Se verificó en vivo, no solo leyendo el código: se levantó el stack completo
+  (`docker compose up -d`), el agente de Wazuh se enroló solo (`agent_control -l` → Active), y un
+  evento `cambio_maestra` real disparó la regla 100120 en 2 s, contada en `alertas_siem` del panel.
+  Los 18 tests de `control-central` (con FastAPI 0.142.3 y starlette 1.7.0) y los 32 de `cliente-gestor`
+  (con el nuevo formato de bóveda `BOV2`) pasan. Se encontró y corrigió un hallazgo real: `escribir_atomico`
+  borraba el archivo viejo antes de renombrar el temporal, dejando una ventana sin bóveda en el disco si
+  el proceso se interrumpía justo ahí. Se cambió a `rename` directo, que ya reemplaza el destino de forma
+  atómica en Windows y Linux. Se actualizó la fila de R08 en `03-Analisis-Riesgos.md`, que todavía decía
+  "Wazuh manager no levantado".
+- **Herramienta / comando**: `docker compose up -d`, `agent_control -l`, `scripts/generar_evento_prueba.py
+  --tipo cambio_maestra`, `cargo test` (cliente y, dentro de Docker, control-central).
+- **Resultado**: Éxito. El bug de `escribir_atomico` no se había manifestado todavía (nadie reportó
+  pérdida de datos), pero la ventana de riesgo era real.
+- **Evidencia anexa**: `cliente-gestor/src-tauri/src/vault/store.rs` (función `escribir_atomico`),
+  `docs/03-Analisis-Riesgos.md` (fila R08).
+- **Incidencia / hallazgo**: El commit de Wazuh mezcló tres cambios sin relación aparente entre sí bajo
+  un mensaje que solo menciona Wazuh: el SIEM, la reescritura del formato de la bóveda (`BOV2`, pedida por
+  el docente) y la suba de FastAPI/starlette que el equipo había dejado para el final por riesgo de
+  regresión. Los tres funcionan, verificados, pero dificultan revisar o revertir cada uno por separado.
+- **Observaciones**: Pendiente hablar con Horacio sobre separar cambios no relacionados en commits
+  distintos. Quedan dos puntos de la revisión: el puerto 55000 del manager con credenciales por defecto, y
+  si hace falta registrarlo como fila propia en el análisis de riesgos.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

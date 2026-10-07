@@ -955,11 +955,11 @@ fn conexion_desde(bytes: &[u8]) -> Result<Connection, ErrorBoveda> {
 }
 
 fn escribir_atomico(ruta: &Path, bytes: &[u8]) -> Result<(), ErrorBoveda> {
+    // `rename` reemplaza el destino de forma atómica, en Windows y en Linux. Borrar antes
+    // abría una ventana sin bóveda en el disco: si el proceso se interrumpía justo ahí, la
+    // bóveda se perdía y solo quedaba el `.tmp`.
     let temporal = ruta.with_extension("tmp");
     fs::write(&temporal, bytes).map_err(ErrorBoveda::Io)?;
-    if ruta.exists() {
-        fs::remove_file(ruta).map_err(ErrorBoveda::Io)?;
-    }
     fs::rename(&temporal, ruta).map_err(ErrorBoveda::Io)?;
     Ok(())
 }
