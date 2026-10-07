@@ -1484,6 +1484,33 @@ Hora (UTC): 19:52
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Sin commit todavía; pendiente confirmación.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Hallazgo de la cola de eventos offline y el vencimiento de la firma
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se verificó en `cliente-gestor/src-tauri/src/events/mod.rs` que la cola de eventos solo se
+  reintenta en la próxima operación sobre la bóveda, sin temporizador ni reintento al abrir o cerrar la app, y que
+  la firma JWS vence a los 10 minutos. Un evento demorado por la cola queda con `firma_valida: false`, igual que uno
+  forjado. No es un requisito de la letra: lo definió el equipo al diseñar `events/mod.rs`. Se documentó como
+  limitación de alcance en `00-arquitectura-c4.md`, se referenció en R02 de `03-Analisis-Riesgos.md` y en el CU-04
+  de `07-Monitoreo-Logs-SIEM.md`, y se dejaron 5 ideas sin decidir en `00-pendientes-entrega.md`.
+- **Herramienta / comando**: lectura de `events/mod.rs`, `control-central/app/core/security.py` y
+  `control-central/app/api/events.py`.
+- **Resultado**: Documentado. Ninguna de las ideas de arreglo se implementó todavía.
+- **Evidencia anexa**: `docs/00-arquitectura-c4.md`, `docs/03-Analisis-Riesgos.md`, `docs/07-Monitoreo-Logs-SIEM.md`,
+  `docs/00-pendientes-entrega.md`.
+- **Incidencia / hallazgo**: Si se demuestra en vivo (sección 6.6 de `LETRA.md`) con el equipo recién encendido, un
+  evento viejo en cola podría leerse como un ataque de forjado de firma.
+- **Observaciones**: Pendiente decidir entre las 5 ideas antes de implementar nada. El equipo ya hizo una
+  pre-entrega con lo existente hasta ahora y recibió el visto bueno; esto sigue como mejora.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

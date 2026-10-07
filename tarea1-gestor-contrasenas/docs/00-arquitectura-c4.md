@@ -102,6 +102,33 @@ implementado en la versión congelada.
 eventos (RT-05). Se acepta con la justificación anterior, registrada como R05 en
 `03-Analisis-Riesgos.md`.
 
+### Limitación de alcance: cola de eventos offline y vencimiento de la firma
+
+**Decisión:** el equipo diseñó la cola de eventos (`cliente-gestor`) sin exigencia de la letra. RF-06/RNF-01
+solo exigen que el gestor funcione completo sin conexión; RF-08 solo exige enviar el evento firmado. La forma de
+reintentar y el tiempo de vida de la firma son decisiones propias, verificadas en el código el 07/10/2026.
+
+**Comportamiento actual (`events/mod.rs`):**
+- Si no hay red, el evento queda en `cola-eventos.jsonl`. El alta, modificación o borrado en la bóveda ya está
+  completo de forma local y no depende de este envío.
+- El reintento de la cola **no es automático**: no hay temporizador en segundo plano ni reintento al abrir o
+  cerrar la app. El único momento en que el cliente reintenta es la próxima vez que se genera otro evento (otra
+  alta, modificación, borrado o cambio de maestra). Si no se hace ninguna otra operación, la cola queda en
+  espera indefinidamente.
+- Cada evento se firma con un token JWS que vence a los **10 minutos** (`exp = ahora + 600 s`).
+  `control-central` siempre responde `201` a un evento recibido, pero solo lo marca `firma_valida: true` si la
+  firma todavía es válida. Si un evento pasó más de 10 minutos en la cola antes de reenviarse, la firma ya venció:
+  el servidor lo acepta y lo persiste, pero queda registrado con `firma_valida: false`, igual que si la firma
+  fuera falsificada.
+
+**Qué queda en el laboratorio:** un evento legítimo, demorado por estar offline más de 10 minutos, se ve en el
+panel y en el SIEM igual que un intento de forjar la firma (RT-02). Hoy no hay forma de distinguir ambos casos
+desde los datos guardados.
+
+**Riesgo residual:** durante una demostración en vivo (sección 6.6 de `LETRA.md`), un evento demorado podría
+leerse como un ataque. Está relacionado con R02 en `03-Analisis-Riesgos.md`. Hay cinco ideas en discusión para
+mitigarlo, sin decidir todavía: ver `docs/00-pendientes-entrega.md`, sección "Decisiones abiertas".
+
 ## Nivel 3 — Componentes
 
 ### Contenedor: Cliente de escritorio (`cliente-gestor`)
