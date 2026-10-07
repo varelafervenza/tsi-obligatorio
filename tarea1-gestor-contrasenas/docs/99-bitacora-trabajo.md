@@ -1815,6 +1815,32 @@ Hora (UTC): N/D
   no expande el glob `*.exe` como se espera en el runner de Windows, va a fallar visiblemente en el log
   del job, no en silencio.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Prueba real del workflow de Release con el tag descartable v0.0-test
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se creó y pusheó el tag `v0.0-test` para probar `release.yml` de punta a punta,
+  antes de confiar en él para el tag `v1.0` real. El workflow corrió solo, compiló el instalador y
+  `gh release create` sí expandió el glob `*.exe` en el runner de Windows (la duda que había quedado
+  abierta). El Release quedó creado con el asset `cliente-gestor_0.1.0_x64-setup.exe` (3 946 261 bytes).
+  Se confirmó con un `curl` sin ningún header de autenticación que el link de descarga responde `302` a
+  un blob firmado de Azure y después `200` con el archivo completo.
+- **Herramienta / comando**: `git tag v0.0-test && git push origin v0.0-test`; API de GitHub
+  (`/actions/runs/...` y `/releases/tags/v0.0-test`) por `curl`, sin token (repo público); `curl -I -L`
+  contra el link de descarga del asset.
+- **Resultado**: Éxito completo. Release: `github.com/varelafervenza/tsi-obligatorio/releases/tag/v0.0-test`.
+- **Evidencia anexa**: la respuesta del `curl` queda en esta conversación, no se guardó archivo aparte.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Pendiente borrar el tag y el Release de prueba (`v0.0-test`) antes de la entrega,
+  para que no quede un release descartable mezclado con el `v1.0` real.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

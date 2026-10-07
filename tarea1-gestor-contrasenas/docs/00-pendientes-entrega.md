@@ -12,7 +12,7 @@
 
 | # | Pendiente | Exigido por | Responsable | Estado |
 |---|---|---|---|---|
-| 1 | Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` | Letra (congelamiento) | a confirmar | Pendiente. `.github/workflows/release.yml` ya está listo para publicar el instalador como asset del Release en cuanto se pushee el tag; no se probó con un tag real todavía (recomendado: probar primero con un tag descartable, ej. `v0.0-test`) |
+| 1 | Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` | Letra (congelamiento) | a confirmar | Pendiente el tag real. `release.yml` ya se probó con el tag descartable `v0.0-test` (07/10): el Release se creó solo y el `.exe` (3.9 MB) se descargó sin login. Falta borrar ese tag/Release de prueba y pushear `v1.0` cuando se confirme el congelamiento |
 | 2 | Video de la demo, de 5 minutos o menos | Letra | a confirmar | Pendiente |
 | 3 | Cobertura de eventos desde la app: alta, modificación y borrado reales. Hoy el 100 % salió de un script | Letra (6.4) | Pablo Morales | Cerrado |
 
