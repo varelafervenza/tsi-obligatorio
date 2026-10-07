@@ -1729,6 +1729,36 @@ Hora (UTC): N/D
   distintos. Quedan dos puntos de la revisión: el puerto 55000 del manager con credenciales por defecto, y
   si hace falta registrarlo como fila propia en el análisis de riesgos.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Quitar los puertos del manager de Wazuh (R08) y convención de commits en CLAUDE.md
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: Siguiendo la revisión del commit de Wazuh, se confirmó que el puerto 55000 del manager
+  (API, usuario/contraseña por defecto `wazuh`/`wazuh`) respondía desde el host: se logró autenticar con
+  `curl` y se obtuvo un token válido. Se revisó que nada documentado usa 1514, 1515 ni 55000 desde el host
+  (todo pasa por `docker exec`, y el agente habla con el manager por la red interna `blue-team-net`). Se
+  quitaron los tres del `ports:` de `wazuh-manager` en `infra/docker-compose.yml`. Se recreó el servicio, el
+  agente volvió a `Active` solo, y un evento `cambio_maestra` de prueba disparó la regla 100120 igual que
+  antes (`alertas_siem` pasó de 1 a 2). Se actualizaron `README.md`, `infra/wazuh/README.md` y la fila R08.
+  Se agregó además una convención a `CLAUDE.md`: un commit, un cambio, citando `1c4b4fb` como ejemplo de lo
+  que no hacer.
+- **Herramienta / comando**: `curl -u wazuh:wazuh https://localhost:55000/security/user/authenticate`,
+  `docker compose up -d`, `agent_control -l`, `scripts/generar_evento_prueba.py`.
+- **Resultado**: Éxito. El puerto ya no responde desde el host; la detección sigue funcionando igual.
+- **Evidencia anexa**: `infra/docker-compose.yml`, `README.md`, `infra/wazuh/README.md`,
+  `docs/03-Analisis-Riesgos.md` (fila R08).
+- **Incidencia / hallazgo**: Ninguno nuevo.
+- **Observaciones**: Si en algún momento se agrega un agente Wazuh real en el Windows del usuario (para el
+  FIM de la bóveda), hay que volver a publicar 1514 y 1515. Queda pendiente avisarle a Horacio y Pablo sobre
+  la convención de separar commits.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

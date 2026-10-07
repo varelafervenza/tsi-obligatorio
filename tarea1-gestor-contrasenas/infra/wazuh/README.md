@@ -47,8 +47,12 @@ que el manager siga vivo. Las alertas quedan en el volumen `wazuh-alerts`
 Tampoco hay agente en el Windows del usuario. El FIM de la bóveda local sigue sin
 desplegar. El agente de este compose vigila el JSONL de auditoría, no el archivo de la bóveda.
 
-Puertos en el host: 1514 y 1515 (agente), 55000 (API del manager, usuario `wazuh` /
-contraseña `wazuh`, solo laboratorio).
+Sin puertos publicados en el host (07/10): el manager y el agente comparten `blue-team-net`
+y se hablan por el nombre del servicio. Antes se publicaban 1514, 1515 y 55000 (API del
+manager, con el usuario y la contraseña por defecto, `wazuh`/`wazuh`); nada del laboratorio
+los usaba desde el host, así que se quitaron (R08 en `docs/03-Analisis-Riesgos.md`). Si se
+agrega un agente Wazuh real en el Windows del usuario, hay que volver a publicar 1514 y 1515
+en `infra/docker-compose.yml`.
 
 ## Retención
 

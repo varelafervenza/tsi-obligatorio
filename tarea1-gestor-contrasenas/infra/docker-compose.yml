@@ -87,10 +87,11 @@ services:
       nofile:
         soft: 655360
         hard: 655360
-    ports:
-      - "1514:1514"
-      - "1515:1515"
-      - "55000:55000"
+    # Sin puertos publicados: el agente de este compose habla con el manager por
+    # blue-team-net (nombre de servicio), no por el host. La API (55000, usuario/clave
+    # por defecto) y el enrolamiento (1514/1515) quedaban expuestos sin que nada los usara
+    # desde afuera (R08 en docs/03-Analisis-Riesgos.md). Si se agrega un agente Wazuh real
+    # en el Windows del usuario (FIM de la bóveda), volver a publicar 1514 y 1515.
     volumes:
       - ./wazuh/local_rules.xml:/wazuh-config-mount/etc/rules/local_rules.xml:ro
       - ./wazuh/manager/01-laboratorio.sh:/entrypoint-scripts/01-laboratorio.sh:ro

@@ -20,6 +20,10 @@ El trabajo principal es la **Tarea 1**, en `tarea1-gestor-contrasenas/`.
 - Antes de cambiar el repositorio, proponé el mensaje de commit y los archivos. Esperá el "sí".
 - Los commits pasan por el hook de `gitleaks` (`.pre-commit-config.yaml`). Si el hook bloquea, no lo saltees con `--no-verify`: revisá el hallazgo.
 - Si un equipo no tiene el hook instalado, instalarlo con `python -m pip install pre-commit` y `python -m pre_commit install`.
+- **Un commit, un cambio.** Si estás resolviendo dos cosas sin relación entre sí (por ejemplo, Wazuh y el formato de
+  la bóveda), proponé commits separados, aunque sea más lento. El mensaje del commit tiene que decir todo lo que
+  cambia: revisar `1c4b4fb` ("se agrega wazhu") como ejemplo de lo que no hacer — mezcló Wazuh, una reescritura del
+  formato de la bóveda y una suba de FastAPI/Starlette bajo un mensaje que solo mencionaba lo primero.
 
 ## Tests de `control-central`
 

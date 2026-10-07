@@ -82,9 +82,10 @@ Para ver las últimas alertas:
 docker exec infra-wazuh-manager-1 tail -n 5 /var/ossec/logs/alerts/alerts.json
 ```
 
-Puertos publicados: **1514** y **1515** (el agente) y **55000** (API del manager, usuario
-`wazuh` / contraseña `wazuh`, solo laboratorio). El detalle y lo que queda afuera (indexer,
-FIM de la bóveda en Windows, retención del JSONL) está en `infra/wazuh/README.md`.
+No hay puertos publicados en el host: el agente y el manager se hablan por la red interna
+de Docker (`blue-team-net`). Para el manager, usar `docker exec` como en los dos comandos
+de arriba. El detalle y lo que queda afuera (indexer, FIM de la bóveda en Windows, retención
+del JSONL) está en `infra/wazuh/README.md`.
 
 ### 2. Tests del cliente — Linux o Windows con Rust
 
