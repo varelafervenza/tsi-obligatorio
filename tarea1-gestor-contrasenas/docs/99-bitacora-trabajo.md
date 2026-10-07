@@ -1841,6 +1841,59 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente borrar el tag y el Release de prueba (`v0.0-test`) antes de la entrega,
   para que no quede un release descartable mezclado con el `v1.0` real.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Un solo punto de descarga para el Red Team (Release) y corrección de la guía de pruebas
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se corrigieron dos hallazgos de la última revisión del README. (1)
+  `docs/guia-de-pruebas.md` todavía decía que el instalador estaba solo en el artefacto de Actions
+  (vencía y pedía login); se actualizó para que apunte primero al Release. (2) se verificó que
+  GitHub genera automáticamente un zip del código fuente en la página de cada Release ("Source
+  code"), con link fijo y sin login, igual que el asset del `.exe` — confirmado con `curl` contra
+  el Release de prueba `v0.0-test`. Por eso no hace falta `git clone` para nada: se agregó un
+  párrafo al inicio de "Requisitos y cómo evaluar" explicando que una sola página de Release tiene
+  el instalador y el código fuente completo, con `git clone` como alternativa para quien lo prefiera.
+  Se simplificó la sección 3 para no repetir esa explicación. (3) se agregó una línea al inicio de
+  "Cómo empezar" aclarando que esa sección es para el Blue Team, con un salto directo a "Requisitos
+  y cómo evaluar" para quien venga del Red Team.
+- **Herramienta / comando**: `curl -I -L` contra `github.com/.../archive/refs/tags/v0.0-test.zip`.
+- **Resultado**: Éxito. El zip responde `302` a `codeload.github.com` sin ningún header de autenticación.
+- **Evidencia anexa**: `README.md`, `docs/guia-de-pruebas.md`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Ninguna pendiente de esta revisión del README.
+
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Walkthrough completo de la guía de pruebas y dos ajustes de prolijidad
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se recorrió `docs/guia-de-pruebas.md` de punta a punta, como si fuera alguien
+  sin contexto previo del proyecto, para confirmar que el README más la guía alcanzan para descargar,
+  instalar y usar el sistema completo (infra y cliente) con fines de prueba. Se confirmó que sí: cada
+  paso de B-01 a C-15 es accionable y tiene un resultado esperado concreto. Se corrigieron dos detalles
+  de prolijidad: (1) la tabla "Resumen" del final decía que el cliente iba de C-01 a C-13, sin incluir
+  la C-15 (bóveda de 22 sistemas) que se agregó después. (2) se agregó una línea al inicio de la Parte 2
+  aclarando que la Parte 1 (backend) tiene que estar levantada antes, porque C-04 depende de eso y el
+  orden solo estaba implícito en la numeración.
+- **Herramienta / comando**: lectura completa de `docs/guia-de-pruebas.md`.
+- **Resultado**: Confirmado que el camino está completo. Ningún paso faltante.
+- **Evidencia anexa**: `docs/guia-de-pruebas.md`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Ninguna pendiente de esta revisión.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

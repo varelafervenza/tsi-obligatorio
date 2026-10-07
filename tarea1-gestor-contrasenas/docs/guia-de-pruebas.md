@@ -161,8 +161,12 @@
 
 ## Parte 2 — Cliente de escritorio (Windows)
 
-Antes de empezar: el instalador está en el artefacto `cliente-gestor-instalador` del workflow de GitHub
-Actions. En Windows 11, Smart App Control tiene que estar desactivado (ver el README de evaluación).
+Antes de empezar: la Parte 1 (backend) tiene que estar levantada. C-04 conecta la app al control
+central, y sin eso falla. El instalador está en los **Releases** del repositorio (`github.com/.../releases`),
+como asset del tag de la entrega. Se baja con un link fijo, sin login en GitHub. (El artefacto
+`cliente-gestor-instalador` del workflow de GitHub Actions sigue existiendo, pero vence a los 90 días
+y pide login: usarlo solo si no hay un Release todavía.) En Windows 11, Smart App Control tiene que
+estar desactivado (ver el README de evaluación).
 
 ### C-01. Instalar y abrir la app
 
@@ -328,5 +332,5 @@ No se prueba. Está documentado como limitación en `docs/09-Gestion-Accesos.md`
 | Parte | Pruebas | Persona | Con ayuda de Claude |
 |---|---|---|---|
 | Backend | B-01 a B-16 | B-01 a B-12, B-15, B-16 | B-04 si falla, B-14 si no hay celular, B-15 si falla |
-| Cliente | C-01 a C-13 | Todas | C-12 si la cola no se vacía |
+| Cliente | C-01 a C-13, C-15 (C-14 no se prueba) | Todas | C-12 si la cola no se vacía |
 | Automáticas | A-01 a A-03 | A-01 y A-03 (comandos) | A-02 y la interpretación de A-03 |

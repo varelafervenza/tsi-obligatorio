@@ -19,6 +19,9 @@ Sigue afuera del código, como despliegue o evidencia: TLS y WebAuthn/Windows He
 
 ## Cómo empezar
 
+Esta sección es para el **Blue Team**, el equipo que construye la solución. Si venís del **Red Team** a
+descargar, instalar y atacar el sistema, saltá directo a "Requisitos y cómo evaluar".
+
 1. Lea `LETRA.md` completo.
 2. Revise la matriz de documentación (sección 8) para saber qué plantilla llenar en cada semana.
 3. Copie de `../plantilla/isaca/` las plantillas indicadas a su carpeta `docs/` (o copie toda la carpeta `plantilla` como referencia).
@@ -41,6 +44,12 @@ Sigue afuera del código, como despliegue o evidencia: TLS y WebAuthn/Windows He
 - **Equipo B (Red Team):** ataca la solución entregada (28/10 → 09/11) y emite informe.
 
 ## Requisitos y cómo evaluar
+
+**Cómo conseguir todo esto:** en `github.com/.../releases` está el tag de la entrega (`v1.0`). Esa
+misma página tiene el instalador `.exe` de la app (sección 3) **y**, en "Source code", el código
+fuente completo en un `.zip` — ambos con un link fijo, sin login en GitHub. No hace falta `git`
+para nada: alcanza con bajar y descomprimir ese zip para tener `infra/`, `docs/`, `scripts/`, todo.
+Si prefieren `git`, el repo es público: `git clone https://github.com/varelafervenza/tsi-obligatorio.git`.
 
 Esta sección cubre cómo levantar cada parte por separado. Para el paso a paso de **uso completo del
 sistema** (crear el primer usuario del panel, que no pide token; entrar a Grafana con las credenciales
@@ -101,17 +110,13 @@ Windows, Visual Studio Build Tools con el workload de C++.
 ### 3. Aplicación de escritorio — Windows
 
 Requisitos: Node 20 y Rust (sólo si se compila; en Windows hace falta además Visual Studio
-Build Tools con el workload de C++, igual que en la sección 2) o el instalador `.exe` ya compilado.
+Build Tools con el workload de C++, igual que en la sección 2) o el instalador `.exe` ya compilado,
+que está en el Release de la entrega (ver el párrafo de arriba).
 
-**Dónde conseguir el instalador sin compilar**, de la forma más simple a la que depende de permisos:
-
-1. **Releases del repositorio** (`github.com/.../releases`): a partir del tag `v1.0`, el workflow
-   `release.yml` sube el `.exe` como asset del Release. Se baja con un link fijo, sin login en
-   GitHub y sin vencimiento, aunque el repo sea privado el día de mañana.
-2. **Artefacto `cliente-gestor-instalador`** del job `instalador` en la pestaña Actions del workflow
-   `cliente-gestor.yml`: vence a los 90 días y pide estar logueado en GitHub para bajarlo. Se genera
-   en cada `push` a `master` o disparando `workflow_dispatch` a mano (requiere permiso de escritura
-   sobre el repositorio).
+Alternativa si todavía no hay un Release con ese `.exe`: el artefacto `cliente-gestor-instalador`
+del job `instalador`, en la pestaña Actions del workflow `cliente-gestor.yml`. Vence a los 90 días
+y pide estar logueado en GitHub para bajarlo. Se genera en cada `push` a `master`, o disparando
+`workflow_dispatch` a mano (requiere permiso de escritura sobre el repositorio).
 
 **Limitación de Windows 11 con Smart App Control:** el instalador no está firmado digitalmente.
 Smart App Control lo bloquea mientras está activo. El equipo decidió no firmar el instalador
