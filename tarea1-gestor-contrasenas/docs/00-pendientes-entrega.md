@@ -65,20 +65,24 @@ Ya cerrados: R06 (aviso al activar MFA) y R11 (hook de `gitleaks`), en `aaecc19`
 | 27 | Contactos oficiales de reporte (teléfono y correo) en `docs/12-Notificacion-Incidentes.md` | RSI | Pendiente |
 | 28 | Subir FastAPI y starlette para cerrar V03. Se deja para el final por riesgo de regresión | a confirmar | Pendiente |
 
-## Decisiones abiertas (sin resolver)
+## Decisiones resueltas
 
-### Cola de eventos offline y vencimiento de la firma (hallazgo del 07/10)
+### Cola de eventos offline y vencimiento de la firma (hallazgo del 07/10, resuelto el 07/10)
 
 Ver el detalle en `docs/00-arquitectura-c4.md`, "Limitación de alcance: cola de eventos offline y vencimiento
-de la firma", y la fila R02 de `docs/03-Analisis-Riesgos.md`. Ideas en discusión, ninguna decidida todavía:
+de la firma", y la fila R02 de `docs/03-Analisis-Riesgos.md`. De las cinco ideas en discusión, se implementaron
+tres y se descartaron dos:
 
-| Idea | Qué resuelve | Qué no resuelve |
+| Idea | Decisión | Detalle |
 |---|---|---|
-| Extender el plazo de la firma a 8 horas | Que una demora normal (el equipo apagado durante la noche) no genere `firma_valida: false` | No evita que una demora más larga lo siga generando. Alarga la ventana de reúso de una firma vieja |
-| Reintentar siempre al abrir y al cerrar la app | Vacía la cola en más momentos, sin esperar a la próxima operación | Si el usuario no abre la app seguido, la cola sigue esperando igual |
-| Botón que se activa cuando hay eventos sin enviar | Visibilidad: el usuario sabe que hay algo pendiente y puede reintentar cuando quiera | No evita el vencimiento si el usuario no lo usa a tiempo |
-| Avisar al cerrar que hay eventos sin enviar, con riesgo de firma vencida | Transparencia: el usuario sabe a qué se expone antes de cerrar | Requiere agregar manejo del evento de cierre de ventana (hoy no existe, verificado en el código) |
-| Formulario al cerrar para sincronizar o cerrar avisando | Le da al usuario la decisión en el momento más probable de encontrar la cola llena | Es la opción con más superficie nueva de UI y de pruebas |
+| Extender el plazo de la firma | **Implementado, a 4 horas** (no 8). Ocho horas alargaba de más la ventana de reúso de una firma vieja; cuatro cubre una demora típica sin ese costo | `events::VENCIMIENTO_FIRMA_SEGUNDOS` |
+| Reintentar siempre al abrir y al cerrar la app | **Implementado.** Al abrir, en segundo plano. Al cerrar, con un tope de 2 s para no colgar el cierre | `events::reintentar_cola`, `main.rs` (`setup`, `on_window_event`) |
+| Botón que se activa cuando hay eventos sin enviar | **Implementado.** En el panel "Control central", con el conteo de pendientes | `vault::commands::reintentar_eventos`, `App.tsx` |
+| Avisar al cerrar que hay eventos sin enviar, con riesgo de firma vencida | **Descartado por ahora.** El reintento automático al cerrar ya cubre la mayoría de los casos; agregar un aviso además de eso es una interrupción para poco beneficio adicional | — |
+| Formulario al cerrar para sincronizar o cerrar avisando | **Descartado por ahora.** Es la opción más intrusiva y la que más superficie de UI y de pruebas agrega, para un caso que ya cubren las tres anteriores | — |
+
+Verificado con `cargo test` (30 pruebas, incluidas 3 nuevas de la cola) y con `npm run build` del cliente.
+Evidencia: `docs/evidencias/00-cola-eventos-reintento.txt`.
 
 ## Opcional (no exigido)
 

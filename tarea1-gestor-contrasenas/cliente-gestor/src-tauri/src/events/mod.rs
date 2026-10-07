@@ -13,6 +13,12 @@ use serde::{Deserialize, Serialize};
 
 const URL_DEFECTO: &str = "http://localhost:8001/api/events/";
 
+/// Cuánto dura firmada la firma de un evento antes de que el central la rechace por vencida.
+/// Si un evento queda en la cola offline más tiempo que esto, se va a reenviar con
+/// `firma_valida: false`, igual que si la firma fuera forjada (ver docs/00-arquitectura-c4.md,
+/// "Limitación de alcance: cola de eventos offline y vencimiento de la firma").
+const VENCIMIENTO_FIRMA_SEGUNDOS: i64 = 4 * 60 * 60; // 4 horas
+
 #[derive(Debug)]
 pub enum ErrorEvento {
     Disco(String),
@@ -95,13 +101,14 @@ pub fn instalar_clave(dir: &Path, carpeta: &Path) -> Result<String, ErrorEvento>
 }
 
 /// Firma y envía. Si no hay red, deja el evento en `cola-eventos.jsonl` y no pierde el alta local.
+/// Antes intenta vaciar lo que ya estaba en cola (ver `reintentar_cola`).
 pub fn publicar(dir: &Path, tipo: &str, sistema: &str) -> Result<String, ErrorEvento> {
     let (agente_id, pem) = asegurar_identidad(dir)?;
     let config = leer_config(dir);
     let sistema = if sistema.trim().is_empty() { "boveda" } else { sistema.trim() };
     let ahora = chrono::Utc::now();
     let ts = ahora.format("%Y-%m-%dT%H:%M:%SZ").to_string();
-    let exp = (ahora.timestamp() + 600).max(0) as u64;
+    let exp = (ahora.timestamp() + VENCIMIENTO_FIRMA_SEGUNDOS).max(0) as u64;
     let firma = signer::firmar(&pem, &agente_id, tipo, sistema, &ts, exp).map_err(|e| ErrorEvento::Disco(e.to_string()))?;
     let cuerpo = CuerpoEvento {
         tipo: tipo.to_string(),
@@ -110,17 +117,10 @@ pub fn publicar(dir: &Path, tipo: &str, sistema: &str) -> Result<String, ErrorEv
         timestamp: ts,
         firma_jws: firma,
     };
-    let mut pendientes = leer_cola(dir)?;
-    let mut siguen = Vec::new();
-    for viejo in pendientes.drain(..) {
-        match postear(&config.url, &viejo) {
-            ResultadoPost::Enviado | ResultadoPost::Rechazado(_) => {}
-            ResultadoPost::Reintentar => siguen.push(viejo),
-        }
-    }
+    reintentar_cola(dir)?;
+    let mut siguen = leer_cola(dir)?;
     match postear(&config.url, &cuerpo) {
         ResultadoPost::Enviado => {
-            escribir_cola(dir, &siguen)?;
             if siguen.is_empty() {
                 Ok("Evento enviado al control central.".into())
             } else {
@@ -136,12 +136,51 @@ pub fn publicar(dir: &Path, tipo: &str, sistema: &str) -> Result<String, ErrorEv
             ))
         }
         ResultadoPost::Rechazado(codigo) => {
-            escribir_cola(dir, &siguen)?;
             Err(ErrorEvento::Rechazado(format!(
                 "El control central rechazó el evento ({codigo})."
             )))
         }
     }
+}
+
+/// Intenta reenviar todo lo que haya en la cola, sin agregar nada nuevo. No falla si no hay
+/// conexión: lo que no se pudo enviar queda igual en la cola. Devuelve (enviados, en_cola).
+/// Se usa al abrir la app, al cerrarla y desde el botón "Reintentar envío" del panel.
+pub fn reintentar_cola(dir: &Path) -> Result<(usize, usize), ErrorEvento> {
+    reintentar_cola_con_presupuesto(dir, Duration::MAX)
+}
+
+/// Como `reintentar_cola`, pero deja de intentar en cuanto se pasa el `presupuesto` de tiempo,
+/// para no demorar el cierre de la app si la cola es larga y no hay conexión. Lo que no se llegó
+/// a probar queda igual en la cola.
+pub fn reintentar_cola_con_presupuesto(
+    dir: &Path,
+    presupuesto: Duration,
+) -> Result<(usize, usize), ErrorEvento> {
+    let inicio = std::time::Instant::now();
+    let config = leer_config(dir);
+    let pendientes = leer_cola(dir)?;
+    let total = pendientes.len();
+    let mut siguen = Vec::new();
+    for viejo in pendientes {
+        if inicio.elapsed() >= presupuesto {
+            siguen.push(viejo);
+            continue;
+        }
+        match postear(&config.url, &viejo) {
+            ResultadoPost::Enviado | ResultadoPost::Rechazado(_) => {}
+            ResultadoPost::Reintentar => siguen.push(viejo),
+        }
+    }
+    let en_cola = siguen.len();
+    escribir_cola(dir, &siguen)?;
+    Ok((total - en_cola, en_cola))
+}
+
+/// Cuántos eventos están esperando en la cola, sin tocarla. Se usa para decidir si vale la pena
+/// demorar el cierre de la app con un reintento.
+pub fn eventos_pendientes(dir: &Path) -> usize {
+    contar_cola(dir)
 }
 
 enum ResultadoPost {
@@ -284,6 +323,69 @@ mod tests {
         let mensaje = publicar(&dir, "alta_credencial", "Banco").unwrap();
         assert!(mensaje.contains("cola"));
         assert_eq!(contar_cola(&dir), 1);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    fn evento_de_prueba(n: usize) -> CuerpoEvento {
+        CuerpoEvento {
+            tipo: "alta_credencial".to_string(),
+            sistema: format!("sistema-{n}"),
+            agente_id: "agente-prueba".to_string(),
+            timestamp: "2026-10-07T00:00:00Z".to_string(),
+            firma_jws: "TODO".to_string(),
+        }
+    }
+
+    #[test]
+    fn eventos_pendientes_cuenta_lo_que_hay_en_cola() {
+        let dir = std::env::temp_dir().join(format!("eventos-pendientes-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        assert_eq!(eventos_pendientes(&dir), 0);
+        escribir_cola(&dir, &[evento_de_prueba(1), evento_de_prueba(2)]).unwrap();
+        assert_eq!(eventos_pendientes(&dir), 2);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn el_presupuesto_agotado_no_pierde_eventos() {
+        // Simula el cierre de la app con la cola llena y sin tiempo para reintentar: no se
+        // intenta nada, pero nada se pierde.
+        let dir = std::env::temp_dir().join(format!("eventos-presupuesto-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(
+            dir.join("auditoria.json"),
+            r#"{"url":"http://127.0.0.1:9/api/events/","carpeta_claves":""}"#,
+        )
+        .unwrap();
+        escribir_cola(&dir, &[evento_de_prueba(1), evento_de_prueba(2)]).unwrap();
+
+        let (enviados, en_cola) = reintentar_cola_con_presupuesto(&dir, Duration::ZERO).unwrap();
+
+        assert_eq!(enviados, 0);
+        assert_eq!(en_cola, 2);
+        assert_eq!(eventos_pendientes(&dir), 2);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn reintentar_cola_sin_red_no_pierde_eventos() {
+        let dir = std::env::temp_dir().join(format!("eventos-reintentar-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(
+            dir.join("auditoria.json"),
+            r#"{"url":"http://127.0.0.1:9/api/events/","carpeta_claves":""}"#,
+        )
+        .unwrap();
+        escribir_cola(&dir, &[evento_de_prueba(1), evento_de_prueba(2)]).unwrap();
+
+        let (enviados, en_cola) = reintentar_cola(&dir).unwrap();
+
+        assert_eq!(enviados, 0);
+        assert_eq!(en_cola, 2);
+        assert_eq!(eventos_pendientes(&dir), 2);
         let _ = fs::remove_dir_all(&dir);
     }
 }

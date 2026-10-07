@@ -106,28 +106,33 @@ eventos (RT-05). Se acepta con la justificación anterior, registrada como R05 e
 
 **Decisión:** el equipo diseñó la cola de eventos (`cliente-gestor`) sin exigencia de la letra. RF-06/RNF-01
 solo exigen que el gestor funcione completo sin conexión; RF-08 solo exige enviar el evento firmado. La forma de
-reintentar y el tiempo de vida de la firma son decisiones propias, verificadas en el código el 07/10/2026.
+reintentar y el tiempo de vida de la firma son decisiones propias. El 07/10/2026 se verificó el comportamiento
+original y se corrigió en tres de los cinco puntos que estaban en discusión (ver `docs/00-pendientes-entrega.md`).
 
-**Comportamiento actual (`events/mod.rs`):**
+**Comportamiento actual (`events/mod.rs`, corregido el 07/10):**
 - Si no hay red, el evento queda en `cola-eventos.jsonl`. El alta, modificación o borrado en la bóveda ya está
   completo de forma local y no depende de este envío.
-- El reintento de la cola **no es automático**: no hay temporizador en segundo plano ni reintento al abrir o
-  cerrar la app. El único momento en que el cliente reintenta es la próxima vez que se genera otro evento (otra
-  alta, modificación, borrado o cambio de maestra). Si no se hace ninguna otra operación, la cola queda en
-  espera indefinidamente.
-- Cada evento se firma con un token JWS que vence a los **10 minutos** (`exp = ahora + 600 s`).
-  `control-central` siempre responde `201` a un evento recibido, pero solo lo marca `firma_valida: true` si la
-  firma todavía es válida. Si un evento pasó más de 10 minutos en la cola antes de reenviarse, la firma ya venció:
-  el servidor lo acepta y lo persiste, pero queda registrado con `firma_valida: false`, igual que si la firma
-  fuera falsificada.
+- El reintento ya no depende solo de la próxima operación: el cliente también reintenta **al abrir la app**
+  (en segundo plano, sin demorar el arranque) y **al cerrarla** (con un tope de 2 segundos, para no colgar el
+  cierre si no hay conexión; lo que no se llega a enviar en ese tiempo queda igual en la cola). El panel tiene
+  además un botón "Reintentar envío" que se activa cuando hay eventos pendientes.
+- Cada evento se firma con un token JWS que vence a las **4 horas** (`exp = ahora + 14400 s`; antes eran 10
+  minutos). `control-central` siempre responde `201` a un evento recibido, pero solo lo marca `firma_valida: true`
+  si la firma todavía es válida. Si un evento pasó más de 4 horas en la cola antes de reenviarse, la firma ya
+  venció: el servidor lo acepta y lo persiste, pero queda registrado con `firma_valida: false`, igual que si la
+  firma fuera falsificada.
+- Quedó sin implementar, por decisión explícita: un aviso o un formulario al cerrar la app cuando hay eventos
+  sin enviar. Se evaluó como una interrupción innecesaria para un caso que el reintento automático ya cubre en
+  la mayoría de las situaciones (ver `docs/00-pendientes-entrega.md`).
 
-**Qué queda en el laboratorio:** un evento legítimo, demorado por estar offline más de 10 minutos, se ve en el
-panel y en el SIEM igual que un intento de forjar la firma (RT-02). Hoy no hay forma de distinguir ambos casos
-desde los datos guardados.
+**Qué queda en el laboratorio:** un evento legítimo, demorado por estar offline más de 4 horas sin que la app se
+haya abierto, cerrado o usado para otra operación en ese lapso, se ve en el panel y en el SIEM igual que un
+intento de forjar la firma (RT-02). Es mucho menos probable que con el límite de 10 minutos anterior, pero sigue
+siendo posible. Hoy no hay forma de distinguir ambos casos desde los datos guardados.
 
-**Riesgo residual:** durante una demostración en vivo (sección 6.6 de `LETRA.md`), un evento demorado podría
-leerse como un ataque. Está relacionado con R02 en `03-Analisis-Riesgos.md`. Hay cinco ideas en discusión para
-mitigarlo, sin decidir todavía: ver `docs/00-pendientes-entrega.md`, sección "Decisiones abiertas".
+**Riesgo residual:** durante una demostración en vivo (sección 6.6 de `LETRA.md`), un evento demorado todavía
+podría leerse como un ataque, si el equipo estuvo offline más de 4 horas sin que nadie abriera o cerrara la app.
+Está relacionado con R02 en `03-Analisis-Riesgos.md`.
 
 ## Nivel 3 — Componentes
 

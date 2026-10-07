@@ -122,6 +122,7 @@ export default function App() {
   const [urlCentral, setUrlCentral] = useState("http://localhost:8001/api/events/");
   const [carpetaClaves, setCarpetaClaves] = useState("");
   const [agenteId, setAgenteId] = useState("");
+  const [enCola, setEnCola] = useState(0);
   const [maestraActual, setMaestraActual] = useState("");
   const [maestraNueva, setMaestraNueva] = useState("");
   const [busqueda, setBusqueda] = useState("");
@@ -141,6 +142,7 @@ export default function App() {
         setUrlCentral(estado.url);
         setCarpetaClaves(estado.carpeta_claves);
         setAgenteId(estado.agente_id);
+        setEnCola(estado.en_cola);
       })
       .catch((e: unknown) => setError(mensaje(e)));
   }, []);
@@ -148,7 +150,16 @@ export default function App() {
   async function anotarEvento() {
     const estado = await invoke<EstadoAud>("estado_auditoria");
     setAgenteId(estado.agente_id);
+    setEnCola(estado.en_cola);
     if (estado.ultimo) setAviso(estado.ultimo);
+  }
+
+  async function reintentarEnvio() {
+    await conBoveda(async () => {
+      const texto = await invoke<string>("reintentar_eventos");
+      setAviso(texto);
+      await anotarEvento();
+    });
   }
 
   async function refrescar() {
@@ -338,9 +349,11 @@ export default function App() {
           urlCentral={urlCentral}
           carpetaClaves={carpetaClaves}
           agenteId={agenteId}
+          enCola={enCola}
           ocupado={ocupado}
           onUrl={setUrlCentral}
           onCarpeta={setCarpetaClaves}
+          onReintentar={reintentarEnvio}
           onGuardar={() => {
             void conBoveda(async () => {
               const texto = await invoke<string>("guardar_auditoria", {
@@ -511,9 +524,11 @@ export default function App() {
         urlCentral={urlCentral}
         carpetaClaves={carpetaClaves}
         agenteId={agenteId}
+        enCola={enCola}
         ocupado={ocupado}
         onUrl={setUrlCentral}
         onCarpeta={setCarpetaClaves}
+        onReintentar={reintentarEnvio}
         onGuardar={() => {
           void conBoveda(async () => {
             const texto = await invoke<string>("guardar_auditoria", {
@@ -830,22 +845,26 @@ function Auditoria({
   urlCentral,
   carpetaClaves,
   agenteId,
+  enCola,
   ocupado,
   onUrl,
   onCarpeta,
+  onReintentar,
   onGuardar,
 }: {
   urlCentral: string;
   carpetaClaves: string;
   agenteId: string;
+  enCola: number;
   ocupado: boolean;
   onUrl: (valor: string) => void;
   onCarpeta: (valor: string) => void;
+  onReintentar: () => void;
   onGuardar: () => void;
 }) {
   return (
     <details className="politica">
-      <summary>Control central</summary>
+      <summary>Control central{enCola > 0 ? ` (${enCola} sin enviar)` : ""}</summary>
       <div className="panel">
         <p className="ayuda">
           Agente {agenteId || "…"}. La bóveda no se envía: solo el aviso de alta, cambio, borrado o
@@ -868,6 +887,17 @@ function Auditoria({
         <button type="button" onClick={onGuardar} disabled={ocupado}>
           Guardar y copiar clave pública
         </button>
+        {enCola > 0 ? (
+          <>
+            <p className="ayuda">
+              Hay {enCola} evento{enCola === 1 ? "" : "s"} de auditoría sin enviar, guardados en este
+              equipo. La app ya reintenta sola al abrir y al cerrar; este botón lo hace ahora mismo.
+            </p>
+            <button type="button" onClick={onReintentar} disabled={ocupado}>
+              Reintentar envío ({enCola} pendiente{enCola === 1 ? "" : "s"})
+            </button>
+          </>
+        ) : null}
       </div>
     </details>
   );

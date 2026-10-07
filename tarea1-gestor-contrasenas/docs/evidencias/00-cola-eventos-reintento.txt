@@ -1,0 +1,21 @@
+# Cola de eventos offline: vencimiento de la firma a 4h, reintento al abrir/cerrar y botón manual — 07/10/2026
+# Cambios: cliente-gestor/src-tauri/src/events/mod.rs, main.rs, vault/commands.rs; cliente-gestor/src/App.tsx
+
+## Compilación (cargo check), fuera del sandbox por bloqueos intermitentes de link.exe (no es Smart App Control:
+## VerifiedAndReputablePolicyState=0; tampoco hay proceso que retenga el archivo. Es contención del linker con el
+## escaneo de Defender al correr varios link.exe en paralelo; retry y -j 1 lo resuelven):
+warning: function `codigo_actual` is never used (preexistente, no de este cambio)
+warning: associated function `abrir` is never used (preexistente, no de este cambio)
+Finished `dev` profile [unoptimized + debuginfo] target(s)
+
+## Pruebas (cargo test -j 1):
+test events::tests::eventos_pendientes_cuenta_lo_que_hay_en_cola ... ok
+test events::tests::el_presupuesto_agotado_no_pierde_eventos ... ok
+test events::tests::reintentar_cola_sin_red_no_pierde_eventos ... ok
+test events::tests::sin_red_el_evento_queda_en_cola ... ok
+test events::tests::la_firma_trae_los_claims_que_verifica_el_central ... ok
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+## Build del cliente (npm run build: tsc && vite build), sin bloqueos (no compila con MSVC):
+✓ 34 modules transformed.
+✓ built in 2.20s

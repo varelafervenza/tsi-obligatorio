@@ -278,6 +278,22 @@ pub fn guardar_auditoria(app: AppHandle, url: String, carpeta_claves: String) ->
     Ok(mensaje)
 }
 
+/// Reintenta a mano lo que haya en `cola-eventos.jsonl`. Lo usa el botón que se activa en el
+/// panel cuando hay eventos sin enviar.
+#[tauri::command]
+pub fn reintentar_eventos(app: AppHandle) -> Result<String, String> {
+    let dir = dir_auditoria(&app)?;
+    let (enviados, en_cola) = crate::events::reintentar_cola(&dir).map_err(|e| e.to_string())?;
+    let mensaje = match (enviados, en_cola) {
+        (0, 0) => "No había eventos pendientes.".to_string(),
+        (n, 0) => format!("Se enviaron {n} evento(s) pendientes."),
+        (0, q) => format!("Sin conexión con el control central. Siguen {q} en cola."),
+        (n, q) => format!("Se enviaron {n}. Quedan {q} en cola."),
+    };
+    let _ = std::fs::write(dir.join("ultimo.txt"), &mensaje);
+    Ok(mensaje)
+}
+
 fn dir_auditoria(app: &AppHandle) -> Result<std::path::PathBuf, String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;

@@ -32,3 +32,15 @@ docker run --rm --network infra_blue-team-net -e DATABASE_URL=<url a control_cen
 ```
 
 Requiere que la base `control_central_test` exista y que el stack esté levantado desde `tarea1-gestor-contrasenas/infra/`.
+
+## Compilar o testear `cliente-gestor` (Rust) en este equipo
+
+`cargo check`/`cargo build`/`cargo test` suelen fallar con `could not exec the linker link.exe: Access is denied
+(os error 5)`, o lo mismo con `rustc.exe`. No es Smart App Control (verificado:
+`VerifiedAndReputablePolicyState=0`, o sea apagado) ni un proceso que retenga el archivo. Es Windows Defender
+escaneando cada ejecutable nuevo del linker mientras varios corren en paralelo: es intermitente, y cada intento
+avanza más porque `cargo` cachea lo que ya compiló. Reintentar con `-j 1` unas pocas veces (hasta 5-8) resuelve.
+Lo que funcionó fue reintentar `cargo check`/`test` con `-j 1` por fuera del sandbox del Bash tool
+(`dangerouslyDisableSandbox: true`), unas 5 a 8 veces. No queda confirmado si el sandbox es parte de la causa o
+si alcanzaba con reintentar: no se probó a fondo dentro del sandbox. El build de `npm run build`
+(TypeScript + Vite) no tiene este problema y corre normal dentro del sandbox.

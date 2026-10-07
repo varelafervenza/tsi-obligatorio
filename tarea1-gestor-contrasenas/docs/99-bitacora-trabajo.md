@@ -1555,6 +1555,39 @@ Hora (UTC): 21:40
 - **Incidencia / hallazgo**: Ninguna. La guía de pruebas no usa `localhost:5432`.
 - **Observaciones**: Pendiente de commit.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela y Pablo Morales
+Hora (UTC): N/D
+---
+
+## Actividad: Mejoras de la cola de eventos offline (firma a 4h, reintento al abrir/cerrar, botón manual)
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se implementaron 3 de las 5 ideas en discusión sobre la cola offline. (1) El vencimiento
+  de la firma pasó de 10 minutos a 4 horas (`events::VENCIMIENTO_FIRMA_SEGUNDOS`). (2) El cliente reintenta la
+  cola al abrir la app (segundo plano) y al cerrarla (con un tope de 2 s para no colgar el cierre si no hay
+  conexión). (3) El panel "Control central" muestra cuántos eventos quedan pendientes y tiene un botón para
+  reintentar a mano. Se descartaron, por decisión explícita, el aviso al cerrar y el formulario de sincronización:
+  se evaluó que agregaban una interrupción para un caso que el reintento automático ya cubre. Se agregaron 3
+  pruebas nuevas en Rust (`eventos_pendientes_cuenta_lo_que_hay_en_cola`, `el_presupuesto_agotado_no_pierde_eventos`,
+  `reintentar_cola_sin_red_no_pierde_eventos`).
+- **Herramienta / comando**: `cargo check`/`cargo test -j 1` (fuera del sandbox del Bash tool, con varios
+  reintentos por un bloqueo intermitente del linker con Windows Defender, no por Smart App Control); `npm run
+  build` del cliente.
+- **Resultado**: Éxito. 30 pruebas de Rust pasan (27 existentes + 3 nuevas). El build de TypeScript y Vite no
+  tiene errores.
+- **Evidencia anexa**: `docs/evidencias/00-cola-eventos-reintento.txt`. Documentación actualizada en
+  `00-arquitectura-c4.md`, `00-pendientes-entrega.md`, `03-Analisis-Riesgos.md` y `07-Monitoreo-Logs-SIEM.md`.
+- **Incidencia / hallazgo**: Compilar o testear `cliente-gestor` en este equipo requirió reintentar varias veces
+  por un error intermitente del linker (`link.exe`, acceso denegado), no relacionado con Smart App Control
+  (verificado apagado). Quedó documentado en `CLAUDE.md` para no repetir el diagnóstico.
+- **Observaciones**: La ventana de 4 horas reduce mucho, pero no elimina, el riesgo de que un evento demorado se
+  vea como un forjado de firma (R02). Pendiente: probar el cierre de la app con la cola llena en un equipo real,
+  cosa que no se pudo hacer en esta sesión porque no se pudo ejecutar la GUI de Tauri.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
