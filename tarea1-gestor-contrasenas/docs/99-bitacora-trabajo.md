@@ -1759,6 +1759,33 @@ Hora (UTC): N/D
   FIM de la bóveda), hay que volver a publicar 1514 y 1515. Queda pendiente avisarle a Horacio y Pablo sobre
   la convención de separar commits.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: README raíz — link a la guía de pruebas y contenido de `infra/` actualizado
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se revisó si `README.md` alcanza para que el Red Team descargue, instale y use
+  el sistema completo (cliente y servicios de Docker). Se corrigieron cuatro de los puntos encontrados: (1)
+  un párrafo al inicio de "Requisitos y cómo evaluar" que apunta a `docs/guia-de-pruebas.md` para el uso
+  completo (primer usuario sin token, Grafana, TOTP), que antes solo se citaba de paso. (2) la línea de
+  `infra/` en "Contenido": decía que Wazuh tenía notas de despliegue aparte, pero ahora sube con el mismo
+  `docker compose up` que el resto. (3) se agregó el Anexo B (22 sistemas de prueba) a la sección 3, con
+  el comando para generarlo (`cargo test`) y la referencia a la prueba C-15. (4) la sección 3 ahora repite
+  el requisito de Visual Studio Build Tools para compilar en Windows, que antes solo estaba en la sección 2.
+- **Herramienta / comando**: edición de `README.md`.
+- **Resultado**: Éxito.
+- **Evidencia anexa**: `README.md`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Quedan dos preguntas de logística del repositorio, no de código: si es público o
+  privado (para que el Red Team pueda clonarlo y bajar artefactos de Actions), y si el Red Team tiene
+  permiso para disparar `workflow_dispatch` y generar un instalador fresco por su cuenta.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

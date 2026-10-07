@@ -6,7 +6,7 @@
 - **`docs/`** — Carpeta de trabajo del equipo. Aquí se pegan las plantillas de la carpeta `../plantilla/` y se completan con la documentación de la solución.
 - **`cliente-gestor/`** — App de escritorio offline (Tauri: Rust + React/TS). Bóveda cifrada local, MFA, generador de contraseñas, emisor de eventos firmados.
 - **`control-central/`** — API REST (FastAPI + PostgreSQL) que recibe eventos de auditoría, gestiona usuarios/MFA del panel y alimenta el dashboard.
-- **`infra/`** — `docker-compose.yml` del control central + notas de despliegue de Wazuh, Mailu, Grafana y TheHive.
+- **`infra/`** — `docker-compose.yml` que levanta control central, PostgreSQL, Mailpit, Grafana y Wazuh (manager + agente). Mailu y TheHive quedan aparte, con sus propias notas de despliegue.
 - **`scripts/`** — Utilidades: envío de evento de prueba, verificación de integridad del tag de entrega.
 
 Stack y decisiones de arquitectura completas en la bitácora `docs/99-bitacora-trabajo.md` (entrada del 15/09/2026). Lo implementado el 03/10/2026 está en las entradas de Horacio Duarte de ese día.
@@ -41,6 +41,11 @@ Sigue afuera del código, como despliegue o evidencia: TLS y WebAuthn/Windows He
 - **Equipo B (Red Team):** ataca la solución entregada (28/10 → 09/11) y emite informe.
 
 ## Requisitos y cómo evaluar
+
+Esta sección cubre cómo levantar cada parte por separado. Para el paso a paso de **uso completo del
+sistema** (crear el primer usuario del panel, que no pide token; entrar a Grafana con las credenciales
+de `.env`; enrolar TOTP; probar el flujo de principio a fin), ver `docs/guia-de-pruebas.md`. Esa guía
+también dice qué prueba puede hacer una persona sola y cuál necesita ayuda de una sesión de Claude.
 
 ### 1. Backend (`control-central`) — cualquier máquina con Docker
 
@@ -95,8 +100,9 @@ Windows, Visual Studio Build Tools con el workload de C++.
 
 ### 3. Aplicación de escritorio — Windows
 
-Requisitos: Node 20 y Rust (sólo si se compila) o el instalador `.exe` del artefacto
-`cliente-gestor-instalador` del workflow de GitHub Actions.
+Requisitos: Node 20 y Rust (sólo si se compila; en Windows hace falta además Visual Studio
+Build Tools con el workload de C++, igual que en la sección 2) o el instalador `.exe` del
+artefacto `cliente-gestor-instalador` del workflow de GitHub Actions.
 
 **Limitación de Windows 11 con Smart App Control:** el instalador no está firmado digitalmente.
 Smart App Control lo bloquea mientras está activo. El equipo decidió no firmar el instalador
@@ -117,6 +123,12 @@ clave pública del agente. Con el stack de `infra/` ya levantado:
 Sin ese paso el evento igual se guarda, pero llega como no firmado. Detalle en
 `cliente-gestor/README.md` (sección «Eventos al control central») y prueba C-04 de
 `docs/guia-de-pruebas.md`.
+
+**Datos de prueba (Anexo B, 20+ sistemas con credenciales):** correr `cargo test` en
+`cliente-gestor/src-tauri` genera `cliente-gestor/datos-prueba/boveda-anexo-b.sqlite`, con 22
+sistemas (correo, banca, VPN, Grafana, Wazuh, etc.) y la contraseña de cada uno con el patrón
+`Lab-<sistema>-2026`. Son datos ficticios. Abrirla en la app con la maestra `maestra-de-prueba`.
+Detalle en la prueba C-15 de `docs/guia-de-pruebas.md`.
 
 ### 4. Limitaciones de alcance (acordadas con el docente)
 
