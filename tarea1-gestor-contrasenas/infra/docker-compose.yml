@@ -6,9 +6,9 @@ version: "3.8"
 # O desde la raíz de la tarea (compose.yaml con include):
 #   docker compose up --build -d
 #
-# Stack del control central. Wazuh y Mailu se despliegan con sus propios
-# instaladores/compose oficiales (ver infra/wazuh/README.md e infra/mailu/README.md)
-# y se conectan a esta misma red `blue-team-net`.
+# Stack del control central. Mailu se despliega aparte (infra/mailu/README.md).
+# Wazuh (manager + agente que lee el JSONL) sube con este compose. Sin indexer:
+# ver infra/wazuh/README.md.
 
 networks:
   blue-team-net:
@@ -17,6 +17,7 @@ networks:
 volumes:
   postgres-data:
   grafana-data:
+  wazuh-alerts:
 
 services:
   control-central:
@@ -27,6 +28,7 @@ services:
     volumes:
       - ./logs:/var/log/control-central
       - ../keys/agentes:/app/keys/agentes:ro
+      - wazuh-alerts:/var/log/wazuh-alerts:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,6 +76,47 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       postgres:
+        condition: service_healthy
+    networks:
+      - blue-team-net
+
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.14.8
+    hostname: wazuh.manager
+    ulimits:
+      nofile:
+        soft: 655360
+        hard: 655360
+    ports:
+      - "1514:1514"
+      - "1515:1515"
+      - "55000:55000"
+    volumes:
+      - ./wazuh/local_rules.xml:/wazuh-config-mount/etc/rules/local_rules.xml:ro
+      - ./wazuh/manager/01-laboratorio.sh:/entrypoint-scripts/01-laboratorio.sh:ro
+      - wazuh-alerts:/var/ossec/logs/alerts
+    networks:
+      - blue-team-net
+    healthcheck:
+      # wazuh-control status sale 1 porque clusterd, maild y otros no aplican acá.
+      test: ["CMD-SHELL", "pgrep -x wazuh-analysisd >/dev/null && pgrep -x wazuh-remoted >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 40s
+
+  wazuh-agent:
+    image: wazuh/wazuh-agent:4.14.8
+    hostname: agente-control-central
+    environment:
+      WAZUH_MANAGER_SERVER: wazuh-manager
+      WAZUH_AGENT_NAME: agente-control-central
+    volumes:
+      - ./logs:/var/log/control-central
+      - ./wazuh/agent/ossec.conf:/wazuh-config-mount/etc/ossec.conf:ro
+      - ./wazuh/agent/01-permisos.sh:/entrypoint-scripts/01-permisos.sh:ro
+    depends_on:
+      wazuh-manager:
         condition: service_healthy
     networks:
       - blue-team-net

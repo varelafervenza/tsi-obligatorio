@@ -8,4 +8,4 @@ LETRA.md) se reconstruya con `docker compose up` sin pasos manuales.
 
 - [x] `datasources/postgres.yml` apunta al Postgres del compose (`postgres:5432`).
 - [x] Tablero `dashboards/control-central.json`: eventos, incidentes abiertos, agentes, última sincronización, volumen y listado.
-- [ ] MTTD, MTTR, cobertura y uptime se leen en `GET /api/dashboard/kpis`, no en el tablero. La tasa de falsos positivos queda vacía hasta que Wazuh emita alertas.
+- [ ] MTTD, MTTR, cobertura y uptime se leen en `GET /api/dashboard/kpis`, no en el tablero. `alertas_siem` cuenta las reglas de Wazuh en `alerts.json`. La tasa sigue vacía hasta clasificar alertas locales.

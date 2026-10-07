@@ -102,6 +102,25 @@ implementado en la versión congelada.
 eventos (RT-05). Se acepta con la justificación anterior, registrada como R05 en
 `03-Analisis-Riesgos.md`.
 
+### Limitación de alcance: Mailpit en lugar de Mailu
+
+**Decisión:** en este laboratorio el aviso al RSI sale por Mailpit (`http://localhost:8025`).
+No se despliega Mailu ni se configuran SPF y DKIM.
+
+**Razones:**
+- El destinatario es `rsi@correo.local`. Ese nombre no existe en internet y el mensaje no
+  sale de Docker. SPF y DKIM solo los comprueba quien recibe el correo desde afuera.
+- Mailpit muestra el mismo aviso que arma el control central (alta, modificación, borrado,
+  cambio de maestra y vencimiento), sin secretos en el cuerpo. Con eso se demuestra RF-07.
+- Mailpit no reenvía a internet, así que este laboratorio no queda como relay abierto.
+
+**Qué queda afuera:** no se puede demostrar RT-04 (suplantar el servidor de correo o falsificar
+un aviso hacia un buzón real). El diseño objetivo sigue siendo Mailu con SPF y DKIM si el
+correo saliera de la red.
+
+**Riesgo residual:** quien alcance el puerto 1025 de este equipo puede inyectar un aviso en la
+bandeja local de Mailpit. No puede hacerlo llegar a un buzón externo.
+
 ### Limitación de alcance: cola de eventos offline y vencimiento de la firma
 
 **Decisión:** el equipo diseñó la cola de eventos (`cliente-gestor`) sin exigencia de la letra. RF-06/RNF-01
@@ -141,7 +160,7 @@ Está relacionado con R02 en `03-Analisis-Riesgos.md`.
 | Componente | Responsabilidad | Depende de |
 |---|---|---|
 | `crypto` (kdf, cipher) | Argon2id + XChaCha20-Poly1305 | — |
-| `vault` (store) | CRUD de credenciales cifradas, historial, políticas por sistema | `crypto` |
+| `vault` (store) | CRUD de credenciales. El archivo SQLite entero va cifrado en disco (`BOV2`, XChaCha20-Poly1305 con la clave Argon2id). Una bóveda vieja en SQLite sin cifrar se reescribe al abrirla | `crypto` |
 | `auth` (totp, webauthn) | MFA local para desbloquear la bóveda | `crypto` (deriva material de sesión) |
 | `events` (signer) | Firma JWS y envío/cola de eventos | `vault` (dispara al mutar), clave privada del agente |
 | `generator` (regex_policy) | Generación de contraseñas/passphrase cumpliendo regex por sistema | `vault` (lee la política definida) |

@@ -33,12 +33,12 @@
 | Capa | Herramienta | Estado | Rol |
 |---|---|---|---|
 | Red (NIDS) | Suricata / Zeek | **No implementado** (decisión de alcance, ver `03-Analisis-Riesgos.md` y el Excel de controles). | — |
-| Host (HIDS) | Wazuh (agente en el cliente) | **Planificado.** El agente y su FIM sobre la bóveda no están desplegados. | Integridad del archivo de bóveda |
+| Host (HIDS) | Wazuh (agente en el cliente) | **Parcial.** El agente `agente-control-central` está activo y lee el JSONL. El FIM sobre el archivo de la bóveda en Windows no está desplegado. | Integridad del archivo de bóveda |
 | Eventos de la aplicación | `control-central` → JSONL | **Implementado.** Cada evento se escribe en `infra/logs/audit-events.jsonl` sin secretos. | Fuente para el SIEM |
-| SIEM | Wazuh manager + reglas `infra/wazuh/local_rules.xml` | **Reglas escritas, manager no levantado.** | Correlación |
+| SIEM | Wazuh manager 4.14.8 + reglas `infra/wazuh/local_rules.xml` | **Levantado.** El agente manda el JSONL y el manager escribió alertas 100120, 100101 y 100111. Sin indexer: las alertas quedan en `alerts.json` y el panel las cuenta en `alertas_siem`. | Correlación |
 | Correlación local | API `control-central` (`app/siem/reglas.py`) | **Implementado.** Aplica los mismos umbrales que las reglas de Wazuh y guarda alertas en la tabla `alerts`. | Alertas del panel |
 | Panel | Grafana (tablero "Control central") y `GET /api/dashboard/kpis` | **Implementado.** | Visualización |
-| Notificación | SMTP a Mailpit (dev) | **Implementado** con Mailpit. Mailu queda como limitación. | Aviso al RSI |
+| Notificación | SMTP a Mailpit | **Implementado.** Mailu no se despliega: el aviso no sale de Docker. Ver `00-arquitectura-c4.md`. | Aviso al RSI |
 
 ---
 

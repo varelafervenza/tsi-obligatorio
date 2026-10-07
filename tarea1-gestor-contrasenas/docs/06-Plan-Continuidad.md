@@ -95,7 +95,7 @@ workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 
 | Canal | Herramienta | Contacto | Estado |
 |---|---|---|---|
-| Correo de alerta | Mailpit (desarrollo); Mailu pendiente | `rsi@correo.local` | Implementado con Mailpit |
+| Correo de alerta | Mailpit. Mailu no se despliega en este laboratorio | `rsi@correo.local` | Implementado con Mailpit |
 | Dashboard de estado | Grafana (tablero "Control central") | `http://localhost:3000` | Implementado |
 | Teléfono | No implementado (Wazo es opcional en la letra) | — | N.A. justificado en el Excel de controles |
 

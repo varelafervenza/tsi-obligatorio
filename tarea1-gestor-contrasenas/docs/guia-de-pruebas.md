@@ -276,6 +276,14 @@ Actions. En Windows 11, Smart App Control tiene que estar desactivado (ver el RE
 
 No se prueba. Está documentado como limitación en `docs/09-Gestion-Accesos.md`.
 
+### C-15. Conjunto mínimo de 22 sistemas
+
+| Campo | Detalle |
+|---|---|
+| **Quién** | Persona |
+| **Pasos** | En la app, abrir el archivo `cliente-gestor/datos-prueba/boveda-anexo-b.sqlite` con la maestra `maestra-de-prueba`. |
+| **Resultado esperado** | La lista tiene 22 sistemas (correo, banca, VPN, Grafana, Wazuh, etc.). La contraseña de cada uno es `Lab-` + el nombre del sistema + `-2026`. Son datos ficticios. |
+
 ---
 
 ## Parte 3 — Pruebas automáticas y de calidad
@@ -286,7 +294,7 @@ No se prueba. Está documentado como limitación en `docs/09-Gestion-Accesos.md`
 |---|---|
 | **Quién** | Persona |
 | **Pasos** | En GitHub, abrir la pestaña **Actions**, elegir el workflow `cliente-gestor` y el último run. |
-| **Resultado esperado** | Los jobs `test` e `instalador` en verde. `test` corre los 27 tests de Rust de la bóveda. |
+| **Resultado esperado** | Los jobs `test` e `instalador` en verde. `test` corre los tests de Rust de la bóveda, incluido el que arma la bóveda de 22 sistemas. |
 
 ### A-02. Tests del cliente en la máquina
 
@@ -301,7 +309,7 @@ No se prueba. Está documentado como limitación en `docs/09-Gestion-Accesos.md`
 |---|---|
 | **Quién** | Persona para correr los comandos. Sesión de Claude para interpretar el resultado. |
 | **Pasos** | 1. `pip-audit -r control-central/requirements.txt` · 2. `bandit -r control-central/app -f txt` · 3. En `cliente-gestor/`: `npm audit --omit=dev` |
-| **Resultado esperado** | Lo que ya está documentado en `docs/10-Gestion-Vulnerabilidades.md`. Los avisos de `starlette` y `ecdsa` son los conocidos. |
+| **Resultado esperado** | Lo que ya está documentado en `docs/10-Gestion-Vulnerabilidades.md`. El aviso que puede seguir es el de `ecdsa` (V04, riesgo aceptado). |
 
 ---
 
@@ -309,8 +317,8 @@ No se prueba. Está documentado como limitación en `docs/09-Gestion-Accesos.md`
 
 - **WebAuthn y Windows Hello:** `docs/09-Gestion-Accesos.md`.
 - **TLS en el canal cliente → API:** `docs/00-arquitectura-c4.md`.
-- **Mailu (correo con SPF/DKIM):** se usa Mailpit en su lugar.
-- **Manager de Wazuh:** las reglas están escritas y se prueban con la API (ver `docs/07-Monitoreo-Logs-SIEM.md`).
+- **Mailu (correo con SPF/DKIM):** se usa Mailpit. La decisión está en `docs/00-arquitectura-c4.md`.
+- **Indexer y dashboard de Wazuh:** no se levantan. El manager y el agente sí, con `docker compose up` desde `infra/`.
 - **Escaneo de red y web (OpenVAS, nmap, nuclei):** pendiente.
 
 ---

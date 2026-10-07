@@ -15,7 +15,7 @@ Stack y decisiones de arquitectura completas en la bitácora `docs/99-bitacora-t
 
 En código ya están la bóveda offline, los eventos firmados (incluido el vencimiento), el correo por Mailpit, los incidentes, el panel `GET /api/dashboard/kpis`, el tablero de Grafana, los usuarios del panel con TOTP y hash elegible, el delay al fallar la maestra, y las reglas de Wazuh en `infra/wazuh/local_rules.xml`. El enrolamiento TOTP de la bóveda muestra un QR para la app de autenticación. La ruta inicial del archivo es `boveda-prueba.sqlite` en la carpeta de datos de la app.
 
-Sigue afuera del código, como despliegue o evidencia: levantar el manager de Wazuh (las mismas reglas ya corren en la API y se clasifican en `/api/alerts/`), Mailu con SPF/DKIM, TLS, y WebAuthn/Windows Hello. La retención de 90 días corre al arrancar el control central. Hay que reconstruir el compose para crear la tabla `alerts`.
+Sigue afuera del código, como despliegue o evidencia: TLS y WebAuthn/Windows Hello. El correo del laboratorio es Mailpit (decisión en `docs/00-arquitectura-c4.md`). El manager y el agente de Wazuh suben con el compose de `infra/` (sin indexer; las alertas quedan en `alerts.json`). La retención de 90 días corre al arrancar el control central. Hay que reconstruir el compose para crear la tabla `alerts`.
 
 ## Cómo empezar
 
@@ -57,6 +57,35 @@ Esperado: `{"status":"ok","database":"up"}`. La API queda en el puerto **8001** 
 (`http://localhost:8001/docs`); dentro del contenedor escucha en 8000. Grafana en
 `http://localhost:3000` y Mailpit en `http://localhost:8025`.
 
+Ese mismo `docker compose up` levanta Wazuh. La primera vez baja las imágenes
+`wazuh/wazuh-manager:4.14.8` y `wazuh/wazuh-agent:4.14.8` (pesan) y el agente espera a que
+el manager pase el chequeo de salud, cerca de un minuto. No hay pantalla de Wazuh: el
+indexer no entra en este Docker. Las alertas quedan en `alerts.json` y el panel las cuenta
+en `alertas_siem`.
+
+Desde `infra/`, cuando el manager figura como healthy:
+
+```powershell
+docker exec infra-wazuh-manager-1 /var/ossec/bin/agent_control -l
+```
+
+Esperado: `agente-control-central` en estado **Active**. El agente lee
+`infra/logs/audit-events.jsonl`. Una línea con `"tipo": "cambio_maestra"` dispara la regla
+**100120**. Cinco `intento_fallido_maestra` del mismo `agente_id` en dos minutos disparan
+la **100101**. Cinco `borrado_credencial` en las mismas condiciones disparan la **100111**.
+El conteo de esas reglas (y de las base 100100 y 100110) está en
+`http://localhost:8001/api/dashboard/kpis`, campo `kpis.falsos_positivos.alertas_siem`.
+
+Para ver las últimas alertas:
+
+```powershell
+docker exec infra-wazuh-manager-1 tail -n 5 /var/ossec/logs/alerts/alerts.json
+```
+
+Puertos publicados: **1514** y **1515** (el agente) y **55000** (API del manager, usuario
+`wazuh` / contraseña `wazuh`, solo laboratorio). El detalle y lo que queda afuera (indexer,
+FIM de la bóveda en Windows, retención del JSONL) está en `infra/wazuh/README.md`.
+
 ### 2. Tests del cliente — Linux o Windows con Rust
 
 Los tests de la lógica de la bóveda (cripto, TOTP, generador, exportación) corren en el CI
@@ -92,5 +121,6 @@ Sin ese paso el evento igual se guarda, pero llega como no firmado. Detalle en
 
 - **Windows Hello y WebAuthn** no forman parte de la entrega. Ver `docs/09-Gestion-Accesos.md`.
 - **TLS** no se usa en el laboratorio. Ver `docs/00-arquitectura-c4.md`.
+- **Mailpit** es el correo del laboratorio. Mailu, SPF y DKIM no se despliegan: el aviso no sale de Docker. Ver `docs/00-arquitectura-c4.md`.
 
 Las limitaciones y sus riesgos residuales están en `docs/03-Analisis-Riesgos.md` (R05 y R06).

@@ -50,7 +50,7 @@ El CVSS no lo informa `pip-audit`; queda pendiente de buscarlo en la base de NVD
 |---|---|---|---|---|---|---|---|---|
 | V01 | `control-central` (`python-jose` 3.3.0) | PYSEC-2024-232, PYSEC-2024-233, PYSEC-2025-185 | pip-audit | Pendiente | **Remediado**: se subió a 3.4.0 | 05/10/2026 | 05/10/2026 | Pablo Morales |
 | V02 | `control-central` (`python-multipart` 0.0.9) | Siete avisos PYSEC-2026-1851 a 3040 | pip-audit | Pendiente | **Remediado**: se subió a 0.0.31 | 05/10/2026 | 05/10/2026 | Pablo Morales |
-| V03 | `control-central` (`starlette` 0.38.6, vía FastAPI 0.115.0) | Siete avisos: PYSEC-2026-161, 248, 249, 1941, 1943, 2280, 2281 | pip-audit | Pendiente | **Abierta.** Se corrige con FastAPI y starlette más nuevos. Cambio de versión mayor, dejado para después de la demo | 05/10/2026 | — | Pablo Morales |
+| V03 | `control-central` (`starlette` 0.38.6, vía FastAPI 0.115.0) | Siete avisos: PYSEC-2026-161, 248, 249, 1941, 1943, 2280, 2281. El arreglo más alto que pedía el audit del 05/10 era starlette 1.3.1 | pip-audit | Pendiente | **Remediado:** FastAPI 0.142.3 y starlette 1.7.0. 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
 | V04 | `control-central` (`ecdsa` 0.19.2, dependencia de `python-jose`) | PYSEC-2026-1325 | pip-audit | Pendiente | **Riesgo aceptado** (ver sección 5) | 05/10/2026 | — | Pablo Morales |
 
 ---
@@ -64,7 +64,7 @@ El CVSS no lo informa `pip-audit`; queda pendiente de buscarlo en la base de NVD
 | Media | 4.0–6.9 | 30 días |
 | Baja | 0.1–3.9 | 90 días |
 
-V03 queda abierta. Hasta tener el CVSS de cada aviso, no se puede asignar su SLA. Si alguno resulta crítico o alto, el plazo es el de la tabla y tiene prioridad sobre el resto.
+V03 se cerró el 07/10 al subir FastAPI y starlette por encima de las versiones que pedía el audit. El CVSS de esos avisos sigue sin buscarse en NVD. V04 sigue aceptada.
 
 ---
 
@@ -108,6 +108,6 @@ V03 queda abierta. Hasta tener el CVSS de cada aviso, no se puede asignar su SLA
 - [x] SAST sobre el código del backend con evidencia.
 - [x] Registro con ID, activo, herramienta y estado.
 - [ ] CVSS y SLA asignados a cada hallazgo (pendiente: V03 y V04).
-- [ ] Sin vulnerabilidades críticas o altas abiertas sin mitigación (V03 abierta hasta actualizar FastAPI).
+- [x] V03 cerrada con FastAPI 0.142.3 y starlette 1.7.0 (07/10/2026).
 - [ ] Escaneo de red y web (pendiente).
 - [ ] SAST incorporado al ciclo de desarrollo (bandit corrido a mano, no en CI).

@@ -17,15 +17,13 @@ docker compose -f docker-compose.yml up -d
 - [ ] Probar el envío de notificación ante alta/mod/borrado/cambio de maestra (RF-07)
       y capturar evidencia en `docs/evidencias/`.
 
-## H2 (mientras tanto): Mailpit
+## Decisión del laboratorio: Mailpit
 
-El prototipo envía por SMTP a **Mailpit** (`infra/docker-compose.yml`, UI en
+El aviso al RSI sale por **Mailpit** (`infra/docker-compose.yml`, UI en
 `http://localhost:8025`). Las variables `SMTP_*` de `control-central.env.example`
-apuntan ahí. Cuando Mailu esté en `blue-team-net`, cambiar `SMTP_HOST`/`SMTP_PORT`
-y activar TLS + auth. El código del mailer no cambia.
+apuntan ahí. No se despliega Mailu.
 
-## Pendiente
-
-- [ ] Generar el compose con el asistente y copiarlo a este directorio.
-- [ ] Conectar a la red `blue-team-net` de `infra/docker-compose.yml`.
-- [ ] Apuntar `SMTP_HOST` a Mailu y probar SPF/DKIM/DMARC.
+El destinatario es `rsi@correo.local` y el mensaje no sale de Docker, así que SPF y
+DKIM no tienen un receptor externo que los compruebe. Mailpit muestra el aviso de
+alta, modificación, borrado, cambio de maestra y vencimiento, sin secretos. El detalle
+está en `docs/00-arquitectura-c4.md`, sección "Mailpit en lugar de Mailu".

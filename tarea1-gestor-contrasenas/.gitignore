@@ -20,6 +20,7 @@ infra/control-central.env
 
 # Secretos y bóvedas de prueba
 *.vault
+*.sqlite
 keys/
 
 # Logs SIEM generados en runtime (el directorio sí se versiona con .gitkeep)

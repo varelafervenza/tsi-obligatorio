@@ -3,10 +3,12 @@
 MTTD: promedio de la primera alerta del evento de origen (creado_en) menos occurred_at de ese evento.
 MTTR: promedio de resuelto_en menos la primera alerta del evento de origen, solo casos resueltos con alerta.
 Cobertura: cuántos de los cuatro tipos de RF-07 ya llegaron al menos una vez.
-La tasa de falsos positivos queda vacía hasta que el SIEM emita alertas (RF-10).
+alertas_siem cuenta las reglas 100100-100120 en alerts.json. La tasa sigue vacía
+hasta que alguien clasifique las alertas locales.
 """
 import socket
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -14,6 +16,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.siem.alertas_wazuh import contar_alertas
 from app.core.runtime import segundos_activo
 from app.db.session import get_db
 from app.models.alert import Alert
@@ -190,15 +193,25 @@ def obtener_kpis(db: Session = Depends(get_db)):
         )
         or 0
     )
+    alertas_siem = contar_alertas(Path(settings.siem_alerts_path))
     if clasificadas == 0:
         tasa_falsos = None
-        nota_falsos = (
-            f"{alertas_reglas} alertas de las reglas locales, ninguna clasificada. "
-            "Wazuh todavía no emite las suyas."
-        )
+        if alertas_siem == 0:
+            nota_falsos = (
+                f"{alertas_reglas} alertas de las reglas locales, ninguna clasificada. "
+                "Wazuh todavía no emitió alertas de las reglas 100100-100120."
+            )
+        else:
+            nota_falsos = (
+                f"Wazuh emitió {alertas_siem} alertas de las reglas del gestor. "
+                "La tasa sigue vacía: ninguna alerta local está clasificada como falso positivo."
+            )
     else:
         tasa_falsos = round(100 * falsos / clasificadas, 1)
-        nota_falsos = "Tasa sobre alertas locales ya clasificadas. El manager de Wazuh sigue aparte."
+        nota_falsos = (
+            f"Tasa sobre alertas locales ya clasificadas. "
+            f"Wazuh emitió {alertas_siem} alertas de las reglas del gestor."
+        )
 
     return Panel(
         generado_en=ahora,
@@ -225,7 +238,7 @@ def obtener_kpis(db: Session = Depends(get_db)):
             ),
             falsos_positivos=FalsosPositivos(
                 tasa=tasa_falsos,
-                alertas_siem=0,
+                alertas_siem=alertas_siem,
                 alertas_reglas=alertas_reglas,
                 nota=nota_falsos,
             ),

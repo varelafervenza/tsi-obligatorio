@@ -54,8 +54,8 @@ Ya cerrados: R06 (aviso al activar MFA) y R11 (hook de `gitleaks`), en `aaecc19`
 
 | # | Pendiente | Responsable | Estado |
 |---|---|---|---|
-| 19 | Wazuh manager levantado con al menos una alerta real, o limitación documentada | a confirmar | Pendiente |
-| 20 | Mailu con SPF y DKIM, o justificar Mailpit ante la cátedra | a confirmar | Pendiente |
+| 19 | Wazuh manager levantado con al menos una alerta real, o limitación documentada | a confirmar | Hecho (07/10): manager y agente 4.14.8, alertas 100120, 100101 y 100111. Sin indexer ni FIM de la bóveda |
+| 20 | Mailu con SPF y DKIM, o justificar Mailpit ante la cátedra | a confirmar | Hecho (07/10): se usa Mailpit. Justificación en `docs/00-arquitectura-c4.md` |
 | 21 | Consulta escrita a la cátedra: Anexo A (no está en el repo) y postura sobre Mailpit y Wazuh | a confirmar | Pendiente |
 | 22 | Medir uptime, RNF-02 (apertura < 2 s), RNF-05 (carga básica) y RNF-10 (rollback) | a confirmar | Pendiente |
 | 23 | Escaneo de red y web (nmap, OpenVAS o nuclei), más Trivy y `cargo audit` | a confirmar | Pendiente |
@@ -63,7 +63,7 @@ Ya cerrados: R06 (aviso al activar MFA) y R11 (hook de `gitleaks`), en `aaecc19`
 | 25 | Backup diario automático (tarea programada de Windows) y copia fuera del equipo | a confirmar | Pendiente |
 | 26 | Custodia de `keys/agentes/`: decidir dónde se guarda la clave privada | RSI | Pendiente |
 | 27 | Contactos oficiales de reporte (teléfono y correo) en `docs/12-Notificacion-Incidentes.md` | RSI | Pendiente |
-| 28 | Subir FastAPI y starlette para cerrar V03. Se deja para el final por riesgo de regresión | a confirmar | Pendiente |
+| 28 | Subir FastAPI y starlette para cerrar V03. Se deja para el final por riesgo de regresión | a confirmar | Hecho (07/10): FastAPI 0.142.3 y starlette 1.7.0. 18 tests pasan |
 
 ## Decisiones resueltas
 

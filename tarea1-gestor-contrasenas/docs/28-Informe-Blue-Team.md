@@ -25,7 +25,7 @@ Lo que está demostrado con evidencia:
 Lo que no cumple todavía, y se declara abierto en la sección 6:
 
 - El MTTD y el MTTR del panel se corrigieron el 06/10 (ver sección 4.2): el MTTD mide desde el evento hasta la alerta y el MTTR desde la alerta hasta la resolución.
-- El SIEM Wazuh está modelado y su regla escrita, pero el manager no está levantado. Por eso la tasa de falsos positivos del SIEM no se puede calcular.
+- El manager y el agente de Wazuh están levantados (4.14.8, sin indexer). Hay alertas reales de las reglas 100120, 100101 y 100111. La tasa de falsos positivos sigue vacía porque ninguna alerta local está clasificada.
 - Hay limitaciones de alcance aceptadas con la cátedra: TLS en el laboratorio, y Windows Hello y WebAuthn fuera de la entrega.
 
 ---
@@ -37,10 +37,10 @@ El detalle está en `00-arquitectura-c4.md`. Resumen de componentes:
 | Componente | Tecnología | Rol |
 |---|---|---|
 | `cliente-gestor` | Tauri 2, React 18, Rust | Bóveda local cifrada, agente de eventos, modo offline |
-| `control-central` | FastAPI 0.115, SQLAlchemy 2, PostgreSQL 16 | Recepción de eventos, reglas, alertas, incidentes, panel |
-| Correo | Mailpit (prototipo); Mailu previsto | Notificaciones a RSI |
+| `control-central` | FastAPI 0.142.3, Starlette 1.7.0, SQLAlchemy 2, PostgreSQL 16 | Recepción de eventos, reglas, alertas, incidentes, panel |
+| Correo | Mailpit | Notificaciones a RSI. Mailu no se despliega (ver `00-arquitectura-c4.md`) |
 | Panel | Grafana 11.2 | Visualización sobre PostgreSQL |
-| SIEM | Wazuh (reglas escritas; manager no desplegado) | Correlación externa prevista |
+| SIEM | Wazuh 4.14.8 (manager + agente, sin indexer) | Correlación de `audit-events.jsonl` |
 
 Dependencia del canal: los eventos se firman con una clave privada por agente (RS-256). El control central tiene la clave pública de cada agente en `keys/agentes/`.
 
@@ -55,7 +55,7 @@ Los detalles por control están en `11-SoA-Plan-Tratamiento.md` y en el Excel `d
 | **Gobernar** | Política (`01`, borrador 0.1), registro de activos (14 activos), análisis de riesgos (12 riesgos), SoA (93 controles: 73 aplican, 20 N.A.) | Parcial. Política sin firma del RSI |
 | **Identificar** | Activos A01–A14, riesgos R01–R12 de RT-01 a RT-12, vulnerabilidades V01–V04 | Parcial |
 | **Proteger** | Argon2id, XChaCha20-Poly1305, RS-256 para eventos, TOTP en login y en el panel, token por login, listado sin secretos | Parcial. TLS y Hello/WebAuthn fuera de la entrega |
-| **Detectar** | Reglas de la API con alertas en vivo (CU-01 a CU-03), panel de KPIs, log JSONL sin secretos | Parcial. Wazuh sin manager |
+| **Detectar** | Reglas de la API con alertas en vivo (CU-01 a CU-03), panel de KPIs, log JSONL sin secretos, Wazuh 4.14.8 con alertas 100120, 100101 y 100111 | Parcial. Sin indexer ni FIM de la bóveda |
 | **Responder** | Procedimiento de incidentes (`04`), incidente de prueba resuelto, notificación simulada BCU/URCDP (`12`) | Parcial. Sin bloqueo automático del origen |
 | **Recuperar** | Plan de continuidad (`06`), backup `pg_dump` con SHA-256, restauración probada con datos | Parcial. Backup diario y copia externa pendientes |
 
@@ -74,7 +74,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 | MTTD | Tiempo de detección de un ataque simulado | 0.2 s (alerta 1 menos evento 10, definición A) | 1 | Sí, con la definición A (ver 4.2) |
 | MTTR | Tiempo de respuesta a incidente | 77 881.7 s (21 h 38 min), desde la alerta hasta la resolución | 1 | Sí, con la definición desde la alerta (ver 4.2). Valor alto por la espera de creación del caso |
 | Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % en la base (06/10, script) y alta/mod/borrado repetidos desde la app el 07/10 (`docs/evidencias/05-03-app-alta.png`, `05-03-app-modificacion.png`, `05-03-app-borrado.png`) | 4 de 4 tipos | Sí |
-| Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`) | 0 SIEM / 4 de reglas locales | No medido |
+| Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`). `alertas_siem` ya cuenta las reglas de Wazuh | 16 alertas SIEM en la prueba del 07/10; ninguna alerta local clasificada | Tasa no medida |
 | Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
 
 ### 4.2 Lectura de los KPIs (lo que hay que saber antes de defenderlos)
@@ -103,7 +103,7 @@ el caso 1: incluye el tiempo entre la alerta y la creación manual del incidente
 - **Cobertura del 100 %:** resuelto. El 06/10 se completó el KPI en la base con un script; el 07/10 se
   repitió alta (sección 05), modificación y borrado desde el cliente (`firma_valida: true`, agente
   `agente-aeb5b922`, `docs/evidencias/05-03-app-modificacion.png` y `05-03-app-borrado.png`).
-- **Falsos positivos:** requiere alertas de Wazuh clasificadas. Hay que levantar el manager.
+- **Falsos positivos:** el manager ya emite alertas. La tasa sigue vacía hasta clasificar las alertas locales.
 - **Uptime:** medir durante la ventana de validación con una sonda de `healthz` registrada en el tiempo.
 
 ---
@@ -129,7 +129,7 @@ Nota de la corrida doble: el script `simular_casos_uso.py` se ejecutó dos veces
 |---|---|---|
 | V01 | `python-jose` con avisos | Remediado (3.4.0) |
 | V02 | `python-multipart` con avisos | Remediado (0.0.31) |
-| V03 | `starlette` (dependencia de FastAPI 0.115.0) con avisos | **Abierta.** Subir FastAPI queda para el final por riesgo de regresión. CVSS pendiente |
+| V03 | `starlette` (dependencia de FastAPI 0.115.0) con avisos | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS pendiente |
 | V04 | `ecdsa` sin corrección | Riesgo aceptado: RS-256 no usa ECDSA |
 
 Herramientas corridas: `pip-audit` antes y después, `bandit` con 0 issues, `npm audit` con 0 vulnerabilidades.
@@ -146,8 +146,8 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 
 ### 6.3 Pendientes que afectan la entrega
 
-- Wazuh manager levantado con al menos una alerta real, o limitación documentada.
-- Mailu con SPF y DKIM, o justificar Mailpit ante la cátedra.
+- Clasificar alertas para poder calcular la tasa de falsos positivos. El manager ya emite alertas (07/10).
+- Mailpit queda como correo del laboratorio. La justificación está en `00-arquitectura-c4.md`.
 - Consulta por escrito a la cátedra sobre el Anexo A (no está en el repo) y la postura sobre Mailpit y Wazuh.
 - Firma del RSI en `01`, `06`, `11` y `12`.
 - Backup diario automático (tarea programada) y copia fuera del equipo.
@@ -171,7 +171,7 @@ Pendiente: la bitácora Excel `04-bitacora-planilla.xlsx` tiene las entradas has
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada y restauración. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto es medible y está nombrado: definición de MTTD y MTTR, SIEM con manager levantado, vulnerabilidades V03 y firma del RSI. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto es medible y está nombrado: tasa de falsos positivos (falta clasificar) y firma del RSI. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 
@@ -181,7 +181,7 @@ El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, r
 - [x] KPIs de 6.4 con valores medidos, definición y estado.
 - [x] Incidentes simulados y su resultado.
 - [x] Vulnerabilidades y limitaciones de alcance.
-- [x] Cobertura de eventos al 100 % (con evento de prueba; falta repetir desde el cliente).
+- [x] Cobertura de eventos al 100 % desde la app (alta, modificación y borrado, 07/10).
 - [x] MTTD con la definición A (primera alerta menos evento de origen).
 - [x] MTTR medido desde la alerta.
 - [ ] Firma del RSI.

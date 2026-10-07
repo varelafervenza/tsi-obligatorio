@@ -1,38 +1,55 @@
 # Wazuh (SIEM/HIDS)
 
-No se incluye un `docker-compose.yml` inline acá porque el stack oficial de Wazuh
-(manager + indexer + dashboard, con certificados TLS generados) es extenso y cambia
-de versión en versión. Usar el generador oficial:
+## Cómo levantarlo
 
-```bash
-git clone https://github.com/wazuh/wazuh-docker.git -b v4.9.0
-cd wazuh-docker/single-node
-docker compose up -d
+Desde `infra/`, con Docker Desktop abierto. Es el mismo compose del control central; no hace
+falta clonar `wazuh-docker`.
+
+```powershell
+copy .env.example .env
+copy control-central.env.example control-central.env
+docker compose up --build -d
 ```
 
-Después:
-1. Conectar el manager de Wazuh a la red `blue-team-net` de `infra/docker-compose.yml`
-   (o exponer el puerto del manager y apuntar los agentes ahí).
-2. Instalar el **agente Wazuh** en la VM del cliente-gestor (o del control-central si
-   se quiere monitorear también ese host) para FIM sobre el archivo de bóveda.
-3. Copiar `local_rules.xml` a `/var/ossec/etc/rules/local_rules.xml` del manager (RF-10)
-   y el fragmento `localfile-audit.xml` al `ossec.conf` que lee el JSONL.
-4. Documentar las capturas de alertas en `docs/07-Monitoreo-Logs-SIEM.md`.
+La primera vez descarga `wazuh/wazuh-manager:4.14.8` y `wazuh/wazuh-agent:4.14.8`. El agente
+no arranca hasta que el manager está healthy (cerca de un minuto).
 
-## Formato de log (ya emitido por control-central)
+```powershell
+docker exec infra-wazuh-manager-1 /var/ossec/bin/agent_control -l
+```
 
-Cada `POST /api/events/` agrega **una línea JSON** en
-`infra/logs/audit-events.jsonl` (dentro del contenedor:
-`/var/log/control-central/audit-events.jsonl`). Campos: `programa`, `event_id`,
-`tipo`, `sistema`, `agente_id`, `occurred_at`, `received_at`, `ip_origen`,
-`firma_valida`. Sin secretos ni `firma_jws`.
+Esperado: `agente-control-central` **Active**. Después, una línea nueva en
+`logs/audit-events.jsonl` con `"tipo": "cambio_maestra"` tiene que generar la regla 100120.
+Fuerza bruta (100101) y borrado masivo (100111) piden 5 eventos del mismo `agente_id` en
+2 minutos. El panel las suma en `GET /api/dashboard/kpis` → `alertas_siem`.
 
-Cuando exista el manager, pegar `localfile-audit.xml` en el `ossec.conf` que lee
-ese JSONL. Las reglas ya están en `local_rules.xml` y matchean `tipo`:
-`intento_fallido_maestra`, `borrado_credencial`, `cambio_maestra`.
+```powershell
+docker exec infra-wazuh-manager-1 tail -n 5 /var/ossec/logs/alerts/alerts.json
+```
 
-## Pendiente
+| Pieza | Imagen | Rol |
+|---|---|---|
+| `wazuh-manager` | `wazuh/wazuh-manager:4.14.8` | Aplica `local_rules.xml` y escribe `alerts.json` |
+| `wazuh-agent` | `wazuh/wazuh-agent:4.14.8` | Lee `infra/logs/audit-events.jsonl` y lo manda al manager |
 
-- [x] Formato de log del forwarder (`wazuh_forwarder.py` → JSONL).
-- [x] Reglas escritas en `local_rules.xml` (fuerza bruta, borrado masivo, cambio de maestra). Falta dispararlas con el manager levantado.
-- [ ] Configurar retención ≥ 90 días (RNF-07).
+La 4.9 que figuraba antes no publica imagen de agente. Manager y agente van en la misma
+4.14.8 para que el enrolamiento cierre.
+
+## Qué no está
+
+El indexer y el dashboard de Wazuh no se levantan: el indexer pide cerca de 1 GB de heap y
+esta Docker ya comparte memoria con el resto del stack. Sin indexer, Filebeat sale y la
+imagen oficial apaga el manager. `manager/01-laboratorio.sh` deja Filebeat en espera para
+que el manager siga vivo. Las alertas quedan en el volumen `wazuh-alerts`
+(`/var/ossec/logs/alerts/alerts.json`). El panel las cuenta en `alertas_siem` de
+`GET /api/dashboard/kpis` (reglas 100100, 100101, 100110, 100111 y 100120).
+
+Tampoco hay agente en el Windows del usuario. El FIM de la bóveda local sigue sin
+desplegar. El agente de este compose vigila el JSONL de auditoría, no el archivo de la bóveda.
+
+Puertos en el host: 1514 y 1515 (agente), 55000 (API del manager, usuario `wazuh` /
+contraseña `wazuh`, solo laboratorio).
+
+## Retención
+
+- [ ] Retención del JSONL y de `alerts.json` en 90 días o más (RNF-07). La de PostgreSQL ya corre al arrancar el central.

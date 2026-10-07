@@ -15,7 +15,7 @@ App de escritorio (Tauri: Rust + frontend web) que corre 100% local. No requiere
 
 ## Estado
 
-- [x] Esquema SQLite y CRUD: crear, abrir, cerrar, alta, consulta, modificación y borrado. `vault/store.rs`. El historial se usa para rechazar reuso; la pantalla no lo lista.
+- [x] Esquema SQLite y CRUD: crear, abrir, cerrar, alta, consulta, modificación y borrado. `vault/store.rs`. En disco el archivo va cifrado (`BOV2`). El historial se usa para rechazar reuso; la pantalla no lo lista.
 - [x] Argon2id con parámetros configurables (por defecto 19 MiB / 2 iteraciones). `crypto/kdf.rs`.
 - [x] Cifrado XChaCha20-Poly1305 de cada entrada (nonce nuevo, tag verificado). `crypto/cipher.rs`.
 - [x] TOTP local: la bóveda muestra un QR, se confirma con el código de la app y la próxima apertura lo exige. `auth/totp.rs` y `src/App.tsx`. WebAuthn/Windows Hello siguen sin implementar.
@@ -58,7 +58,7 @@ cargo test
 3. Elegí la credencial. **Ver** muestra la contraseña. Cambiala y **Guardar cambios**. Volvé a elegirla y confirmá el valor nuevo.
 4. **Cerrar** y **Abrir bóveda** con la misma maestra. La credencial sigue ahí.
 5. Cerrá y abrí con otra maestra. Tiene que rechazarla y no mostrar credenciales.
-6. Abrí `boveda-prueba.sqlite` con un editor de texto y buscá la contraseña que cargaste. No tiene que aparecer en claro.
+6. Abrí `boveda-prueba.sqlite` con un editor de texto o con DB Browser. El archivo empieza con `BOV2` y no se abre como una base SQLite. No tienen que aparecer la contraseña, el sistema ni el usuario.
 7. Con una credencial seleccionada, **Borrar** la saca de la lista.
 
 ## Política y generador

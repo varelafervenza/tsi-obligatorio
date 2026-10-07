@@ -1588,10 +1588,116 @@ Hora (UTC): N/D
   vea como un forjado de firma (R02). Pendiente: probar el cierre de la app con la cola llena en un equipo real,
   cosa que no se pudo hacer en esta sesión porque no se pudo ejecutar la GUI de Tauri.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 21:32
+---
+
+## Actividad: Wazuh leyendo el JSONL y el KPI de alertas del SIEM
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: Se levantaron el manager y el agente de Wazuh 4.14.8 en `infra/docker-compose.yml`.
+  La imagen oficial del agente empieza en 4.13, así que no se usó la 4.9 de la letra. No se levantó el
+  indexer ni el dashboard: Docker tiene poca memoria y Filebeat, al salir, tumba al manager. El script
+  `infra/wazuh/manager/01-laboratorio.sh` deja a Filebeat en `sleep infinity`. El agente lee
+  `/var/log/control-central/audit-events.jsonl`. Las reglas 100100, 100101, 100110, 100111 y 100120
+  cuentan en `alertas_siem` del panel. El README de la tarea y `infra/wazuh/README.md` dicen cómo
+  levantarlo: entra con el mismo `docker compose up`.
+- **Herramienta / comando**: `docker compose up` en `infra/`; `agent_control -l` en el manager;
+  `GET /api/dashboard/kpis`; `python -m pytest -q tests` dentro de `infra-control-central` contra
+  `control_central_test`.
+- **Resultado**: Éxito. El agente `agente-control-central` quedó Active. Tras un segundo envío de
+  intentos fallidos, el KPI `alertas_siem` dio 16 (100120=1, 100101=3, 100110=4, 100111=1, 100100=7).
+  Las 18 pruebas de la API pasan, incluidas las 2 del contador de alertas.
+- **Evidencia anexa**: `infra/wazuh/`, `control-central/app/siem/alertas_wazuh.py`,
+  `control-central/tests/test_alertas_wazuh.py`. No hay captura nueva en `docs/evidencias/`.
+- **Incidencia / hallazgo**: El primer healthcheck usaba `wazuh-control status`. Ese comando sale con
+  código 1 porque varios demonios opcionales están apagados, y tarda unos 15 s. El compose no llegaba
+  a healthy. Se cambió el chequeo a `pgrep` de `wazuh-analysisd` y `wazuh-remoted`. El script de alta
+  del agente también sale con 1 si `WAZUH_REGISTRATION_PASSWORD` está vacío; el agente igual se conectó.
+  El primer JSONL se creó en la carpeta equivocada y se borró. La tasa de falsos positivos sigue vacía
+  hasta clasificar alertas locales.
+- **Observaciones**: No hay FIM de la bóveda en Windows. Sin commit todavía.
+
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 21:32
+---
+
+## Actividad: Dejar por escrito que Mailpit alcanza en este laboratorio
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: La decisión de no levantar Mailu ya estaba conversada y no estaba en los
+  documentos. Se escribió en `docs/00-arquitectura-c4.md`, en el README, en `infra/mailu/README.md`,
+  en `docs/06`, `docs/07`, `docs/28` y en `docs/00-pendientes-entrega.md`. El aviso va a
+  `rsi@correo.local` y no sale de Docker, así que SPF y DKIM no tienen un receptor externo que los
+  compruebe. Mailpit muestra el alta, la modificación, el borrado y el cambio de maestra.
+- **Herramienta / comando**: edición de esos documentos.
+- **Resultado**: Documentado. Mailu no se levantó.
+- **Evidencia anexa**: `docs/00-arquitectura-c4.md` (sección «Limitación de alcance: Mailpit en lugar de Mailu»).
+- **Incidencia / hallazgo**: Quien llegue al puerto 1025 puede inyectar un aviso en la bandeja local de
+  Mailpit. No llega a un buzón de internet.
+- **Observaciones**: Si el correo tuviera que salir del laboratorio, habría que volver a Mailu.
+
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 21:32
+---
+
+## Actividad: Cerrar V03 (FastAPI y Starlette) y armar la bóveda de 22 sistemas
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: (1) `control-central/requirements.txt` pasó a FastAPI 0.142.3 y Starlette 1.7.0.
+  El audit del 05/10 pedía, como mínimo, Starlette 1.3.1. Se reconstruyó la imagen y
+  `GET /healthz` respondió bien. `docs/10-Gestion-Vulnerabilidades.md` marca V03 como remediada el
+  07/10. El CVSS sigue pendiente. (2) El test `sembrar_anexo_b_en_una_boveda` creó
+  `cliente-gestor/datos-prueba/boveda-anexo-b.sqlite` con 22 sistemas ficticios. Se abre con la
+  maestra `maestra-de-prueba`. La guía de pruebas lo describe en C-15.
+- **Herramienta / comando**: `docker compose up -d --build control-central`; `python -m pytest -q tests`
+  dentro de la imagen (18 pasan); `cargo test sembrar_anexo_b_en_una_boveda` con
+  `CARGO_TARGET_DIR` en `%TEMP%\gestor-target`.
+- **Resultado**: Éxito en ambos. El archivo de la bóveda pesa 36 864 bytes y el test afirma 22 entradas
+  al crearla y al reabrirla.
+- **Evidencia anexa**: `control-central/requirements.txt`, `docs/10-Gestion-Vulnerabilidades.md`,
+  `cliente-gestor/datos-prueba/boveda-anexo-b.sqlite`, `docs/guia-de-pruebas.md` (C-15).
+- **Incidencia / hallazgo**: El primer `cargo test` falló al crear `src-tauri\target` (acceso denegado).
+  Se reintentó con el target en la carpeta temporal y pasó. `pip-audit` no pudo volver a consultar
+  PyPI: el certificado de esta máquina no verifica. V03 queda cerrada por las versiones que el audit
+  anterior ya pedía, sin un audit nuevo. No se midieron uptime, apertura de bóveda, carga ni rollback,
+  y no se anotó que esas pruebas hubieran salido bien.
+- **Observaciones**: V04 (`ecdsa`) sigue aceptada. Sin commit todavía.
+
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte
+Hora (UTC): 21:50
+---
+
+## Actividad: Cifrar el archivo completo de la bóveda
+
+- **Fase**: Implementación y prueba
+- **Duración**: N/D
+- **Tarea realizada**: El docente pidió cifrar la tabla de la bóveda. Antes, la contraseña y las notas iban cifradas, pero el archivo era un SQLite normal: sistema, usuario y categoría se leían con cualquier visor. Ahora el archivo entero se guarda con cabecera `BOV2` y XChaCha20-Poly1305, con la misma clave Argon2id de la maestra. Al abrir una bóveda vieja (cabecera `SQLite format 3`) se reescribe cifrada. Las 29 pruebas de Rust pasan, incluida una que migra una bóveda vieja y otra que comprueba que el sistema no queda en claro.
+- **Herramienta / comando**: `cargo test` en `cliente-gestor/src-tauri`, con `CARGO_TARGET_DIR` en la carpeta temporal.
+- **Resultado**: Éxito. `cliente-gestor/datos-prueba/boveda-anexo-b.sqlite` empieza con `BOV2`.
+- **Evidencia anexa**: `cliente-gestor/src-tauri/src/vault/store.rs`. No hay captura nueva en `docs/evidencias/`.
+- **Incidencia / hallazgo**: El primer intento de regenerar la bóveda de 22 sistemas falló con `YaExiste` porque Windows no dejó borrar el sqlite anterior (acceso denegado). Se borró con `del /f` y el test pasó.
+- **Observaciones**: Sin commit todavía.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
 - [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09; Pablo Morales el
-  25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10 y el 03/10).
+  25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10, el 03/10 y el 07/10).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

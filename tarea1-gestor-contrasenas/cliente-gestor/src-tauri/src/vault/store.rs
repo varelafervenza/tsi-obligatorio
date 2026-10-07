@@ -1,16 +1,21 @@
-//! Archivo de bóveda (SQLite). La contraseña de cada credencial se guarda cifrada
-//! con la clave derivada de la maestra. Este módulo no escribe secretos en logs.
+//! Archivo de bóveda. Por dentro es SQLite, pero en disco el archivo entero va
+//! cifrado (cabecera `BOV2` + XChaCha20-Poly1305) con la clave Argon2id de la
+//! maestra. Una bóveda vieja, en SQLite sin cifrar, se reescribe al abrirla.
+//! Este módulo no escribe secretos en logs.
 
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::ptr::NonNull;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rusqlite::{params, Connection, OptionalExtension};
+use rusqlite::{params, Connection, DatabaseName, OptionalExtension};
 
 use crate::crypto::cipher;
 use crate::crypto::kdf::{self, ParametrosKdf};
 
 const VERIFICADOR: &[u8] = b"boveda-v1";
+const MAGIC_BOV2: &[u8] = b"BOV2";
+const CABECERA_BOV2: usize = 32;
 
 const ESQUEMA: &str = "
 CREATE TABLE meta (
@@ -137,10 +142,14 @@ pub struct Boveda {
     conn: Connection,
     clave: [u8; 32],
     ruta: PathBuf,
+    guardar: bool,
 }
 
 impl Drop for Boveda {
     fn drop(&mut self) {
+        if self.guardar {
+            let _ = self.persistir();
+        }
         self.clave.fill(0);
     }
 }
@@ -159,27 +168,104 @@ impl Boveda {
         if !ruta.exists() {
             return Err(ErrorBoveda::NoExiste);
         }
-        let conn = Connection::open(ruta)?;
-        let (salt, parametros, verificador) = leer_meta(&conn)?;
-        let mut clave = derivar(maestra, &salt, parametros)?;
-        match cipher::descifrar(&clave, &verificador) {
-            Ok(plano) if plano == VERIFICADOR => {
-                asegurar_esquema(&conn)?;
-                if let Err(error) = exigir_totp(&conn, &clave, codigo) {
-                    clave.fill(0);
-                    return Err(error);
+        let archivo = fs::read(ruta).map_err(ErrorBoveda::Io)?;
+        if archivo.starts_with(b"SQLite format 3") {
+            return Self::abrir_sqlite_legado(ruta, maestra, codigo);
+        }
+        if archivo.starts_with(MAGIC_BOV2) {
+            return Self::abrir_archivo_cifrado(ruta, &archivo, maestra, codigo);
+        }
+        Err(ErrorBoveda::ArchivoInvalido)
+    }
+
+    fn abrir_sqlite_legado(ruta: &Path, maestra: &str, codigo: Option<&str>) -> Result<Self, ErrorBoveda> {
+        let (mut clave, plano) = {
+            let conn = Connection::open(ruta)?;
+            let (salt, parametros, verificador) = leer_meta(&conn)?;
+            let mut clave = derivar(maestra, &salt, parametros)?;
+            match cipher::descifrar(&clave, &verificador) {
+                Ok(plano) if plano == VERIFICADOR => {
+                    asegurar_esquema(&conn)?;
+                    if let Err(error) = exigir_totp(&conn, &clave, codigo) {
+                        clave.fill(0);
+                        return Err(error);
+                    }
+                    let data = conn.serialize(DatabaseName::Main).map_err(ErrorBoveda::from)?;
+                    (clave, data.to_vec())
                 }
-                Ok(Self {
-                    conn,
-                    clave,
-                    ruta: ruta.to_path_buf(),
-                })
+                _ => {
+                    clave.fill(0);
+                    return Err(ErrorBoveda::MaestraIncorrecta);
+                }
             }
+        };
+        let conn = match conexion_desde(&plano) {
+            Ok(conn) => conn,
+            Err(error) => {
+                clave.fill(0);
+                return Err(error);
+            }
+        };
+        let boveda = Self {
+            conn,
+            clave,
+            ruta: ruta.to_path_buf(),
+            guardar: true,
+        };
+        boveda.persistir()?;
+        Ok(boveda)
+    }
+
+    fn abrir_archivo_cifrado(
+        ruta: &Path,
+        archivo: &[u8],
+        maestra: &str,
+        codigo: Option<&str>,
+    ) -> Result<Self, ErrorBoveda> {
+        let (parametros, salt, blob) = leer_cabecera(archivo)?;
+        let mut clave = derivar(maestra, &salt, parametros)?;
+        let plano = match cipher::descifrar(&clave, blob) {
+            Ok(plano) => plano,
+            Err(_) => {
+                clave.fill(0);
+                return Err(ErrorBoveda::MaestraIncorrecta);
+            }
+        };
+        let conn = match conexion_desde(&plano) {
+            Ok(conn) => conn,
+            Err(error) => {
+                clave.fill(0);
+                return Err(error);
+            }
+        };
+        let (_salt, _parametros, verificador) = match leer_meta(&conn) {
+            Ok(meta) => meta,
+            Err(error) => {
+                clave.fill(0);
+                return Err(error);
+            }
+        };
+        match cipher::descifrar(&clave, &verificador) {
+            Ok(plano) if plano == VERIFICADOR => {}
             _ => {
                 clave.fill(0);
-                Err(ErrorBoveda::MaestraIncorrecta)
+                return Err(ErrorBoveda::MaestraIncorrecta);
             }
         }
+        if let Err(error) = asegurar_esquema(&conn) {
+            clave.fill(0);
+            return Err(error);
+        }
+        if let Err(error) = exigir_totp(&conn, &clave, codigo) {
+            clave.fill(0);
+            return Err(error);
+        }
+        Ok(Self {
+            conn,
+            clave,
+            ruta: ruta.to_path_buf(),
+            guardar: true,
+        })
     }
 
     pub fn ruta(&self) -> &Path {
@@ -214,6 +300,7 @@ impl Boveda {
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
             params![sistema, usuario, cifrado, notas_cifradas, categoria, ahora, ahora, vence_en],
         )?;
+        self.persistir()?;
         Ok(CredencialResumen {
             id: self.conn.last_insert_rowid(),
             sistema: sistema.to_string(),
@@ -360,6 +447,7 @@ impl Boveda {
         if cambiadas == 0 {
             Err(ErrorBoveda::NoEncontrada)
         } else {
+            self.persistir()?;
             Ok(())
         }
     }
@@ -372,6 +460,7 @@ impl Boveda {
         if marcadas == 0 {
             Err(ErrorBoveda::NoEncontrada)
         } else {
+            self.persistir()?;
             Ok(())
         }
     }
@@ -456,6 +545,7 @@ impl Boveda {
             )?;
         }
         tx.commit()?;
+        self.persistir()?;
         Ok(filas.len())
     }
 
@@ -500,6 +590,7 @@ impl Boveda {
             let _ = self
                 .conn
                 .execute("DELETE FROM historial WHERE credencial_id = ?1", [id]);
+            self.persistir()?;
             Ok(())
         }
     }
@@ -512,6 +603,7 @@ impl Boveda {
             "UPDATE meta SET totp_secreto = ?1, totp_activo = 0 WHERE id = 1",
             params![blob],
         )?;
+        self.persistir()?;
         Ok((secreto, uri))
     }
 
@@ -528,6 +620,7 @@ impl Boveda {
         }
         self.conn
             .execute("UPDATE meta SET totp_activo = 1 WHERE id = 1", [])?;
+        self.persistir()?;
         Ok(())
     }
 
@@ -598,6 +691,7 @@ impl Boveda {
         }
         tx.commit()?;
         self.clave = clave_nueva;
+        self.persistir()?;
         Ok(())
     }
 
@@ -663,6 +757,7 @@ impl Boveda {
                 politica.categoria.trim()
             ],
         )?;
+        self.persistir()?;
         Ok(())
     }
 
@@ -721,19 +816,52 @@ impl Boveda {
                 fs::create_dir_all(padre).map_err(ErrorBoveda::Io)?;
             }
         }
-        let conn = Connection::open(ruta)?;
-        match inicializar(&conn, maestra, parametros) {
-            Ok(clave) => Ok(Self {
-                conn,
-                clave,
-                ruta: ruta.to_path_buf(),
-            }),
-            Err(error) => {
-                drop(conn);
-                let _ = fs::remove_file(ruta);
-                Err(error)
-            }
+        let conn = Connection::open_in_memory()?;
+        let clave = match inicializar(&conn, maestra, parametros) {
+            Ok(clave) => clave,
+            Err(error) => return Err(error),
+        };
+        let mut boveda = Self {
+            conn,
+            clave,
+            ruta: ruta.to_path_buf(),
+            guardar: true,
+        };
+        if let Err(error) = boveda.persistir() {
+            boveda.guardar = false;
+            let _ = fs::remove_file(ruta);
+            return Err(error);
         }
+        Ok(boveda)
+    }
+
+    fn persistir(&self) -> Result<(), ErrorBoveda> {
+        let (salt, parametros, _) = leer_meta(&self.conn)?;
+        if salt.len() != 16 {
+            return Err(ErrorBoveda::ArchivoInvalido);
+        }
+        let plano = self.conn.serialize(DatabaseName::Main).map_err(ErrorBoveda::from)?;
+        let cifrado = cipher::cifrar(&self.clave, &plano).map_err(|_| ErrorBoveda::Cripto)?;
+        let mut archivo = Vec::with_capacity(CABECERA_BOV2 + cifrado.len());
+        archivo.extend_from_slice(MAGIC_BOV2);
+        archivo.extend_from_slice(&parametros.memoria_kib.to_le_bytes());
+        archivo.extend_from_slice(&parametros.iteraciones.to_le_bytes());
+        archivo.extend_from_slice(&parametros.paralelismo.to_le_bytes());
+        archivo.extend_from_slice(&salt);
+        archivo.extend_from_slice(&cifrado);
+        escribir_atomico(&self.ruta, &archivo)
+    }
+
+    #[cfg(test)]
+    fn fijar_vence(&self, sistema: &str, vence_en: i64) -> Result<(), ErrorBoveda> {
+        let cambiadas = self.conn.execute(
+            "UPDATE credenciales SET vence_en = ?1 WHERE sistema = ?2",
+            params![vence_en, sistema],
+        )?;
+        if cambiadas == 0 {
+            return Err(ErrorBoveda::NoEncontrada);
+        }
+        self.persistir()
     }
 }
 
@@ -786,6 +914,54 @@ fn leer_meta(conn: &Connection) -> Result<(Vec<u8>, ParametrosKdf, Vec<u8>), Err
         paralelismo: u32::try_from(paralelismo).map_err(|_| ErrorBoveda::ArchivoInvalido)?,
     };
     Ok((salt, parametros, verificador))
+}
+
+fn leer_cabecera(archivo: &[u8]) -> Result<(ParametrosKdf, [u8; 16], &[u8]), ErrorBoveda> {
+    if archivo.len() < CABECERA_BOV2 || &archivo[..4] != MAGIC_BOV2 {
+        return Err(ErrorBoveda::ArchivoInvalido);
+    }
+    let memoria = u32::from_le_bytes(archivo[4..8].try_into().map_err(|_| ErrorBoveda::ArchivoInvalido)?);
+    let iteraciones = u32::from_le_bytes(archivo[8..12].try_into().map_err(|_| ErrorBoveda::ArchivoInvalido)?);
+    let paralelismo = u32::from_le_bytes(archivo[12..16].try_into().map_err(|_| ErrorBoveda::ArchivoInvalido)?);
+    let mut salt = [0u8; 16];
+    salt.copy_from_slice(&archivo[16..32]);
+    Ok((
+        ParametrosKdf {
+            memoria_kib: memoria,
+            iteraciones,
+            paralelismo,
+        },
+        salt,
+        &archivo[CABECERA_BOV2..],
+    ))
+}
+
+fn conexion_desde(bytes: &[u8]) -> Result<Connection, ErrorBoveda> {
+    if bytes.is_empty() {
+        return Err(ErrorBoveda::ArchivoInvalido);
+    }
+    let mut conn = Connection::open_in_memory()?;
+    let tamano = i32::try_from(bytes.len()).map_err(|_| ErrorBoveda::ArchivoInvalido)?;
+    let ptr = unsafe { rusqlite::ffi::sqlite3_malloc(tamano) } as *mut u8;
+    if ptr.is_null() {
+        return Err(ErrorBoveda::Cripto);
+    }
+    unsafe {
+        std::ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len());
+        let data = rusqlite::serialize::OwnedData::from_raw_nonnull(NonNull::new_unchecked(ptr), bytes.len());
+        conn.deserialize(DatabaseName::Main, data, false)?;
+    }
+    Ok(conn)
+}
+
+fn escribir_atomico(ruta: &Path, bytes: &[u8]) -> Result<(), ErrorBoveda> {
+    let temporal = ruta.with_extension("tmp");
+    fs::write(&temporal, bytes).map_err(ErrorBoveda::Io)?;
+    if ruta.exists() {
+        fs::remove_file(ruta).map_err(ErrorBoveda::Io)?;
+    }
+    fs::rename(&temporal, ruta).map_err(ErrorBoveda::Io)?;
+    Ok(())
 }
 
 fn derivar(maestra: &str, salt: &[u8], parametros: ParametrosKdf) -> Result<[u8; 32], ErrorBoveda> {
@@ -1001,9 +1177,15 @@ mod tests {
             creada.id
         };
         let bytes = fs::read(&ruta).unwrap();
+        assert!(bytes.starts_with(b"BOV2"));
+        assert!(!bytes.starts_with(b"SQLite format 3"));
         assert!(
             !bytes.windows(secreto.len()).any(|w| w == secreto.as_bytes()),
             "el secreto quedó en texto plano dentro del archivo"
+        );
+        assert!(
+            !bytes.windows(b"Banco".len()).any(|w| w == b"Banco"),
+            "el sistema quedó en texto plano dentro del archivo"
         );
 
         let boveda = Boveda::abrir(&ruta, "maestra-de-prueba").unwrap();
@@ -1152,19 +1334,8 @@ mod tests {
             let boveda = Boveda::crear_con(&ruta, "maestra-de-prueba", params_rapidos()).unwrap();
             boveda.alta("Banco", "ana", "secreto-uno", "", "finanzas").unwrap();
             boveda.alta("Correo", "ana", "secreto-dos", "", "trabajo").unwrap();
-        }
-        {
-            let conn = rusqlite::Connection::open(&ruta).unwrap();
-            conn.execute(
-                "UPDATE credenciales SET vence_en = 1 WHERE sistema = 'Banco'",
-                [],
-            )
-            .unwrap();
-            conn.execute(
-                "UPDATE credenciales SET vence_en = ?1 WHERE sistema = 'Correo'",
-                [super::ahora() + 86_400],
-            )
-            .unwrap();
+            boveda.fijar_vence("Banco", 1).unwrap();
+            boveda.fijar_vence("Correo", super::ahora() + 86_400).unwrap();
         }
         let boveda = Boveda::abrir(&ruta, "maestra-de-prueba").unwrap();
         assert_eq!(boveda.sistemas_vencidos().unwrap(), vec!["Banco".to_string()]);
@@ -1195,5 +1366,83 @@ mod tests {
         assert!(Boveda::abrir_con(&ruta, "maestra-de-prueba", Some(&codigo)).is_ok());
         drop(Boveda::abrir_con(&ruta, "maestra-de-prueba", Some(&codigo)).unwrap());
         let _ = fs::remove_file(&ruta);
+    }
+
+    #[test]
+    fn una_boveda_sqlite_vieja_se_cifra_al_abrirla() {
+        let ruta = ruta_tmp("legacy");
+        {
+            let conn = Connection::open(&ruta).unwrap();
+            let clave = inicializar(&conn, "maestra", params_rapidos()).unwrap();
+            let secreto = cifrar_texto(&clave, "secreto-viejo").unwrap();
+            let notas = cifrar_texto(&clave, "").unwrap();
+            let ahora = super::ahora();
+            conn.execute(
+                "INSERT INTO credenciales (sistema, usuario, secreto, notas, categoria, creado_en, actualizado_en)
+                 VALUES ('Banco', 'ana', ?1, ?2, '', ?3, ?3)",
+                params![secreto, notas, ahora],
+            )
+            .unwrap();
+        }
+        assert!(fs::read(&ruta).unwrap().starts_with(b"SQLite format 3"));
+        let boveda = Boveda::abrir(&ruta, "maestra").unwrap();
+        assert_eq!(boveda.obtener(1).unwrap().secreto, "secreto-viejo");
+        drop(boveda);
+        let bytes = fs::read(&ruta).unwrap();
+        assert!(bytes.starts_with(b"BOV2"));
+        assert_eq!(
+            Boveda::abrir(&ruta, "maestra").unwrap().listar().unwrap().len(),
+            1
+        );
+        let _ = fs::remove_file(&ruta);
+    }
+
+    #[test]
+    fn sembrar_anexo_b_en_una_boveda() {
+        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../datos-prueba");
+        fs::create_dir_all(&dir).unwrap();
+        let ruta = dir.join("boveda-anexo-b.sqlite");
+        let _ = fs::remove_file(&ruta);
+        let boveda = Boveda::crear(&ruta, "maestra-de-prueba").unwrap();
+        let sistemas = [
+            ("correo-laboral", "ana.duarte", "trabajo"),
+            ("banca-en-linea", "ana.duarte", "finanzas"),
+            ("portal-agesic", "ana.duarte", "trabajo"),
+            ("vpn-organizacion", "ana.duarte", "infraestructura"),
+            ("wifi-oficina", "invitado", "infraestructura"),
+            ("repositorio-git", "ana.duarte", "desarrollo"),
+            ("panel-grafana", "rsi", "infraestructura"),
+            ("servidor-correo", "postmaster", "infraestructura"),
+            ("mesa-de-ayuda", "ana.duarte", "trabajo"),
+            ("nube-archivos", "ana.duarte", "trabajo"),
+            ("firma-digital", "ana.duarte", "acceso"),
+            ("registro-horario", "ana.duarte", "trabajo"),
+            ("compras-internas", "ana.duarte", "trabajo"),
+            ("portal-rrhh", "ana.duarte", "trabajo"),
+            ("monitor-wazuh", "rsi", "infraestructura"),
+            ("base-de-datos", "gestor", "infraestructura"),
+            ("tablero-incidentes", "rsi", "infraestructura"),
+            ("acceso-edificio", "ana.duarte", "acceso"),
+            ("impresora-segura", "ana.duarte", "oficina"),
+            ("respaldo-remoto", "ana.duarte", "infraestructura"),
+            ("wiki-interna", "ana.duarte", "trabajo"),
+            ("chat-equipo", "ana.duarte", "trabajo"),
+        ];
+        for (sistema, usuario, categoria) in sistemas {
+            let secreto = format!("Lab-{sistema}-2026");
+            boveda
+                .alta(
+                    sistema,
+                    usuario,
+                    &secreto,
+                    "Dato ficticio del conjunto mínimo de prueba.",
+                    categoria,
+                )
+                .unwrap();
+        }
+        assert_eq!(boveda.listar().unwrap().len(), sistemas.len());
+        drop(boveda);
+        let abierta = Boveda::abrir(&ruta, "maestra-de-prueba").unwrap();
+        assert_eq!(abierta.listar().unwrap().len(), 22);
     }
 }

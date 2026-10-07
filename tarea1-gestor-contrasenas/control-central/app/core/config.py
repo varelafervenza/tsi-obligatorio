@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False
     hash_algorithm: str = "argon2id"  # o "bcrypt", elegible desde RF-11
     siem_log_path: str = "./logs/audit-events.jsonl"
+    siem_alerts_path: str = "/var/log/wazuh-alerts/alerts.json"
 
     class Config:
         env_file = ".env"
