@@ -12,6 +12,10 @@ El trabajo principal es la **Tarea 1**, en `tarea1-gestor-contrasenas/`.
 
 ## Cómo trabajar
 
+- **Antes de cada commit, hacé `git fetch` y revisá si hay commits nuevos en `origin` que tu copia local todavía no
+  tiene** (`git log --oneline HEAD..origin/<rama>`). El equipo pushea directo sin pasar por esta sesión, y un
+  sync automático (de VS Code, por ejemplo) puede traer esos commits a la copia local sin que lo notes. Si hay
+  commits nuevos, avisá qué son antes de seguir.
 - Commit y push van en **pasos separados**, cada uno con confirmación previa del usuario.
 - Antes de cambiar el repositorio, proponé el mensaje de commit y los archivos. Esperá el "sí".
 - Los commits pasan por el hook de `gitleaks` (`.pre-commit-config.yaml`). Si el hook bloquea, no lo saltees con `--no-verify`: revisá el hallazgo.
