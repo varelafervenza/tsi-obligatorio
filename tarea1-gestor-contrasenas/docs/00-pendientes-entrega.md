@@ -1,7 +1,7 @@
 # Pendientes para la entrega — Tarea 1
 
 > Fuente única de lo que falta. Se actualiza en el **mismo commit** que cierra cada punto.
-> Estado al **06/10/2026**. Pre-entrega: **07/10/2026**. Defensa: **14/10/2026**.
+> Estado al **07/10/2026**. Pre-entrega: **07/10/2026**. Defensa: **14/10/2026**.
 >
 > Columna **Exigido por**: `Letra` = lo pide `LETRA.md`; `Propio` = compromiso que el equipo declaró en sus documentos.
 > Responsable: `a confirmar` cuando no hay asignación en la RACI.
@@ -14,7 +14,7 @@
 |---|---|---|---|---|
 | 1 | Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` | Letra (congelamiento) | a confirmar | Pendiente |
 | 2 | Video de la demo, de 5 minutos o menos | Letra | a confirmar | Pendiente |
-| 3 | Cobertura de eventos desde la app: alta, modificación y borrado reales. Hoy el 100 % salió de un script | Letra (6.4) | a confirmar | Pendiente |
+| 3 | Cobertura de eventos desde la app: alta, modificación y borrado reales. Hoy el 100 % salió de un script | Letra (6.4) | Pablo Morales | Cerrado |
 
 ### Compromisos del análisis de riesgos (`docs/03-Analisis-Riesgos.md`, v2)
 
@@ -103,3 +103,4 @@ de la firma", y la fila R02 de `docs/03-Analisis-Riesgos.md`. Ideas en discusió
 | 06/10 | `cc52884` | Pruebas automáticas de MTTD, MTTR y cobertura |
 | 06/10 | `fa4b30b` | Análisis de riesgos versión 2 (03) |
 | 06/10 | `aaecc19` | Hook de `gitleaks`, aviso MFA (R06) y pruebas de firma JWS |
+| 07/10 | — | Cobertura alta/mod/borrado desde la app (`05-03-app-modificacion.png`, `05-03-app-borrado.png`) |

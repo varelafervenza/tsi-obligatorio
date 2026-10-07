@@ -73,7 +73,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 |---|---|---|---|---|
 | MTTD | Tiempo de detección de un ataque simulado | 0.2 s (alerta 1 menos evento 10, definición A) | 1 | Sí, con la definición A (ver 4.2) |
 | MTTR | Tiempo de respuesta a incidente | 77 881.7 s (21 h 38 min), desde la alerta hasta la resolución | 1 | Sí, con la definición desde la alerta (ver 4.2). Valor alto por la espera de creación del caso |
-| Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % (evento `modificacion_credencial` enviado el 06/10, `docs/evidencias/28-cobertura-modificacion.txt`) | 4 de 4 tipos | Sí, en la base de laboratorio |
+| Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % en la base (06/10, script) y alta/mod/borrado repetidos desde la app el 07/10 (`docs/evidencias/05-03-app-alta.png`, `05-03-app-modificacion.png`, `05-03-app-borrado.png`) | 4 de 4 tipos | Sí |
 | Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`) | 0 SIEM / 4 de reglas locales | No medido |
 | Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
 
@@ -100,8 +100,9 @@ el caso 1: incluye el tiempo entre la alerta y la creación manual del incidente
 
 ### 4.3 Qué falta para cumplir 6.4
 
-- **Cobertura del 100 %:** resuelto el 06/10 con un evento `modificacion_credencial` firmado. Falta repetirlo con una
-  alta, modificación y borrado reales desde el cliente, para que la medición no dependa solo del script.
+- **Cobertura del 100 %:** resuelto. El 06/10 se completó el KPI en la base con un script; el 07/10 se
+  repitió alta (sección 05), modificación y borrado desde el cliente (`firma_valida: true`, agente
+  `agente-aeb5b922`, `docs/evidencias/05-03-app-modificacion.png` y `05-03-app-borrado.png`).
 - **Falsos positivos:** requiere alertas de Wazuh clasificadas. Hay que levantar el manager.
 - **Uptime:** medir durante la ventana de validación con una sonda de `healthz` registrada en el tiempo.
 
@@ -170,7 +171,7 @@ Pendiente: la bitácora Excel `04-bitacora-planilla.xlsx` tiene las entradas has
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada y restauración. Lo que queda abierto es medible y está nombrado: cobertura al 100 %, definición correcta de MTTD y MTTR, SIEM con manager levantado, vulnerabilidades V03 y firma del RSI. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada y restauración. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto es medible y está nombrado: definición de MTTD y MTTR, SIEM con manager levantado, vulnerabilidades V03 y firma del RSI. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

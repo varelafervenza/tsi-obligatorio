@@ -105,3 +105,24 @@ start http://localhost:8025
     y `sistema-app-2`.
   - `05-03-mailpit.png`: Mailpit con 5 correos de alta, incluidos los ids 4 y 5 de la app.
   - `05-04-grafana.png`: tablero con Eventos = 5, Agentes = 2 y "Última sincronización: hace 18 minutos".
+
+# 07
+# 07/10/26 - Alta, modificación y borrado desde el cliente (cobertura 6.4)
+# Desde la app en Windows, con la carpeta de claves ya configurada. Los correos de Mailpit
+# muestran el tipo, el sistema, el agente y `firma_valida: True`. No llevan secretos ni el JWS.
+
+## 07-01 — Modificación de credencial desde la app
+- Archivo: `docs/evidencias/05-03-app-modificacion.png`
+- Muestra: Mailpit, 7/10/2026 18:21 (hora local). Asunto **Modificación de credencial**.
+  Cuerpo: id 5, `tipo: modificacion_credencial`, `sistema: sistema-prueba2`,
+  `agente_id: agente-aeb5b922`, `occurred_at: 2026-10-07T21:21:31+00:00`, `firma_valida: True`.
+- Qué demuestra: el cliente firma y envía `modificacion_credencial` (RF-07, RF-08). La cobertura
+  de ese tipo ya no depende solo del script `generar_evento_prueba.py`.
+
+## 07-02 — Borrado de credencial desde la app
+- Archivo: `docs/evidencias/05-03-app-borrado.png`
+- Muestra: Mailpit, 7/10/2026 18:24 (hora local). Asunto **Borrado de credencial**.
+  Cuerpo: id 6, `tipo: borrado_credencial`, `sistema: sistema-prueba2`,
+  `agente_id: agente-aeb5b922`, `occurred_at: 2026-10-07T21:24:01+00:00`, `firma_valida: True`.
+- Qué demuestra: el cliente firma y envía `borrado_credencial`. Junto con las altas de la
+  sección 05 (`05-03-app-alta.png`) queda cubierta alta, modificación y borrado desde la app.

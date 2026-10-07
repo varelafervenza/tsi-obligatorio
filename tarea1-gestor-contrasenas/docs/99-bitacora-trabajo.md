@@ -1511,6 +1511,29 @@ Hora (UTC): N/D
 - **Observaciones**: Pendiente decidir entre las 5 ideas antes de implementar nada. El equipo ya hizo una
   pre-entrega con lo existente hasta ahora y recibió el visto bueno; esto sigue como mejora.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 21:25
+---
+
+## Actividad: Cobertura alta, modificación y borrado desde la app
+
+- **Fase**: Validación
+- **Duración**: 20 min
+- **Tarea realizada**: Desde el cliente se modificó y se borró la credencial `sistema-prueba2`. Mailpit
+  recibió **Modificación de credencial** (evento id 5, `firma_valida: True`) y **Borrado de credencial**
+  (evento id 6, `firma_valida: True`), agente `agente-aeb5b922`. Junto con las altas de la evidencia 05
+  queda cerrada la cobertura 6.4 desde la app, no solo con el script. Se documentó en `20-Evidencias.md`
+  (sección 07), se actualizó el informe 28 y se marcó el pendiente #3 como cerrado.
+- **Herramienta / comando**: app de escritorio; Mailpit `http://localhost:8025`.
+- **Resultado**: Éxito. Los dos correos no incluyen secretos ni el JWS.
+- **Evidencia anexa**: `docs/evidencias/05-03-app-modificacion.png`, `docs/evidencias/05-03-app-borrado.png`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Pendiente de commit. El hash del commit se completa en `00-pendientes-entrega.md`
+  al confirmar.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
