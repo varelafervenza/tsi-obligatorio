@@ -1463,6 +1463,27 @@ Hora (UTC): N/D
   hace, otra sesión va a ver pendientes que ya están cerrados.
 - **Observaciones**: Pendiente: asignar responsables a los puntos marcados "a confirmar" en la RACI.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 19:52
+---
+
+## Actividad: Documentar el paso de la carpeta de claves para firmar eventos
+
+- **Fase**: Documentación
+- **Duración**: 15 min
+- **Tarea realizada**: El paso de pegar la ruta a `keys/agentes` y tocar "Guardar y copiar clave pública"
+  ya estaba en `cliente-gestor/README.md` y en la prueba C-04 de `docs/guia-de-pruebas.md`, pero no en el
+  README de la tarea (el que abre quien evalúa) ni en la ayuda de la sección Control central de la app.
+  Se agregó ahí para que el evento no quede con `firma_valida: false` por omisión.
+- **Herramienta / comando**: edición de `README.md` y `cliente-gestor/src/App.tsx`.
+- **Resultado**: Éxito. El evaluador ve el paso junto a cómo instalar la app.
+- **Evidencia anexa**: `README.md` (sección 3), ayuda del panel Control central.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Sin commit todavía; pendiente confirmación.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

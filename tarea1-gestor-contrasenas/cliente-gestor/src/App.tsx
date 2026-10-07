@@ -849,7 +849,8 @@ function Auditoria({
       <div className="panel">
         <p className="ayuda">
           Agente {agenteId || "…"}. La bóveda no se envía: solo el aviso de alta, cambio, borrado o
-          vencimiento.
+          vencimiento. Para que el central lo marque como firmado, pegá la ruta absoluta a
+          keys\agentes del repo y tocá Guardar y copiar clave pública antes del primer alta.
         </p>
         <label className="fila">
           <span>URL de eventos</span>

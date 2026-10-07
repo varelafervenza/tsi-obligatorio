@@ -73,6 +73,21 @@ Smart App Control lo bloquea mientras está activo. El equipo decidió no firmar
 (costo) y el evaluador tiene que desactivar Smart App Control para ejecutarlo, o usar un Windows
 sin esa función (por ejemplo Windows 10).
 
+**Para que los eventos queden firmados** (`firma_valida: true`), el central tiene que tener la
+clave pública del agente. Con el stack de `infra/` ya levantado:
+
+1. En la app, abrir **Control central**.
+2. Dejar la URL `http://localhost:8001/api/events/`.
+3. En **Carpeta de claves públicas del central**, pegar la ruta absoluta a
+   `tarea1-gestor-contrasenas\keys\agentes` (la carpeta del repo, no un archivo).
+4. Tocar **Guardar y copiar clave pública**. El aviso tiene que decir que copió un `.pub.pem`.
+5. Recién después: alta, modificación o borrado. En `http://localhost:8001/api/events/` el último
+   evento tiene que traer `firma_valida: true`.
+
+Sin ese paso el evento igual se guarda, pero llega como no firmado. Detalle en
+`cliente-gestor/README.md` (sección «Eventos al control central») y prueba C-04 de
+`docs/guia-de-pruebas.md`.
+
 ### 4. Limitaciones de alcance (acordadas con el docente)
 
 - **Windows Hello y WebAuthn** no forman parte de la entrega. Ver `docs/09-Gestion-Accesos.md`.
