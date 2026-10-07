@@ -67,7 +67,9 @@ curl -X POST http://localhost:8001/api/users/ -H "Content-Type: application/json
 curl -X POST http://localhost:8001/api/users/login -H "Content-Type: application/json" -d "{\"email\":\"rsi@correo.local\",\"password\":\"clave-panel-1\"}"
 ```
 
-Sin Docker (API local contra Postgres del compose; puerto 5432 publicado):
+Sin Docker (API local): Postgres **no** está publicado en el host. O se corre todo con
+`docker compose`, o se publica `5432` a mano solo para ese desarrollo. Los backups usan
+`docker exec`, no `localhost:5432`.
 
 ```bash
 python -m venv venv && venv\Scripts\activate

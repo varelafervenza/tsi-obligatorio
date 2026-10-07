@@ -116,7 +116,7 @@ se comprobó en el código y en la infraestructura. Ver la sección 5 para la ac
 | R10 | Exfiltración de secretos por errores de la app (RT-10) | A02, A05 | 3 | 5 | **A** | Mitigar | **Parcial.** Sin `traceback` ni modo debug en `control-central`. El JSONL no tiene secretos (verificado). No se hizo el barrido de patrones en logs antes de H4. | 05/10/2026 (vencida) |
 | R11 | OSINT del repositorio (RT-11) | A13 | 3 | 4 | **A** | Mitigar | **Mitigado en lo técnico (06/10).** Configurados `.pre-commit-config.yaml` (hook de `gitleaks`) y `.gitleaks.toml`. Barrido del historial completo: 1 hallazgo, falso positivo (valor de prueba en `vault/store.rs`), excusado en la configuración. Pendiente: probar el hook en un commit real, porque requiere `pre-commit` instalado en cada equipo. Las imágenes tienen versión fijada, sin digest. | 06/10/2026 (verificar hook) |
 | R12 | DoS puntual al control central (RT-12) | A04 | 3 | 2 | M | Retener (aceptar) | **Aceptado.** Sin límites de tasa en la API. El cliente opera offline (RNF-01). | Monitoreo continuo |
-| R13 | PostgreSQL accesible desde la red del host (nuevo) | A05, A07 | 2 | 4 | M | Mitigar | **No tratado.** `docker-compose.yml` publica `5432:5432`. Falta confirmar si algún script o herramienta de la guía depende de ese puerto antes de quitarlo. | 07/10/2026 |
+| R13 | PostgreSQL accesible desde la red del host (nuevo) | A05, A07 | 2 | 4 | M | Mitigar | **Mitigado (07/10).** Se quitó `5432:5432` del compose. La base solo escucha en `blue-team-net`. Grafana y `control-central` siguen usando `postgres:5432`. Los scripts de backup usan `docker exec`. | 07/10/2026 |
 
 > **Corrección de la v1**: la v1 decía que había 4 riesgos Alto. La matriz tiene **5** (R01, R03, R06, R10 y R11).
 > Los 5 deben tratarse antes del 07/10/2026 según el criterio de la sección 1. Ninguno está completo al 06/10.
@@ -157,7 +157,7 @@ Acciones propuestas, ordenadas por prioridad. Las de los riesgos Alto son obliga
 | R10 | Fugas por canales no contemplados (ej. volcado de memoria) quedan fuera de alcance de esta tarea | RSI | Pendiente de firma |
 | R11 | Historial de Git anterior a la adopción del hook no queda cubierto retroactivamente | RSI | Pendiente de firma |
 | R12 | Un DoS sostenido y distribuido sigue afectando la disponibilidad del control central (RNF-03) | RSI | Aceptado, sin tratamiento más allá del límite de tasa básico |
-| R13 | Si la base queda publicada hasta el 07/10, un acceso directo al host expone los datos. Se acepta solo hasta esa fecha | RSI | Pendiente de firma |
+| R13 | Un contenedor en `blue-team-net` sigue pudiendo hablar con Postgres. El host ya no tiene el puerto 5432 | RSI | Pendiente de firma |
 
 ---
 

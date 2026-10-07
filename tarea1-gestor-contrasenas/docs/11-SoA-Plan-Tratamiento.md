@@ -137,7 +137,7 @@
 | 8.18 | Uso de utilidades con privilegios | Sí | Los scripts usan `docker exec` y pg_dump con el usuario de la base. | `scripts/backup_bd.sh`, `scripts/restaurar_bd_prueba.sh` | Parcial |
 | 8.19 | Instalación de software en sistemas operativos | Sí | Las imágenes y dependencias están fijadas. No hay un procedimiento escrito de instalación. | `docker-compose.yml`, `requirements.txt` | Parcial |
 | 8.20 | Seguridad de las redes | Sí | Red interna de Docker. Sin VLAN ni firewall del laboratorio configurados. | `02-Registro-Activos.md` (A14) | Parcial |
-| 8.21 | Seguridad de los servicios de red | Sí | Puertos publicados: 8001, 3000, 5432, 1025 y 8025. El puerto 5432 es accesible desde el equipo. | `infra/docker-compose.yml` | Parcial |
+| 8.21 | Seguridad de los servicios de red | Sí | Puertos publicados en el host: 8001, 3000, 1025 y 8025. PostgreSQL no se publica; queda en `blue-team-net` (R13, 07/10). | `infra/docker-compose.yml` | Parcial |
 | 8.22 | Segregación de redes | Sí | Una sola red `blue-team-net` para todos los servicios. | `infra/docker-compose.yml` | Parcial |
 | 8.23 | Filtrado web | N.A. | No hay navegación gestionada por la solución. | — | N.A. |
 | 8.24 | Uso de criptografía | Sí | Argon2id, XChaCha20-Poly1305, RS256 para los eventos. TLS en tránsito pendiente (limitación). | `cipher.rs`, `kdf.rs`, `security.py`, `00-...` | Parcial |

@@ -39,8 +39,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-control_central}
       POSTGRES_USER: ${POSTGRES_USER:-gestor}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-    ports:
-      - "5432:5432"
+    # Sin ports: la base solo es alcanzable en blue-team-net (R13). Grafana y la API usan postgres:5432.
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:

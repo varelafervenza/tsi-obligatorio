@@ -23,7 +23,7 @@
 | 4 | R01 | Medidor de fortaleza de la maestra (no está en el código) | Propio | Pendiente |
 | 5 | R03 | Pruebas de IDOR sobre la API y DAST básico | Propio | Pendiente |
 | 6 | R10 | Barrido de patrones de secretos en logs y código | Propio | Pendiente |
-| 7 | R13 | Quitar la publicación del puerto 5432 en `infra/docker-compose.yml`. Antes, confirmar que ningún script lo necesita | Propio | Pendiente |
+| 7 | R13 | Quitar la publicación del puerto 5432 en `infra/docker-compose.yml`. Antes, confirmar que ningún script lo necesita | Propio | Cerrado |
 | 8 | R05 | Publicar la API solo en `127.0.0.1`. Antes, confirmar que los evaluadores acceden desde su equipo | Propio | Pendiente |
 | 9 | R02 | Regla de alerta por firma inválida repetida | Propio | Pendiente |
 | 10 | R07 | CSP en Grafana y escape de campos de evento | Propio | Pendiente |
@@ -104,3 +104,4 @@ de la firma", y la fila R02 de `docs/03-Analisis-Riesgos.md`. Ideas en discusió
 | 06/10 | `fa4b30b` | Análisis de riesgos versión 2 (03) |
 | 06/10 | `aaecc19` | Hook de `gitleaks`, aviso MFA (R06) y pruebas de firma JWS |
 | 07/10 | — | Cobertura alta/mod/borrado desde la app (`05-03-app-modificacion.png`, `05-03-app-borrado.png`) |
+| 07/10 | — | R13: PostgreSQL ya no se publica en el host (`5432`) |

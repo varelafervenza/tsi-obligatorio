@@ -1534,6 +1534,27 @@ Hora (UTC): 21:25
 - **Observaciones**: Pendiente de commit. El hash del commit se completa en `00-pendientes-entrega.md`
   al confirmar.
 
+---
+Fecha: 07/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 21:40
+---
+
+## Actividad: Dejar de publicar PostgreSQL en el host (R13)
+
+- **Fase**: Implementación
+- **Duración**: 15 min
+- **Tarea realizada**: Se quitó `5432:5432` de `infra/docker-compose.yml`. La base queda solo en
+  `blue-team-net`. Grafana y la API siguen con `postgres:5432`. Los backups usan `docker exec`.
+  Se actualizó R13, SoA 8.21, el README de `control-central` y el pendiente #7.
+- **Herramienta / comando**: edición de compose y docs.
+- **Resultado**: Éxito de código. Para aplicar el cambio en un stack ya levantado hace falta
+  `docker compose up -d` desde `infra/` (recrea el servicio `postgres` y suelta el puerto).
+- **Evidencia anexa**: `infra/docker-compose.yml`, `docs/03-Analisis-Riesgos.md` (R13).
+- **Incidencia / hallazgo**: Ninguna. La guía de pruebas no usa `localhost:5432`.
+- **Observaciones**: Pendiente de commit.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
