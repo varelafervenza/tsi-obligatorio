@@ -28,7 +28,7 @@
 |---|---|
 | Nombre del documento | Política de Seguridad de la Información — Gestor de Contraseñas |
 | Código | SI-POL-01 |
-| Versión | 0.2 (borrador) |
+| Versión | 0.3 (borrador; falta firma del RSI) |
 | Fecha de aprobación | Pendiente — a formalizar en la auditoría del 14/10/2026 |
 | Aprobado por | Pendiente (RSI del equipo / docente en la auditoría) |
 | Autor | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
@@ -40,6 +40,7 @@
 |---|---|---|---|
 | 0.1 | 22/09/2026 | Blue Team | Primera versión, alineada a la arquitectura, activos y riesgos ya documentados. |
 | 0.2 | 27/09/2026 | Blue Team | Se actualiza la gestión de incidentes a `Incident` interno, se deja TheHive como integración futura y se explicitan los estados de implementación de controles. |
+| 0.3 | 10/10/2026 | Pablo Morales | Se alinea la política al código: TOTP/RBAC implementados, Wazuh y Mailpit en el laboratorio, Hello fuera de alcance. |
 
 ## 1. Objetivo
 
@@ -84,8 +85,8 @@ ataque fuera de las VMs del laboratorio del curso (ver reglas de compromiso, sec
 | Confidencialidad | Zero-knowledge: la bóveda se cifra y descifra solo en `cliente-gestor`; `control-central` nunca recibe ni puede reconstruir una contraseña, solo metadata firmada (RF-08). |
 | Integridad | Cifrado AEAD (XChaCha20-Poly1305) en la bóveda y firma JWS por agente en cada evento de auditoría; cualquier alteración se detecta antes de aceptarse. |
 | Disponibilidad | El gestor funciona 100% offline (RNF-01); la caída del control central no interrumpe el uso diario, solo retrasa la sincronización de eventos. |
-| Mínimo privilegio | El diseño prevé RBAC en `control-central` (roles por usuario del panel); las claves de firma deben ser una por agente, nunca compartidas entre clientes. RBAC y la gestión de claves siguen pendientes de implementación. |
-| Defensa en profundidad / Zero Trust | El diseño exige verificar cada evento como si viniera de un origen hostil (NIST SP 800-207) y usar MFA en el cliente y en el panel del control central. Los flujos MFA todavía están pendientes de implementación y evidencia. |
+| Mínimo privilegio | RBAC en `control-central` (roles admin, auditor y rsi). Cada agente firma con su propia clave; un host comprometido no firma por otro. La custodia de `keys/agentes/` (copia de la privada) sigue pendiente de decisión del RSI. |
+| Defensa en profundidad / Zero Trust | Cada evento se verifica como hostil (JWS RS256). MFA: TOTP en la bóveda y en el panel. Windows Hello y WebAuthn quedan fuera de la entrega (ver `09-Gestion-Accesos.md`). |
 
 ## 5. Estructura de la política
 
@@ -94,11 +95,11 @@ configuración real desplegada (`infra/`, `control-central/`, `cliente-gestor/`)
 
 | Política específica | Contenido mínimo | Referencia | Estado |
 |---|---|---|---|
-| Política de control de accesos | MFA local (TOTP/WebAuthn/Windows Hello), RBAC del panel, elección de Argon2id/bcrypt | `09-Gestion-Accesos.md` | Pendiente |
-| Política de gestión de contraseñas/vulnerabilidades | Reglas de generación (RF-04/RF-05), rotación, escaneos | `10-Gestion-Vulnerabilidades.md` | Pendiente |
-| Política de gestión de incidentes | Detección, reporte, escalamiento, estados | `04-Gestion-Incidentes.md` | Pendiente |
-| Política de monitoreo y logs | Eventos, reglas SIEM, retención ≥ 90 días (RNF-07) | `07-Monitoreo-Logs-SIEM.md` | Pendiente |
-| Política de copias de seguridad | Exportación de bóvedas, prueba de restauración | `06-Plan-Continuidad.md` | Pendiente |
+| Política de control de accesos | MFA local (TOTP), RBAC del panel, elección de Argon2id/bcrypt. Hello/WebAuthn fuera de alcance | `09-Gestion-Accesos.md` | Borrador (implementado; sin firma RSI) |
+| Política de gestión de contraseñas/vulnerabilidades | Reglas de generación (RF-04/RF-05), rotación, escaneos | `10-Gestion-Vulnerabilidades.md` | Borrador (V03 remediada el 07/10) |
+| Política de gestión de incidentes | Detección, reporte, escalamiento, estados | `04-gestion-incidentes.md` | Borrador (incidente 1 simulado) |
+| Política de monitoreo y logs | Eventos, reglas SIEM, retención ≥ 90 días (RNF-07) | `07-Monitoreo-Logs-SIEM.md` | Borrador (API + Wazuh 4.14.8) |
+| Política de copias de seguridad | Exportación de bóvedas, prueba de restauración | `06-Plan-Continuidad.md` | Borrador (restore probado; backup diario pendiente) |
 | Inventario y riesgos (insumo, no política) | Activos y amenazas que justifican los controles anteriores | `02-Registro-Activos.md`, `03-Analisis-Riesgos.md` | Hecho |
 
 ## 6. Roles y responsabilidades
@@ -106,7 +107,7 @@ configuración real desplegada (`infra/`, `control-central/`, `cliente-gestor/`)
 | Rol | Responsabilidades |
 |---|---|
 | RSI (del equipo, rotativo o fijo) | Aprobar esta política y sus revisiones; aceptar formalmente el riesgo residual (`03-Analisis-Riesgos.md`, sección 6); ser el destinatario de las notificaciones de auditoría. |
-| Administrador de la plataforma | Mantener `infra/` (Docker Compose, Wazuh, Mailu, Grafana) desplegada y actualizada; ejecutar y probar las copias de seguridad. |
+| Administrador de la plataforma | Mantener `infra/` (Docker Compose, Wazuh, Mailpit, Grafana) desplegada y actualizada; ejecutar y probar las copias de seguridad. |
 | Usuario final | Elegir una contraseña maestra robusta; habilitar MFA local; no compartir ni exportar la bóveda fuera de los mecanismos previstos (RF-12). |
 | Equipo de desarrollo (Blue Team) | Implementar los RF/RNF de `LETRA.md`, mantener la bitácora al día, y poder demostrar en vivo cualquier control declarado (condición de aprobación de la auditoría, sección 6.6). |
 | Equipo de validación (Red Team) | Evaluar la solución congelada sin modificarla; documentar hallazgos según `plantilla/informe-red-team.md`, dentro de la ventana 28/10-09/11/2026. |

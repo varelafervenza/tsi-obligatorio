@@ -1,7 +1,7 @@
 # Pendientes para la entrega — Tarea 1
 
 > Fuente única de lo que falta. Se actualiza en el **mismo commit** que cierra cada punto.
-> Estado al **07/10/2026**. Pre-entrega: **07/10/2026**. Defensa: **14/10/2026**.
+> Estado al **10/10/2026**. Pre-entrega: **07/10/2026**. Defensa: **14/10/2026**.
 >
 > Columna **Exigido por**: `Letra` = lo pide `LETRA.md`; `Propio` = compromiso que el equipo declaró en sus documentos.
 > Responsable: `a confirmar` cuando no hay asignación en la RACI.

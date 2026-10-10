@@ -34,6 +34,7 @@
 |---|---|---|---|
 | 0.1 | 22/09/2026 | Blue Team | Primera versión: 12 riesgos derivados de RT-01..RT-12, sobre el inventario `02-Registro-Activos.md`. |
 | 2.0 | 06/10/2026 | Blue Team | Estado verificado de cada control en el código y la infraestructura. Se corrige el conteo de riesgos Alto (5, no 4). Se agrega R13 (PostgreSQL publicado en el host). Se actualizan los tratamientos y las fechas vencidas. |
+| 2.1 | 10/10/2026 | Pablo Morales | Se alinea R04 (Mailpit justificado), R08 (Wazuh levantado), R13 (5432 ya no se publica) y el residual de V03 (cerrada). |
 
 ## 1. Contexto
 
@@ -61,7 +62,7 @@
 | A02, A05 | Exfiltración de secretos por errores de la app (RT-10) | Interno, accidental | Logs de depuración o stack traces expuestos en producción |
 | A13 | OSINT del repositorio: secretos commiteados, Dockerfiles vulnerables (RT-11) | Externo, deliberado | Falta de escaneo de secretos previo al push |
 | A04 | Denegación de servicio puntual al control central (RT-12) | Externo, deliberado | Ausencia de límites de tasa en la API |
-| A04, A05 | Acceso directo a la base desde la red del host (R13, hallazgo nuevo) | Externo o interno | PostgreSQL publicado en el puerto 5432 del host |
+| A04, A05 | Acceso directo a la base desde la red del host (R13, hallazgo nuevo) | Externo o interno | Mitigado el 07/10: Postgres ya no se publica en el host; solo `blue-team-net` |
 
 ## 3. Análisis de riesgo (cualitativo)
 
@@ -107,7 +108,7 @@ se comprobó en el código y en la infraestructura. Ver la sección 5 para la ac
 | R01 | Fuerza bruta / crackeo de la maestra (RT-01) | A01, A02 | 3 | 5 | **A** | Mitigar | **Parcial.** Argon2id y delay adaptativo implementados (`vault/commands.rs`). Medidor de fortaleza de la maestra no encontrado en el código. | 02/10/2026 (vencida) |
 | R02 | Forjado de eventos de auditoría (RT-02) | A03, A04, A06 | 2 | 4 | M | Mitigar | **Parcial.** Firma RS-256 con clave por agente implementada y verificada. Alerta por firma inválida repetida: no hay regla. Hallazgo del 07/10, mitigado el mismo día: un evento demorado por la cola offline queda con `firma_valida: false`, igual que un forjado. Se extendió el plazo de la firma a 4 h y se agregó reintento al abrir y cerrar la app, así que hace falta estar offline más de 4 h sin abrir ni cerrar la app para que vuelva a pasar. Ver `00-arquitectura-c4.md`, "Limitación de alcance: cola de eventos offline". | 29/09/2026 (vencida) |
 | R03 | IDOR / XSS / SQLi en el control central (RT-03) | A04, A05, A07 | 3 | 5 | **A** | Mitigar | **Parcial.** SQLAlchemy parametrizado y validación con Pydantic. `bandit` sin hallazgos (`evidencias/10-bandit.txt`). Sin pruebas DAST ni chequeo de IDOR. | 05/10/2026 (vencida) |
-| R04 | Suplantación del servidor de correo (RT-04) | A10 | 3 | 3 | M | Mitigar | **No tratado.** Mailu no está desplegado (prototipo con Mailpit). Sin SPF, DKIM ni DMARC. | 29/09/2026 (vencida) |
+| R04 | Suplantación del servidor de correo (RT-04) | A10 | 3 | 3 | M | Mitigar | **Aceptado con Mailpit (07/10).** Mailu, SPF y DKIM no se despliegan: el aviso no sale de Docker. Justificación en `00-arquitectura-c4.md`. | 07/10/2026 |
 | R05 | MITM por TLS mal configurado (RT-05) | A04, A14 | 2 | 4 | M | Retener (limitación aceptada) | **Aceptado, con mitigación no aplicada.** La API se publica en `0.0.0.0:8001` (`docker-compose.yml`), no en `127.0.0.1`. | Aceptado |
 | R06 | Bypass de MFA (RT-06) | A01, A07 | 3 | 4 | **A** | Mitigar | **Mitigado en lo técnico (06/10).** TOTP con enroll solo por el propio usuario (403 para otro). Al confirmar un TOTP se envía aviso al titular y al RSI (`users.py`, `confirmar_totp`; `mailer.enviar_aviso_mfa_seguro`). Probado: el correo llegó a Mailpit (`evidencias/03-r06-r11.txt`). Pendiente: el phishing que obtenga el código en el momento sigue siendo posible sin factor resistente. | 06/10/2026 |
 | R07 | XSS almacenado en el dashboard (RT-07) | A11 | 3 | 3 | M | Mitigar | **No tratado.** Sin CSP en el control central ni en Grafana. | 29/09/2026 (vencida) |
@@ -137,8 +138,8 @@ Acciones propuestas, ordenadas por prioridad. Las de los riesgos Alto son obliga
 | R09 | Validar el KDF del archivo | Rechazar memoria, iteraciones o paralelismo fuera de rangos mínimos y máximos antes de derivar | Media | 07/10/2026 |
 | R02 | Alerta por firma inválida repetida | Regla en `reglas.py` y en `local_rules.xml`: N firmas inválidas de un agente en una ventana | Media | 07/10/2026 |
 | R07 | Sanitizar y limitar el render | CSP en Grafana y escape de los campos de evento antes de mostrarlos | Media | 07/10/2026 |
-| R08 | Proteger la integridad del SIEM | FIM sobre la configuración de Wazuh; alerta de agente desconectado. Depende de levantar el manager | Media | Después del 07/10 |
-| R04 | Configurar correctamente el correo | Desplegar Mailu con SPF, DKIM y DMARC, o justificar Mailpit ante la cátedra | Media | Consulta a la cátedra antes del 07/10 |
+| R08 | Proteger la integridad del SIEM | Manager y agente levantados el 07/10. Sigue sin FIM de la bóveda ni alerta de agente desconectado | Media | Parcial (07/10) |
+| R04 | Configurar correctamente el correo | Mailpit justificado en `00-arquitectura-c4.md`. Mailu no se despliega | Media | 07/10/2026 |
 | R12 | Acotar el impacto de un DoS | Límites de tasa básicos en la API | Baja | Aceptado |
 
 ## 6. Riesgo residual y aceptación
@@ -147,7 +148,7 @@ Acciones propuestas, ordenadas por prioridad. Las de los riesgos Alto son obliga
 |---|---|---|---|
 | R01 | Un ataque dirigido con hardware dedicado sigue siendo posible si la maestra es débil; queda a criterio del usuario | RSI | Pendiente de firma |
 | R02 | Compromiso total del endpoint del agente aún permitiría firmar eventos falsos de ese agente puntual | RSI | Pendiente de firma |
-| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) abierta | RSI | Pendiente de firma |
+| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) remediada el 07/10; CVSS pendiente | RSI | Pendiente de firma |
 | R04 | Ingeniería social directa al RSI (fuera del alcance técnico) | RSI | Pendiente de firma |
 | R05 | Intercepción del tráfico HTTP en la red del laboratorio, sin TLS (limitación acordada con el docente) | RSI | Pendiente de firma |
 | R06 | Phishing de TOTP al no haber factor resistente (WebAuthn/Hello fuera de alcance); robo físico del dispositivo con TOTP | RSI | Pendiente de firma |

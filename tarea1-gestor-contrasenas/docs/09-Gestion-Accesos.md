@@ -1,10 +1,8 @@
 # Gestión de Identidades y Accesos (IAM) — Gestor de Contraseñas con Control Centralizado
 
-> Basado en `plantilla/isaca/09-gestion-accesos.md`. Función **Proteger** del MCU 5.0. Este
-> documento define **cómo va a funcionar** el acceso (diseño); las capturas de enroll y de
-> configuración del hash son **evidencia** que se agrega recién cuando el módulo de auth deje de
-> ser un TODO (`cliente-gestor/src-tauri/src/auth/`, `control-central/app/core/mfa.py`) — ver el
-> callout al final de la sección 1 con el detalle de qué capturar y cuándo.
+> Basado en `plantilla/isaca/09-gestion-accesos.md`. Función **Proteger** del MCU 5.0. Describe
+> el acceso **implementado**: TOTP en la bóveda y en el panel, RBAC y hash elegible. Hello y
+> WebAuthn quedan fuera de la entrega (sección «Limitación de alcance»).
 
 ---
 
@@ -25,26 +23,26 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-IAM-09 |
-| Versión | 0.1 (borrador — diseño; sin evidencia real todavía) |
+| Versión | 0.2 (TOTP y RBAC implementados; Hello fuera de alcance) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
-| Fecha | 22/09/2026 |
+| Fecha | 10/10/2026 |
 
 ## 1. Modelo de autenticación
 
 | Factor | Mecanismo en esta solución | Dónde vive |
 |---|---|---|
 | Algo que sé (S) | Contraseña maestra → Argon2id (KDF) | `cliente-gestor/src-tauri/src/crypto/kdf.rs` |
-| Algo que tengo (T) | TOTP (RFC 6238) o llave WebAuthn/FIDO2 | `cliente-gestor/src-tauri/src/auth/totp.rs`, `webauthn.rs` |
-| Algo que soy (B) | Windows Hello (biometría/PIN), como authenticator de plataforma WebAuthn | Mismo módulo `auth/webauthn.rs` |
+| Algo que tengo (T) | TOTP (RFC 6238) | `cliente-gestor/src-tauri/src/auth/totp.rs` y TOTP del panel |
+| Algo que soy (B) | Windows Hello / WebAuthn | **Fuera de la entrega** (ver limitación más abajo) |
 
 ### Política de factores según operación
 
 | Operación | Dónde ocurre | Factor mínimo | Mecanismo |
 |---|---|---|---|
-| Abrir la bóveda | `cliente-gestor` | 1 factor obligatorio + 2do opcional | Contraseña maestra (+ TOTP/WebAuthn si el usuario lo habilitó) |
+| Abrir la bóveda | `cliente-gestor` | 1 factor obligatorio + 2do opcional | Contraseña maestra (+ TOTP si el usuario lo habilitó) |
 | Modificar / agregar / borrar credencial | `cliente-gestor` | 1 factor (bóveda ya abierta) | Ninguno adicional; el evento firmado ya deja trazabilidad (RF-08) |
-| **Cambiar la contraseña maestra** | `cliente-gestor` | 2 factores | Maestra actual + MFA local, por ser evento crítico (RF-07) |
-| Acceso al panel/dashboard de `control-central` | `control-central` | 2 factores | Password del panel (Argon2id/bcrypt) + TOTP/WebAuthn |
+| **Cambiar la contraseña maestra** | `cliente-gestor` | 2 factores | Maestra actual + TOTP si está enrolado (RF-07) |
+| Acceso al panel/dashboard de `control-central` | `control-central` | 2 factores | Password del panel (Argon2id/bcrypt) + TOTP |
 | Acciones administrativas (cambiar rol, elegir algoritmo de hash) | `control-central` | 2 factores + rol admin | RBAC (`app/api/users.py`) + MFA |
 
 > **Nota de diseño**: preferimos WebAuthn/Windows Hello por sobre TOTP cuando el hardware lo

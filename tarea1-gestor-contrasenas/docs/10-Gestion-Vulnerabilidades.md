@@ -50,7 +50,7 @@ El CVSS no lo informa `pip-audit`; queda pendiente de buscarlo en la base de NVD
 |---|---|---|---|---|---|---|---|---|
 | V01 | `control-central` (`python-jose` 3.3.0) | PYSEC-2024-232, PYSEC-2024-233, PYSEC-2025-185 | pip-audit | Pendiente | **Remediado**: se subió a 3.4.0 | 05/10/2026 | 05/10/2026 | Pablo Morales |
 | V02 | `control-central` (`python-multipart` 0.0.9) | Siete avisos PYSEC-2026-1851 a 3040 | pip-audit | Pendiente | **Remediado**: se subió a 0.0.31 | 05/10/2026 | 05/10/2026 | Pablo Morales |
-| V03 | `control-central` (`starlette` 0.38.6, vía FastAPI 0.115.0) | Siete avisos: PYSEC-2026-161, 248, 249, 1941, 1943, 2280, 2281. El arreglo más alto que pedía el audit del 05/10 era starlette 1.3.1 | pip-audit | Pendiente | **Remediado:** FastAPI 0.142.3 y starlette 1.7.0. 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
+| V03 | `control-central` (hallazgo: `starlette` 0.38.6 vía FastAPI 0.115.0) | Siete avisos PYSEC-2026. El 07/10 se subió a FastAPI 0.142.3 y starlette 1.7.0 | pip-audit | Pendiente | **Remediado.** 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
 | V04 | `control-central` (`ecdsa` 0.19.2, dependencia de `python-jose`) | PYSEC-2026-1325 | pip-audit | Pendiente | **Riesgo aceptado** (ver sección 5) | 05/10/2026 | — | Pablo Morales |
 
 ---

@@ -129,7 +129,7 @@ Nota de la corrida doble: el script `simular_casos_uso.py` se ejecutó dos veces
 |---|---|---|
 | V01 | `python-jose` con avisos | Remediado (3.4.0) |
 | V02 | `python-multipart` con avisos | Remediado (0.0.31) |
-| V03 | `starlette` (dependencia de FastAPI 0.115.0) con avisos | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS pendiente |
+| V03 | `starlette` (hallazgo del 05/10 sobre FastAPI 0.115.0 / starlette 0.38.6) | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS pendiente |
 | V04 | `ecdsa` sin corrección | Riesgo aceptado: RS-256 no usa ECDSA |
 
 Herramientas corridas: `pip-audit` antes y después, `bandit` con 0 issues, `npm audit` con 0 vulnerabilidades.
@@ -152,9 +152,8 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 - Firma del RSI en `01`, `06`, `11` y `12`.
 - Backup diario automático (tarea programada) y copia fuera del equipo.
 - Copia de `keys/agentes/` (decisión de custodia de la clave privada).
-- Tests automáticos en Python para `control-central`: 16 pruebas pasan. Cubren los KPIs (MTTD, MTTR y cobertura,
-  `tests/test_kpis.py`), el aviso al activar MFA (`tests/test_mfa_aviso.py`) y la firma JWS (`tests/test_firma_jws.py`).
-  Faltan los de retención de 90 días e incidentes (opcionales, no exigidos por la letra).
+- Tests automáticos en Python para `control-central`: **18** pruebas pasan (KPIs, aviso MFA, firma JWS
+  y el contador de alertas de Wazuh). Faltan los de retención de 90 días e incidentes (opcionales).
 - Medir RNF-02 (apertura en menos de 2 s) y RNF-05 (carga básica), y definir el plan de rollback (RNF-10).
 - Video de la demo de 5 min o menos.
 - Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` el 07/10.

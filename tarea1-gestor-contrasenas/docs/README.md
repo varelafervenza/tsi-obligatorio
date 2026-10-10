@@ -8,27 +8,29 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 
 ## Documentos a generar (se completa a medida que se avanza)
 
+Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`docs/00-pendientes-entrega.md`).
+
 | Archivo esperado | Origen (plantilla) | Estado |
 |---|---|---|
 | `00-arquitectura-4mas1.md` | `plantilla/plantilla-arquitectura-4más1.md` | ☑ borrador 0.1 |
-| `00-arquitectura-c4.md` | `plantilla/plantilla-arquitectura-C4.md` | ☑ borrador 0.1 |
-| `diagrama-arquitectura.png` | diagrama usado en la LETRA | ☐ |
-| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (entradas de Horacio Duarte del 03/10, hasta el QR de TOTP a las 18:40 UTC; falta espejarlas en el Excel) |
-| `01-Politica-Seguridad.md` | `plantilla/isaca/01-politica-seguridad.md` | ☑ borrador 0.1 (sin aprobación formal aún) |
-| `02-Registro-Activos.md` | `plantilla/isaca/02-registro-activos.md` | ☑ borrador 0.1 (+ Excel `docs/mcu5/excel/02-registro-activos-mcu5.xlsx` cargado) |
-| `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 2.0 (13 riesgos; 5 Alto, ninguno tratado por completo al 06/10; falta firma del RSI) |
-| `04-Gestion-Incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☐ |
-| `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☑ borrador 0.1 (backup y restauración probados; copia externa y backup diario pendientes) |
-| `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador 0.1 (reglas implementadas, sin alertas probadas aún) |
-| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ diseño 0.1 (el QR de TOTP ya está en el cliente; falta la captura) |
-| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ borrador 0.1 (pip-audit, bandit y npm audit; red y web pendientes) |
-| `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☑ borrador 0.1 (93 controles, 73 aplican, 20 N.A.; falta firma del RSI) |
-| `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☑ borrador 0.1 (incidente 1 simulado; no se notifica a BCU ni URCDP; falta aprobación del RSI y contactos oficiales) |
+| `00-arquitectura-c4.md` | `plantilla/plantilla-arquitectura-C4.md` | ☑ borrador (Wazuh en compose, Mailpit justificado, cola 4 h) |
+| `diagrama-arquitectura.png` | diagrama usado en la LETRA | ☑ en esta carpeta |
+| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (entradas hasta el 07/10; el Excel no está al día) |
+| `01-Politica-Seguridad.md` | `plantilla/isaca/01-politica-seguridad.md` | ☑ borrador (TOTP/RBAC al día; falta firma del RSI) |
+| `02-Registro-Activos.md` | `plantilla/isaca/02-registro-activos.md` | ☑ borrador (+ Excel `docs/mcu5/excel/02-registro-activos-mcu5.xlsx`) |
+| `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 2.0 (13 riesgos; falta firma del RSI) |
+| `04-gestion-incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☑ existe (el nombre canónico `04-Gestion-Incidentes.md` sigue pendiente, #13) |
+| `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☑ borrador (backup/restore probados; Wazuh ya está en el compose) |
+| `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador (reglas de API y Wazuh con alertas 100120/100101/100111) |
+| `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ TOTP en cliente y panel; Hello/WebAuthn fuera de alcance |
+| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ V01–V03 remediadas; V04 aceptada; red/Trivy/`cargo audit` pendientes |
+| `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☑ 93 controles; falta firma del RSI |
+| `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☑ incidente 1 simulado; falta firma RSI y contactos oficiales |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |
-| _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada — reparto por componente (Horacio/Pablo/Andrés) |
-| _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 controles con Aplica + evidencia/pendiente (45 Sí, 2 N.A. justificados) |
-| _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ espejo de `99-bitacora-trabajo.md` (8 entradas al 23/09) |
-| `28-Informe-Blue-Team.md` | nueva | ☑ borrador 0.1 (KPIs con valores reales; cobertura 75 % y MTTD/MTTR del panel marcados como no conformes) |
-| `evidencias/` | capturas, vídeos, logs | ☐ |
+| _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada |
+| _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 con Aplica; 24 filas de evidencia siguen en “pendiente” (#14) |
+| _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ desfasado: no espeja `99-bitacora-trabajo.md` desde el 06/10 (#15) |
+| `28-Informe-Blue-Team.md` | nueva | ☑ borrador (cobertura 100 % desde la app; V03 cerrada; falta firma RSI) |
+| `evidencias/` | capturas, logs | ☑ demo, Mailpit, Grafana, cobertura, Wazuh/cola, backups; falta el video (#2) |
 
-> Para el **Red Team**: copie esta carpeta (o el tag de git) y genere su informe en `02-informe-red-team.md` (nuevo), completando además las plantillas de incidentes/vulnerabilidades con cada hallazgo.
+> La lista de lo que falta para el 14/10 está en `00-pendientes-entrega.md`.

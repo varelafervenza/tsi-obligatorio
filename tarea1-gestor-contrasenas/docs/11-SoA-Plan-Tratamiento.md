@@ -28,11 +28,11 @@
 
 - **Sistema:** Gestor de Contraseñas con Control Centralizado (Tarea 1).
 - **Componentes en alcance:** `cliente-gestor` (aplicación de escritorio y bóveda local), `control-central`
-  (API, PostgreSQL, Grafana), Mailpit (correo de desarrollo), scripts de backup, repositorio Git y la
-  documentación de `docs/`.
-- **Fuera de alcance:** instalaciones físicas (la solución corre en el laboratorio del curso y en los equipos
-  de los integrantes), Wazuh y Mailu en producción (todavía no desplegados), y la organización que
-  contrata a los integrantes (es un proyecto académico).
+  (API, PostgreSQL, Grafana), Mailpit (correo del laboratorio), Wazuh manager + agente 4.14.8 (sin indexer),
+  scripts de backup, repositorio Git y la documentación de `docs/`.
+- **Fuera de alcance:** instalaciones físicas (laboratorio del curso y equipos de los integrantes), Mailu
+  (se usa Mailpit; justificado en `00-arquitectura-c4.md`), indexer/dashboard de Wazuh, y la organización
+  que contrata a los integrantes (es un proyecto académico).
 - **Criterio de aplicabilidad:** se marca N.A. sólo lo que no existe en el contexto del proyecto (instalaciones
   físicas propias, contratación de personal, proveedores con contrato). Todo lo técnico aplica, aunque esté
   pendiente.
@@ -132,7 +132,7 @@
 | 8.13 | Copias de respaldo de la información | Sí | Backup de PostgreSQL y copia del JSONL, probados. Falta copia fuera del equipo y backup diario automático. | `06-Plan-Continuidad.md` | Parcial |
 | 8.14 | Redundancia de instalaciones de tratamiento | Sí | Un solo nodo; no hay alta disponibilidad. RTO y RPO de RNF-03 sin redundancia. | `06-Plan-Continuidad.md` (sección 1) | Pendiente |
 | 8.15 | Registro de eventos (logging) | Sí | Eventos del central en Postgres y en JSONL. Los logs de PostgreSQL y del sistema operativo no se registran. | `07-Monitoreo-Logs-SIEM.md` (sección 2) | Parcial |
-| 8.16 | Actividades de monitoreo | Sí | Reglas de detección probadas con la API; Wazuh no está levantado. | `07-Monitoreo-Logs-SIEM.md` (sección 6) | Parcial |
+| 8.16 | Actividades de monitoreo | Sí | Reglas de la API y Wazuh 4.14.8 (alertas 100120, 100101, 100111). Sin indexer ni FIM de la bóveda. | `07-Monitoreo-Logs-SIEM.md` | Parcial |
 | 8.17 | Sincronización de relojes | Sí | Los eventos usan UTC. La validez de la firma depende de la hora del equipo; no hay NTP documentado. | `security.py`, `signer.rs` | Parcial |
 | 8.18 | Uso de utilidades con privilegios | Sí | Los scripts usan `docker exec` y pg_dump con el usuario de la base. | `scripts/backup_bd.sh`, `scripts/restaurar_bd_prueba.sh` | Parcial |
 | 8.19 | Instalación de software en sistemas operativos | Sí | Las imágenes y dependencias están fijadas. No hay un procedimiento escrito de instalación. | `docker-compose.yml`, `requirements.txt` | Parcial |

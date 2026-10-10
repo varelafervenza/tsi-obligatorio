@@ -86,7 +86,7 @@ workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 | Pérdida del servidor `control-central` | 1) Levantar el stack en otro equipo con `docker compose up --build -d` en `infra/`. 2) Restaurar la BD con `scripts/restaurar_bd_prueba.sh` apuntando al último dump. 3) Restaurar `keys/agentes/` desde una copia que todavía **no existe** (pendiente, ver sección 6). 4) Verificar con `healthz` y una firma válida. | No estimado (depende de la descarga de imágenes) | Restauración de la BD: sí. Stack completo: no. | Pablo Morales |
 | Corrupción de la BD | Restaurar desde el último dump en una base nueva, validar conteos y renombrar la base. | < 1 h para la base actual | Sí (restauración en base separada) | Pablo Morales |
 | Pérdida de la bóveda de un usuario | Importar el `.gex` con su contraseña de transporte. Si se perdió esa contraseña, el archivo `.gex` no se puede abrir: es el diseño del cifrado, y se avisa al usuario al exportar. | Inmediato si tiene el archivo | Sí (test automático en CI) | Usuario final |
-| Caída del SIEM (Wazuh) | El control central sigue guardando el JSONL y las alertas en su base. Al volver Wazuh, se vuelve a leer el archivo. | No aplica todavía (Wazuh no está desplegado) | No | Andrés Varela |
+| Caída del SIEM (Wazuh) | El control central sigue guardando el JSONL y las alertas de la API. Al volver el manager, el agente relee `audit-events.jsonl`. | Manager + agente 4.14.8 en el compose (sin indexer) | Parcial (alerta 100120 verificada el 07/10) | Andrés Varela |
 | Falla del correo | El evento se guarda igual; el correo no se reintenta. Se verifica en el panel de alertas y en Mailpit. | No aplica | No | Andrés Varela |
 
 ---

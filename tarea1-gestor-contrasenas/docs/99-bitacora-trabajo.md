@@ -1894,6 +1894,31 @@ Hora (UTC): N/D
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Ninguna pendiente de esta revisión.
 
+---
+Fecha: 10/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 22:56
+---
+
+## Actividad: Alinear documentación con lo implementado al 10/10
+
+- **Fase**: Documentación
+- **Duración**: 40 min
+- **Tarea realizada**: Se corrigieron docs que seguían describiendo el sistema al 03/10–06/10:
+  Wazuh “no levantado”, Mailu “no tratado”, Postgres publicado en 5432, MFA/RBAC “pendientes”,
+  cobertura 75 %, 16 tests de la API, V03 todavía en FastAPI 0.115.0, diagrama y evidencias
+  vacíos en el índice. No se inventó firma del RSI ni se tocó el Excel MCU. Las entradas viejas
+  de esta bitácora se dejaron como historia.
+- **Herramienta / comando**: edición de `README.md`, `docs/README.md`, `01`, `03`, `06`, `09`,
+  `10`, `11`, `28` y `00-pendientes-entrega.md`.
+- **Resultado**: Los documentos de gobernanza y el índice coinciden con el compose y el código
+  actuales.
+- **Evidencia anexa**: los archivos de esta actividad.
+- **Incidencia / hallazgo**: El Excel de controles (#14) y el Excel de bitácora (#15) siguen
+  desfasados; no se tocaron en este cambio.
+- **Observaciones**: Ninguna.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
