@@ -1989,6 +1989,29 @@ Hora (UTC): 00:45
   CVSS v4 8.7 y un v3 0.0 que no se usa.
 - **Observaciones**: El escaneo de red/Trivy/`cargo audit` sigue abierto (#23).
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 01:00
+---
+
+## Actividad: Limpiar pendientes que no están en la letra
+
+- **Fase**: Documentación
+- **Duración**: 20 min
+- **Tarea realizada**: Se cruzó `00-pendientes-entrega.md` con `LETRA.md`. Se sacaron
+  la consulta al foro (#21), el hook en el clone de Horacio (#17), la prueba de la
+  guía con otra persona (#18), la firma del RSI como entregable, el backup diario
+  Windows, la custodia de claves y los contactos oficiales. Se borró
+  `docs/21-Consulta-Catedra.md`. Quedan abiertos solo tag, video, mediciones RNF/KPI,
+  OpenVAS/nuclei y la tasa de falsos positivos (6.4).
+- **Herramienta / comando**: lectura de `LETRA.md` secciones 4, 6.2, 6.4, 6.6 y 8.
+- **Resultado**: La lista de pendientes coincide con la letra.
+- **Evidencia anexa**: `docs/00-pendientes-entrega.md`.
+- **Incidencia / hallazgo**: El #21 no estaba en la letra; era una nota interna del grupo.
+- **Observaciones**: Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

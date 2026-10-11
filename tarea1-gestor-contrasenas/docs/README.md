@@ -8,7 +8,7 @@ Esta carpeta es el **espacio de trabajo** del equipo. Aquí se van copiando y co
 
 ## Documentos a generar (se completa a medida que se avanza)
 
-Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`docs/00-pendientes-entrega.md`).
+Estado al **11/10/2026**. Lo que falta y pide la letra está en `docs/00-pendientes-entrega.md`.
 
 | Archivo esperado | Origen (plantilla) | Estado |
 |---|---|---|

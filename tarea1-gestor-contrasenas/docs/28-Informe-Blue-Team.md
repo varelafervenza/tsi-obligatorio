@@ -144,19 +144,13 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 | Windows Hello y WebAuthn | Fuera de la entrega, acordado con la cátedra. No se pudo validar sin sensor biométrico | Sin segundo factor biométrico. Queda TOTP |
 | Smart App Control | El instalador no está firmado (costo de firma) | Requiere desactivar SAC o usar Windows sin esa función para evaluar |
 
-### 6.3 Pendientes que afectan la entrega
+### 6.3 Pendientes que pide la letra
 
-- Clasificar alertas para poder calcular la tasa de falsos positivos. El manager ya emite alertas (07/10).
-- Mailpit queda como correo del laboratorio. La justificación está en `00-arquitectura-c4.md`.
-- Consulta por escrito a la cátedra sobre el Anexo A (no está en el repo) y la postura sobre Mailpit y Wazuh.
-- Firma del RSI en `01`, `06`, `11` y `12`.
-- Backup diario automático (tarea programada) y copia fuera del equipo.
-- Copia de `keys/agentes/` (decisión de custodia de la clave privada).
-- Tests automáticos en Python para `control-central`: **18** pruebas pasan (KPIs, aviso MFA, firma JWS
-  y el contador de alertas de Wazuh). Faltan los de retención de 90 días e incidentes (opcionales).
-- Medir RNF-02 (apertura en menos de 2 s) y RNF-05 (carga básica), y definir el plan de rollback (RNF-10).
-- Video de la demo de 5 min o menos.
-- Tag `v1.0` y hash SHA-256 con `scripts/verificar_integridad_tag.sh` el 07/10.
+- Clasificar alertas para la tasa de falsos positivos (6.4). El manager ya emite alertas (07/10).
+- Medir uptime (6.4), RNF-02, RNF-05 y documentar rollback (RNF-10).
+- Escaneo OpenVAS o nuclei (matriz 8.1 de `10-gestion-vulnerabilidades`). `bandit` ya está.
+- Video de la demo de 5 min o menos (6.2 #13; 8.2).
+- Tag `v1.0` y hash SHA-256 (6.3; 8.2). Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
 
 ---
 
@@ -170,7 +164,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto es medible y está nombrado: tasa de falsos positivos (falta clasificar) y firma del RSI. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, RNF-02/05/10, uptime, OpenVAS/nuclei, video y tag `v1.0`. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 
