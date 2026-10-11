@@ -2012,6 +2012,31 @@ Hora (UTC): 01:00
 - **Incidencia / hallazgo**: El #21 no estaba en la letra; era una nota interna del grupo.
 - **Observaciones**: Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:00
+---
+
+## Actividad: Rollback RNF-10 y cierre del #22
+
+- **Fase**: Documentación
+- **Duración**: 20 min
+- **Tarea realizada**: Se escribió el procedimiento de rollback (RNF-10) en
+  `docs/06-Plan-Continuidad.md`: API (`docker compose up` + `healthz`), BD
+  (`backup_bd.sh` / `restaurar_bd_prueba.sh`, 1 s el 06/10), instalador anterior,
+  import `.gex` y `git checkout`. No se inventó backup diario ni copia fuera del
+  equipo. Con las evidencias `22-kpis.txt`, `22-kpis-cierre.txt`, `22-healthz.txt`
+  y `22-rnf02-apertura.txt` (uptime 28 min, aperturas 2,63/0,81/0,40 s) se cierra
+  el #22.
+- **Herramienta / comando**: edición de `06`, `00-pendientes-entrega.md`, `11` y `28`.
+- **Resultado**: #22 cerrado.
+- **Evidencia anexa**: `docs/06-Plan-Continuidad.md` (sección Rollback), `docs/evidencias/22-*.txt`.
+- **Incidencia / hallazgo**: La primera apertura (2,63 s) supera los 2 s de RNF-02;
+  las dos siguientes no. Se declara el valor real.
+- **Observaciones**: Siguen abiertos #1, #2, #23 y #29.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

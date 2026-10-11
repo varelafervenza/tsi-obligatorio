@@ -122,7 +122,7 @@
 | 8.3 | Restricción del acceso a la información | Sí | Bóveda cifrada, claves por agente y RBAC del panel. | `09-...`, `03-...` (R02) | Parcial |
 | 8.4 | Acceso al código fuente | Sí | GitHub con escritura para el equipo. Sin protección de la rama `master`. | Git | Parcial |
 | 8.5 | Autenticación segura | Sí | Argon2id, TOTP y espera escalonada. WebAuthn y Windows Hello fuera de la entrega. | `09-...`, `guia-de-pruebas.md` (C-10) | Parcial |
-| 8.6 | Gestión de la capacidad | Sí | RNF-05 (100 usuarios y 5000 credenciales) no medido. | `LETRA.md` (RNF-05) | Pendiente |
+| 8.6 | Gestión de la capacidad | Sí | Carga básica medida el 11/10 (bóveda abierta, API/BD up). Objetivo 100 usuarios / 5000 credenciales no se corrió. | `docs/evidencias/22-*.txt` | Parcial |
 | 8.7 | Protección contra código malicioso | Sí | No hay antivirus ni EDR configurado. El agente de Wazuh con FIM está previsto y no desplegado. | `infra/wazuh/README.md` | Pendiente |
 | 8.8 | Gestión de vulnerabilidades técnicas | Sí | Escaneos de dependencias y SAST corridos; red y web pendientes. Dos avisos sin corrección y siete de starlette abiertos. | `10-Gestion-Vulnerabilidades.md` | Parcial |
 | 8.9 | Gestión de la configuración | Sí | Configuración en `.env.example`, `docker-compose.yml` y READMEs. Los valores de desarrollo siguen siendo `changeme`. | `infra/`, `control-central/README.md` | Parcial |

@@ -147,7 +147,6 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 ### 6.3 Pendientes que pide la letra
 
 - Clasificar alertas para la tasa de falsos positivos (6.4). El manager ya emite alertas (07/10).
-- Medir uptime (6.4), RNF-02, RNF-05 y documentar rollback (RNF-10).
 - Escaneo OpenVAS o nuclei (matriz 8.1 de `10-gestion-vulnerabilidades`). `bandit` ya está.
 - Video de la demo de 5 min o menos (6.2 #13; 8.2).
 - Tag `v1.0` y hash SHA-256 (6.3; 8.2). Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
@@ -164,7 +163,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, RNF-02/05/10, uptime, OpenVAS/nuclei, video y tag `v1.0`. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, OpenVAS/nuclei, video y tag `v1.0`. El #22 (uptime, apertura, carga básica, rollback) se cerró el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

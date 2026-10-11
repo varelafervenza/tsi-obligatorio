@@ -24,9 +24,9 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-BCP-06 |
-| Versión | 0.1 (borrador) |
+| Versión | 0.2 (borrador) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
-| Fecha | 06/10/2026 |
+| Fecha | 11/10/2026 |
 
 ---
 
@@ -35,7 +35,7 @@
 | Métrica | Objetivo (letra, RNF-03) | Medido | Comentario |
 |---|---|---|---|
 | RTO — BD (`control-central`) | 4 h | 1 s para restaurar 29 eventos | La medición es sobre una base chica. Con datos reales el tiempo sería mayor. |
-| RTO — servicio de front (API) | 4 h | No medido | Reconstruir con `docker compose up --build` en un equipo nuevo. Pendiente de cronometrar. |
+| RTO — servicio de front (API) | 4 h | No cronometrado | Procedimiento: `docker compose up --build -d` en `infra/` y `curl http://localhost:8001/healthz`. Ver rollback (RNF-10) abajo. |
 | RPO — BD | 24 h (backup diario, requisito BCU) | Depende de la última corrida manual | El backup diario no está automatizado todavía. |
 | RPO — logs | 5 min (propuesto) | Depende de la última copia | La copia del JSONL es manual. |
 
@@ -88,6 +88,48 @@ workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 | Pérdida de la bóveda de un usuario | Importar el `.gex` con su contraseña de transporte. Si se perdió esa contraseña, el archivo `.gex` no se puede abrir: es el diseño del cifrado, y se avisa al usuario al exportar. | Inmediato si tiene el archivo | Sí (test automático en CI) | Usuario final |
 | Caída del SIEM (Wazuh) | El control central sigue guardando el JSONL y las alertas de la API. Al volver el manager, el agente relee `audit-events.jsonl`. | Manager + agente 4.14.8 en el compose (sin indexer) | Parcial (alerta 100120 verificada el 07/10) | Andrés Varela |
 | Falla del correo | El evento se guarda igual; el correo no se reintenta. Se verifica en el panel de alertas y en Mailpit. | No aplica | No | Andrés Varela |
+
+### Rollback (RNF-10)
+
+La letra pide documentación de despliegue, config y rollback. El despliegue y la config están en
+`README.md` (sección backend) y en `infra/`. El rollback, por caso:
+
+**API o contenedor caído.** Desde `tarea1-gestor-contrasenas/infra/`:
+
+```powershell
+docker compose up --build -d
+curl http://localhost:8001/healthz
+```
+
+Esperado: `{"status":"ok","database":"up"}`. Si el contenedor quedó a medias:
+`docker compose down` y el `up` de nuevo. No toca la bóveda del usuario.
+
+**Base corrupta o datos mal cargados.** No se restaura sobre `control_central` a ciegas.
+El script de prueba levanta una base aparte y compara conteos:
+
+```powershell
+bash scripts/backup_bd.sh
+bash scripts/restaurar_bd_prueba.sh
+```
+
+Corrido el 06/10: 1 s, conteos iguales (`docs/evidencias/06-restauracion-bd-con-datos.txt`).
+Si hay que volver atrás de verdad: tomar el dump de `infra/backups/`, restaurarlo sobre una
+base nueva y cambiar el `DATABASE_URL` de `control-central.env` a esa base. El script de
+prueba no pisa producción.
+
+**App de escritorio mala (instalador nuevo).** Bajar el `.exe` del Release anterior
+(`v0.0-test` hoy; `v1.0` cuando exista) e instalar encima. La bóveda queda en la carpeta
+de datos de la app (`uy.tsi.gestor-contrasenas`), no en el instalador.
+
+**Bóveda perdida o a volver atrás.** Importar el `.gex` con la contraseña de transporte
+(RF-12). Lo cubre el test `favorito_y_copia_cifrada_viajan_a_otra_boveda` del workflow
+`cliente-gestor`. Sin esa contraseña el archivo no se abre: es el diseño.
+
+**Código.** `git checkout` del tag o del commit anterior. El repo no guarda dumps ni
+`.sqlite` (`.gitignore`).
+
+Qué no cubre este rollback: backup diario automático, copia fuera del equipo y copia de
+`keys/agentes/`. No los pide la letra; están en la sección 6 por el BCU.
 
 ---
 
