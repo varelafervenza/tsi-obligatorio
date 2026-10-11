@@ -161,7 +161,7 @@ La madurez es una estimación del equipo (escala 0 a 4) y debe validarla la audi
 | Función MCU 5.0 | Perfil objetivo | Evidencia que lo sostiene | Madurez estimada (0-4) | Acciones para subir |
 |---|---|---|---|---|
 | Gobernar | Avanzado | Política (borrador), RACI, bitácora, controles Excel | 2 | Aprobar la política y definir el procedimiento de revisión |
-| Identificar | Avanzado | Inventario, riesgos, vulnerabilidades (parcial) | 3 | Asignar CVSS y completar el escaneo de red y web |
+| Identificar | Avanzado | Inventario, riesgos, vulnerabilidades (CVSS de V03/V04 cargado) | 3 | Completar el escaneo de red y web |
 | Proteger | Avanzado | Cifrado, MFA TOTP, RBAC, backup | 2 | Subir FastAPI, TLS y copia externa |
 | Detectar | Avanzado | Reglas de detección probadas con la API, JSONL | 2 | Levantar el manager de Wazuh y desplegar el agente |
 | Responder | Avanzado | Procedimiento y un incidente simulado resuelto | 2 | Registrar lecciones aprendidas y el flujo de notificación |
@@ -177,7 +177,7 @@ La madurez es una estimación del equipo (escala 0 a 4) y debe validarla la audi
 | T-02 | 5.10, 6.7, 7.9 | Escribir la política de uso aceptable, de trabajo remoto y de dispositivos portátiles | Media | Andrés Varela | 14/10/2026 |
 | T-03 | 5.5, 6.8 | Terminar la notificación simulada a BCU y URCDP (`12-...`) | Alta | Andrés Varela | 07/10/2026 |
 | T-04 | 8.13, 5.30 | Backup diario automático y copia fuera del equipo | Alta | Pablo Morales | 07/10/2026 |
-| T-05 | 8.8, 5.22 | Asignar CVSS a los avisos abiertos y completar el escaneo de red y web | Media | Pablo Morales | 14/10/2026 |
+| T-05 | 8.8, 5.22 | CVSS de V03/V04 asignado (11/10). Falta el escaneo de red y web | Media | Pablo Morales | 14/10/2026 |
 | T-06 | 8.16, 8.15 | Levantar el manager de Wazuh y desplegar el agente (o justificarlo como limitación) | Alta | Pablo Morales | 14/10/2026 |
 | T-07 | 8.24, 8.21 | TLS en el borde (limitación acordada: queda documentada, no implementada) | Baja | Pablo Morales | Limitación documentada |
 | T-08 | 8.7 | Antivirus o EDR en los equipos de los usuarios (el agente de Wazuh cubre parte) | Media | Horacio Duarte | 14/10/2026 |

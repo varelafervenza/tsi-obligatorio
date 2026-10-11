@@ -1,0 +1,46 @@
+# CVSS de V03 y V04 — consulta OSV/NVD el 11/10/2026
+# Pendiente #24. No se inventaron puntajes: se copiaron de las fichas públicas.
+
+## V03 — starlette 0.38.6 (vía FastAPI 0.115.0). Remediado el 07/10 a starlette 1.7.0.
+
+Peor CVSS v3.1 del grupo: 7.5 (Alto). Ese valor es el que va en la fila V03.
+
+PYSEC-2026-1943  CVE-2024-47874  DoS multipart
+  NVD v3: no enriquecido (N/A)
+  OSV CVSS v4: 8.7  CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N
+  OSV CVSS v3: 0.0 (vector con C:N/I:N/A:N; no se usa)
+  https://nvd.nist.gov/vuln/detail/CVE-2024-47874
+  https://osv.dev/vulnerability/PYSEC-2026-1943
+
+PYSEC-2026-1941  CVE-2025-54121  5.3 Media
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L
+  https://osv.dev/vulnerability/PYSEC-2026-1941
+
+PYSEC-2026-161   CVE-2026-48710  6.5 Media  (BadHost)
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N
+  https://nvd.nist.gov/vuln/detail/CVE-2026-48710
+
+PYSEC-2026-2281  CVE-2026-48818  7.5 Alta  (StaticFiles UNC / Windows)
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+  El contenedor de control-central es Linux: este aviso no aplica al compose.
+  https://osv.dev/vulnerability/PYSEC-2026-2281
+
+PYSEC-2026-2280  CVE-2026-48817  5.3 Media
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N
+  https://osv.dev/vulnerability/PYSEC-2026-2280
+
+PYSEC-2026-249   CVE-2026-54283  7.5 Alta  (límites de form urlencoded)
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H
+  https://osv.dev/vulnerability/PYSEC-2026-249
+
+PYSEC-2026-248   CVE-2026-54282  5.3 Media
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N
+  https://osv.dev/vulnerability/PYSEC-2026-248
+
+## V04 — ecdsa 0.19.2. Riesgo aceptado (la firma del sistema es RS256, no ECDSA).
+
+PYSEC-2026-1325  CVE-2024-23342  7.4 Alta
+  CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N
+  Minerva timing attack sobre P-256. Sin parche publicado.
+  https://osv.dev/vulnerability/PYSEC-2026-1325
+  https://nvd.nist.gov/vuln/detail/CVE-2024-23342

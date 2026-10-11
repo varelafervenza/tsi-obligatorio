@@ -129,8 +129,8 @@ Nota de la corrida doble: el script `simular_casos_uso.py` se ejecutó dos veces
 |---|---|---|
 | V01 | `python-jose` con avisos | Remediado (3.4.0) |
 | V02 | `python-multipart` con avisos | Remediado (0.0.31) |
-| V03 | `starlette` (hallazgo del 05/10 sobre FastAPI 0.115.0 / starlette 0.38.6) | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS pendiente |
-| V04 | `ecdsa` sin corrección | Riesgo aceptado: RS-256 no usa ECDSA |
+| V03 | `starlette` (hallazgo del 05/10 sobre FastAPI 0.115.0 / starlette 0.38.6) | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS 7.5 Alto |
+| V04 | `ecdsa` sin corrección (CVE-2024-23342) | CVSS 7.4 Alto. Riesgo aceptado: RS-256 no usa ECDSA |
 
 Herramientas corridas: `pip-audit` antes y después, `bandit` con 0 issues, `npm audit` con 0 vulnerabilidades.
 

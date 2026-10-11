@@ -59,7 +59,7 @@ Ya cerrados: R06 (aviso al activar MFA) y R11 (hook de `gitleaks`), en `aaecc19`
 | 21 | Consulta escrita a la cátedra: Anexo A (no está en el repo) y postura sobre Mailpit y Wazuh | a confirmar | Pendiente |
 | 22 | Medir uptime, RNF-02 (apertura < 2 s), RNF-05 (carga básica) y RNF-10 (rollback) | a confirmar | Pendiente |
 | 23 | Escaneo de red y web (nmap, OpenVAS o nuclei), más Trivy y `cargo audit` | a confirmar | Pendiente |
-| 24 | CVSS de V03 y V04 en `docs/10-Gestion-Vulnerabilidades.md` | a confirmar | Pendiente |
+| 24 | CVSS de V03 y V04 en `docs/10-Gestion-Vulnerabilidades.md` | Pablo Morales | Cerrado (11/10): V03 7.5 Alto (peor v3.1 del grupo starlette); V04 7.4 Alto (CVE-2024-23342). Fuentes en `docs/evidencias/10-cvss-v03-v04.txt` |
 | 25 | Backup diario automático (tarea programada de Windows) y copia fuera del equipo | a confirmar | Pendiente |
 | 26 | Custodia de `keys/agentes/`: decidir dónde se guarda la clave privada | RSI | Pendiente |
 | 27 | Contactos oficiales de reporte (teléfono y correo) en `docs/12-Notificacion-Incidentes.md` | RSI | Pendiente |
@@ -111,3 +111,4 @@ Evidencia: `docs/evidencias/00-cola-eventos-reintento.txt`.
 | 07/10 | — | R13: PostgreSQL ya no se publica en el host (`5432`) |
 | 10/10 | — | Excel MCU: 25 filas de evidencia en `01-controles` (#14) y 79 entradas en `04-bitacora` (#15) |
 | 10/10 | — | Nombre canónico `04-Gestion-Incidentes.md` (#13) |
+| 11/10 | — | CVSS de V03 (7.5) y V04 (7.4) (#24) |

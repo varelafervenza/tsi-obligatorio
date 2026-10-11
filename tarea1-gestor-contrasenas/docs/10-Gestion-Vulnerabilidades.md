@@ -23,9 +23,9 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-VUL-10 |
-| Versión | 0.1 (borrador) |
+| Versión | 0.2 (borrador) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
-| Fecha | 05/10/2026 |
+| Fecha | 11/10/2026 |
 
 ---
 
@@ -44,14 +44,29 @@
 
 ## 2. Registro de vulnerabilidades
 
-El CVSS no lo informa `pip-audit`; queda pendiente de buscarlo en la base de NVD para cada ID.
+`pip-audit` no informa CVSS. Los puntajes de V03 y V04 se tomaron de OSV/NVD el 11/10/2026
+(detalle y URLs en `docs/evidencias/10-cvss-v03-v04.txt`). V01 y V02 siguen sin puntaje
+oficial cargado: no son el pendiente #24.
 
 | ID | Activo | Hallazgo | Herramienta | CVSS v3 | Estado | Fecha detección | Fecha remediación | Responsable |
 |---|---|---|---|---|---|---|---|---|
 | V01 | `control-central` (`python-jose` 3.3.0) | PYSEC-2024-232, PYSEC-2024-233, PYSEC-2025-185 | pip-audit | Pendiente | **Remediado**: se subió a 3.4.0 | 05/10/2026 | 05/10/2026 | Pablo Morales |
 | V02 | `control-central` (`python-multipart` 0.0.9) | Siete avisos PYSEC-2026-1851 a 3040 | pip-audit | Pendiente | **Remediado**: se subió a 0.0.31 | 05/10/2026 | 05/10/2026 | Pablo Morales |
-| V03 | `control-central` (hallazgo: `starlette` 0.38.6 vía FastAPI 0.115.0) | Siete avisos PYSEC-2026. El 07/10 se subió a FastAPI 0.142.3 y starlette 1.7.0 | pip-audit | Pendiente | **Remediado.** 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
-| V04 | `control-central` (`ecdsa` 0.19.2, dependencia de `python-jose`) | PYSEC-2026-1325 | pip-audit | Pendiente | **Riesgo aceptado** (ver sección 5) | 05/10/2026 | — | Pablo Morales |
+| V03 | `control-central` (hallazgo: `starlette` 0.38.6 vía FastAPI 0.115.0) | Siete avisos PYSEC-2026. El 07/10 se subió a FastAPI 0.142.3 y starlette 1.7.0 | pip-audit | **7.5 (Alto)** — peor v3.1 del grupo | **Remediado.** 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
+| V04 | `control-central` (`ecdsa` 0.19.2, dependencia de `python-jose`) | PYSEC-2026-1325 (CVE-2024-23342) | pip-audit | **7.4 (Alto)** `AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N` | **Riesgo aceptado** (ver sección 5) | 05/10/2026 | — | Pablo Morales |
+
+Desglose de V03 (`starlette` 0.38.6). La fila usa el peor CVSS v3.1 (7.5). CVE-2024-47874 no tiene
+base v3 en NVD; OSV publica CVSS v4 8.7 y un v3 0.0 (vector con impacto nulo, no se usa).
+
+| PYSEC | Alias | CVSS v3.1 | Fuente |
+|---|---|---|---|
+| PYSEC-2026-1943 | CVE-2024-47874 | N/A en NVD; OSV v4 8.7 (DoS multipart) | [NVD](https://nvd.nist.gov/vuln/detail/CVE-2024-47874), [OSV](https://osv.dev/vulnerability/PYSEC-2026-1943) |
+| PYSEC-2026-1941 | CVE-2025-54121 | 5.3 Media | [OSV](https://osv.dev/vulnerability/PYSEC-2026-1941) |
+| PYSEC-2026-161 | CVE-2026-48710 | 6.5 Media | [NVD](https://nvd.nist.gov/vuln/detail/CVE-2026-48710) |
+| PYSEC-2026-2281 | CVE-2026-48818 | 7.5 Alta (StaticFiles UNC en Windows; el contenedor Linux no aplica) | [OSV](https://osv.dev/vulnerability/PYSEC-2026-2281) |
+| PYSEC-2026-2280 | CVE-2026-48817 | 5.3 Media | [OSV](https://osv.dev/vulnerability/PYSEC-2026-2280) |
+| PYSEC-2026-249 | CVE-2026-54283 | 7.5 Alta | [OSV](https://osv.dev/vulnerability/PYSEC-2026-249) |
+| PYSEC-2026-248 | CVE-2026-54282 | 5.3 Media | [OSV](https://osv.dev/vulnerability/PYSEC-2026-248) |
 
 ---
 
@@ -64,7 +79,9 @@ El CVSS no lo informa `pip-audit`; queda pendiente de buscarlo en la base de NVD
 | Media | 4.0–6.9 | 30 días |
 | Baja | 0.1–3.9 | 90 días |
 
-V03 se cerró el 07/10 al subir FastAPI y starlette por encima de las versiones que pedía el audit. El CVSS de esos avisos sigue sin buscarse en NVD. V04 sigue aceptada.
+V03 es **Alta** (peor CVSS v3.1 = 7.5). SLA: 7 días. Quedó remediada el 07/10 (2 días después
+de detectarla). V04 es **Alta** (7.4); no hay parche publicado y se acepta (sección 5). El SLA
+de parcheo no corre mientras el tratamiento sea aceptación.
 
 ---
 
@@ -81,7 +98,7 @@ V03 se cerró el 07/10 al subir FastAPI y starlette por encima de las versiones 
 
 | ID | Hallazgo | Justificación | Aprobado por | Fecha |
 |---|---|---|---|---|
-| V04 | PYSEC-2026-1325 (`ecdsa`) | No tiene corrección publicada. `ecdsa` llega a través de `python-jose`, pero nuestra firma de eventos usa **RS256** (RSA), no ECDSA, así que el aviso no afecta el camino de firma que usamos. Se acepta mientras no haya corrección. | Equipo Blue (pendiente de confirmación del RSI) | 05/10/2026 |
+| V04 | PYSEC-2026-1325 / CVE-2024-23342 (`ecdsa`, CVSS 7.4) | Ataque Minerva sobre P-256. No tiene corrección publicada (el proyecto declara los side-channels fuera de alcance). `ecdsa` llega a través de `python-jose`, pero nuestra firma de eventos usa **RS256** (RSA), no ECDSA, así que el aviso no afecta el camino de firma que usamos. Se acepta mientras no haya corrección. | Equipo Blue (pendiente de confirmación del RSI) | 05/10/2026 |
 
 ---
 
@@ -107,7 +124,7 @@ V03 se cerró el 07/10 al subir FastAPI y starlette por encima de las versiones 
 - [x] Escaneo de dependencias de Python y de Node con evidencia.
 - [x] SAST sobre el código del backend con evidencia.
 - [x] Registro con ID, activo, herramienta y estado.
-- [ ] CVSS y SLA asignados a cada hallazgo (pendiente: V03 y V04).
+- [x] CVSS y SLA de V03 (7.5 Alto) y V04 (7.4 Alto). V01 y V02 siguen sin puntaje.
 - [x] V03 cerrada con FastAPI 0.142.3 y starlette 1.7.0 (07/10/2026).
 - [ ] Escaneo de red y web (pendiente).
 - [ ] SAST incorporado al ciclo de desarrollo (bandit corrido a mano, no en CI).

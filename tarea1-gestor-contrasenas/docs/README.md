@@ -23,7 +23,7 @@ Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`doc
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☑ borrador (backup/restore probados; Wazuh ya está en el compose) |
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador (reglas de API y Wazuh con alertas 100120/100101/100111) |
 | `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ TOTP en cliente y panel; Hello/WebAuthn fuera de alcance |
-| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ V01–V03 remediadas; V04 aceptada; red/Trivy/`cargo audit` pendientes |
+| `10-Gestion-Vulnerabilidades.md` | `plantilla/isaca/10-gestion-vulnerabilidades.md` | ☑ V01–V03 remediadas; V03 CVSS 7.5 y V04 7.4 (#24); red/Trivy/`cargo audit` pendientes |
 | `11-SoA-Plan-Tratamiento.md` | `plantilla/isaca/11-soa-plan-tratamiento.md` | ☑ 93 controles; falta firma del RSI |
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☑ incidente 1 simulado; falta firma RSI y contactos oficiales |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |

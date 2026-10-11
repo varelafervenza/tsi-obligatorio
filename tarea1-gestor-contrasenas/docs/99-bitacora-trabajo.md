@@ -1966,6 +1966,29 @@ Hora (UTC): 00:37
 - **Observaciones**: Cierra #13. El tag `v1.0` (#1) no se toca: todavía faltan firma del
   RSI, video y escaneos.
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 00:45
+---
+
+## Actividad: CVSS de V03 y V04 (#24)
+
+- **Fase**: Documentación
+- **Duración**: 25 min
+- **Tarea realizada**: Se consultaron OSV y NVD para los avisos de `starlette` 0.38.6
+  (V03) y `ecdsa` 0.19.2 (V04). V03 queda en 7.5 Alto (peor CVSS v3.1 del grupo;
+  CVE-2026-54283 y CVE-2026-48818). V04 queda en 7.4 Alto (CVE-2024-23342, Minerva).
+  No se inventaron puntajes. V01 y V02 siguen sin CVSS. Se actualizaron `10`, `03`,
+  `11`, `28` y `00-pendientes-entrega.md`.
+- **Herramienta / comando**: consulta a osv.dev y nvd.nist.gov.
+- **Resultado**: #24 cerrado. SLA de V03 (Alta, 7 días) se cumplió el 07/10.
+- **Evidencia anexa**: `docs/evidencias/10-cvss-v03-v04.txt`.
+- **Incidencia / hallazgo**: CVE-2024-47874 no tiene base v3 en NVD; OSV publica
+  CVSS v4 8.7 y un v3 0.0 que no se usa.
+- **Observaciones**: El escaneo de red/Trivy/`cargo audit` sigue abierto (#23).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

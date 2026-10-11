@@ -148,7 +148,7 @@ Acciones propuestas, ordenadas por prioridad. Las de los riesgos Alto son obliga
 |---|---|---|---|
 | R01 | Un ataque dirigido con hardware dedicado sigue siendo posible si la maestra es débil; queda a criterio del usuario | RSI | Pendiente de firma |
 | R02 | Compromiso total del endpoint del agente aún permitiría firmar eventos falsos de ese agente puntual | RSI | Pendiente de firma |
-| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) remediada el 07/10; CVSS pendiente | RSI | Pendiente de firma |
+| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) remediada el 07/10, CVSS 7.5; V04 aceptada, CVSS 7.4 | RSI | Pendiente de firma |
 | R04 | Ingeniería social directa al RSI (fuera del alcance técnico) | RSI | Pendiente de firma |
 | R05 | Intercepción del tráfico HTTP en la red del laboratorio, sin TLS (limitación acordada con el docente) | RSI | Pendiente de firma |
 | R06 | Phishing de TOTP al no haber factor resistente (WebAuthn/Hello fuera de alcance); robo físico del dispositivo con TOTP | RSI | Pendiente de firma |
