@@ -2037,6 +2037,29 @@ Hora (UTC): 02:00
   las dos siguientes no. Se declara el valor real.
 - **Observaciones**: Siguen abiertos #1, #2, #23 y #29.
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:20
+---
+
+## Actividad: Escaneo nuclei (#23)
+
+- **Fase**: Prueba
+- **Duración**: 25 min
+- **Tarea realizada**: Se corrió nuclei 3.11.1 (7078 plantillas) contra :8001, :3000 y
+  :8025. 4 matches: CVE-2025-4123 (Grafana 11.2.0, NVD 6.1), CVE-2026-21859
+  (Mailpit /proxy, NVD 5.3) y exposición de `/metrics`. Se registraron como V05–V07
+  y se aceptaron en laboratorio (no se suben imágenes antes de la defensa). :8001
+  quedó casi sin barrer por timeout. OpenVAS no se usó.
+- **Herramienta / comando**: `docker run --rm projectdiscovery/nuclei:latest ...`
+- **Resultado**: #23 cerrado. Evidencia `docs/evidencias/10-nuclei.txt`.
+- **Evidencia anexa**: `10-nuclei.txt`, `10-Gestion-Vulnerabilidades.md`.
+- **Incidencia / hallazgo**: Muchos `i/o timeout` por `host.docker.internal`. Los
+  caracteres no latinos de una plantilla no son un hallazgo propio.
+- **Observaciones**: Quedan #1, #2 y #29.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

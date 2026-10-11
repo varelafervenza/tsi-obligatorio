@@ -131,10 +131,13 @@ Nota de la corrida doble: el script `simular_casos_uso.py` se ejecutó dos veces
 | V02 | `python-multipart` con avisos | Remediado (0.0.31) |
 | V03 | `starlette` (hallazgo del 05/10 sobre FastAPI 0.115.0 / starlette 0.38.6) | **Remediado** el 07/10: FastAPI 0.142.3 y starlette 1.7.0. CVSS 7.5 Alto |
 | V04 | `ecdsa` sin corrección (CVE-2024-23342) | CVSS 7.4 Alto. Riesgo aceptado: RS-256 no usa ECDSA |
+| V05 | Grafana 11.2.0, CVE-2025-4123 | NVD 6.1. Aceptado en laboratorio |
+| V06 | Mailpit `/proxy`, CVE-2026-21859 | NVD 5.3. Aceptado en laboratorio |
+| V07 | Grafana `/metrics` (versión) | Baja. Aceptado |
 
 Herramientas corridas: `pip-audit` antes y después, `bandit` con 0 issues, `npm audit` con 0 vulnerabilidades.
 
-No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `cargo audit`.
+nuclei corrido el 11/10 (`10-nuclei.txt`): V05–V07. OpenVAS, Trivy y `cargo audit` no se corrieron.
 
 ### 6.2 Limitaciones de alcance aceptadas
 
@@ -147,7 +150,6 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 ### 6.3 Pendientes que pide la letra
 
 - Clasificar alertas para la tasa de falsos positivos (6.4). El manager ya emite alertas (07/10).
-- Escaneo OpenVAS o nuclei (matriz 8.1 de `10-gestion-vulnerabilidades`). `bandit` ya está.
 - Video de la demo de 5 min o menos (6.2 #13; 8.2).
 - Tag `v1.0` y hash SHA-256 (6.3; 8.2). Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
 
@@ -163,7 +165,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, OpenVAS/nuclei, video y tag `v1.0`. El #22 (uptime, apertura, carga básica, rollback) se cerró el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, video y tag `v1.0`. El #22 y el #23 (nuclei) se cerraron el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

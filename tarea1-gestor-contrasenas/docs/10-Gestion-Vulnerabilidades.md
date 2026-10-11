@@ -37,7 +37,7 @@
 | `npm audit --omit=dev` | Dependencias de producción de `cliente-gestor` | 05/10/2026 | `10-npm-audit.txt` | Corrido |
 | `bandit` (SAST) | Código Python de `control-central/app` | 05/10/2026 | `10-bandit.txt` | Corrido |
 | `cargo audit` | Dependencias de Rust de `cliente-gestor` | — | — | **Pendiente** |
-| OpenVAS / nmap / nuclei | Escaneo de red, puertos y web | — | — | **Pendiente** |
+| nuclei v3.11.1 (7078 plantillas) | HTTP a :8001, :3000, :8025 vía `host.docker.internal` | 11/10/2026 | `10-nuclei.txt` | Corrido. :8001 casi sin cobertura (timeout). OpenVAS no se corrió |
 | Trivy / semgrep | Imágenes Docker y SAST adicional | — | — | **Pendiente** |
 
 ---
@@ -54,6 +54,9 @@ oficial cargado: no son el pendiente #24.
 | V02 | `control-central` (`python-multipart` 0.0.9) | Siete avisos PYSEC-2026-1851 a 3040 | pip-audit | Pendiente | **Remediado**: se subió a 0.0.31 | 05/10/2026 | 05/10/2026 | Pablo Morales |
 | V03 | `control-central` (hallazgo: `starlette` 0.38.6 vía FastAPI 0.115.0) | Siete avisos PYSEC-2026. El 07/10 se subió a FastAPI 0.142.3 y starlette 1.7.0 | pip-audit | **7.5 (Alto)** — peor v3.1 del grupo | **Remediado.** 18 tests pasan. Un `pip-audit` nuevo no pudo consultar PyPI en esta máquina (el certificado no verifica) | 05/10/2026 | 07/10/2026 | Pablo Morales |
 | V04 | `control-central` (`ecdsa` 0.19.2, dependencia de `python-jose`) | PYSEC-2026-1325 (CVE-2024-23342) | pip-audit | **7.4 (Alto)** `AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N` | **Riesgo aceptado** (ver sección 5) | 05/10/2026 | — | Pablo Morales |
+| V05 | Grafana 11.2.0 (`:3000`) | CVE-2025-4123 (XSS / open redirect). Fix ≥ 11.2.9+security-01 | nuclei | **6.1 (Media)** NVD; vendor 7.6 | **Aceptado** en laboratorio (sección 5) | 11/10/2026 | — | Pablo Morales |
+| V06 | Mailpit v1.21 (`:8025`) | CVE-2026-21859 (SSRF en `/proxy`). Fix 1.28.1 | nuclei | **5.3 (Media)** NVD; CNA 5.8 | **Aceptado** en laboratorio (sección 5) | 11/10/2026 | — | Pablo Morales |
+| V07 | Grafana `:3000/metrics` | Expone versión 11.2.0 (y métricas). Sin CVE | nuclei | Baja (info) | **Aceptado** | 11/10/2026 | — | Pablo Morales |
 
 Desglose de V03 (`starlette` 0.38.6). La fila usa el peor CVSS v3.1 (7.5). CVE-2024-47874 no tiene
 base v3 en NVD; OSV publica CVSS v4 8.7 y un v3 0.0 (vector con impacto nulo, no se usa).
@@ -99,6 +102,9 @@ de parcheo no corre mientras el tratamiento sea aceptación.
 | ID | Hallazgo | Justificación | Aprobado por | Fecha |
 |---|---|---|---|---|
 | V04 | PYSEC-2026-1325 / CVE-2024-23342 (`ecdsa`, CVSS 7.4) | Ataque Minerva sobre P-256. No tiene corrección publicada (el proyecto declara los side-channels fuera de alcance). `ecdsa` llega a través de `python-jose`, pero nuestra firma de eventos usa **RS256** (RSA), no ECDSA, así que el aviso no afecta el camino de firma que usamos. Se acepta mientras no haya corrección. | Equipo Blue (pendiente de confirmación del RSI) | 05/10/2026 |
+| V05 | CVE-2025-4123 (Grafana 11.2.0) | Grafana es solo del laboratorio (`localhost:3000`), sin anónimo de internet ni Image Renderer. Subir a 11.2.9+security-01 puede romper el provisionado. Se acepta hasta después de la defensa. | Equipo Blue | 11/10/2026 |
+| V06 | CVE-2026-21859 (Mailpit `/proxy`) | Mailpit no sale a internet (justificado en C4). El SSRF queda en la red Docker. No se sube a 1.28.1 antes de la defensa. | Equipo Blue | 11/10/2026 |
+| V07 | `/metrics` de Grafana | Filtra la versión. Mismo alcance local. | Equipo Blue | 11/10/2026 |
 
 ---
 
@@ -107,6 +113,10 @@ de parcheo no corre mientras el tratamiento sea aceptación.
 `bandit` sobre `control-central/app` no encontró problemas (ver `docs/evidencias/10-bandit.txt`).
 `npm audit --omit=dev` sobre `cliente-gestor` no encontró vulnerabilidades (ver `docs/evidencias/10-npm-audit.txt`).
 
+`nuclei` (11/10/2026, `docs/evidencias/10-nuclei.txt`): 4 matches (V05–V07). Varios `i/o timeout` contra
+`host.docker.internal`; la API en `:8001` quedó casi sin barrer. Los puertos 80/4040/9780/43800
+dieron *connection refused*: no están publicados. OpenVAS no se corrió; la letra admite nuclei.
+
 ---
 
 ## Guía de llenado (Blue Team)
@@ -114,7 +124,7 @@ de parcheo no corre mientras el tratamiento sea aceptación.
 | Fase | Cómo completar | Con qué evidencia |
 |---|---|---|
 | Implementación | Escaneo de dependencias y SAST, remediación de lo que tiene corrección | `10-pip-audit*.txt`, `10-bandit.txt`, `10-npm-audit.txt` |
-| Pendiente | Escaneo de red y web (OpenVAS, nmap, nuclei) y de imágenes Docker (Trivy) | Por correr |
+| Nuclei | Escaneo HTTP de :8001/:3000/:8025 | `10-nuclei.txt` |
 | Red Team | Ejecuta su propio escaneo y pentest; sus hallazgos entran como nuevos IDs V | Informe Red Team |
 
 ---
@@ -126,5 +136,5 @@ de parcheo no corre mientras el tratamiento sea aceptación.
 - [x] Registro con ID, activo, herramienta y estado.
 - [x] CVSS y SLA de V03 (7.5 Alto) y V04 (7.4 Alto). V01 y V02 siguen sin puntaje.
 - [x] V03 cerrada con FastAPI 0.142.3 y starlette 1.7.0 (07/10/2026).
-- [ ] Escaneo de red y web (pendiente).
+- [x] Escaneo web con nuclei (11/10). OpenVAS no se corrió.
 - [ ] SAST incorporado al ciclo de desarrollo (bandit corrido a mano, no en CI).

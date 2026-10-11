@@ -1,0 +1,48 @@
+# nuclei v3.11.1 / templates v10.5.0 — 11/10/2026
+# Comando:
+# docker run --rm projectdiscovery/nuclei:latest \
+#   -u http://host.docker.internal:8001 \
+#   -u http://host.docker.internal:3000 \
+#   -u http://host.docker.internal:8025 \
+#   -severity low,medium,high,critical
+# 7078 plantillas. 8 min. 4 matches. Muchos timeout (host.docker.internal).
+# La API :8001 casi no se barre: nuclei la marcó unresponsive.
+# Puertos 80, 4040, 9780, 43800: probes de plantillas, connection refused (no están publicados).
+
+[INF] nuclei-templates are not installed, installing...
+[INF] Successfully installed nuclei-templates at /root/nuclei-templates
+[INF] Current nuclei version: v3.11.1 (latest)
+[INF] Current nuclei-templates version: v10.5.0 (latest)
+[INF] New templates added in latest release: 295
+[INF] Templates loaded for current scan: 7078
+[INF] Executing 7078 signed templates from projectdiscovery/nuclei-templates
+[INF] Targets loaded for current scan: 3
+[INF] Templates clustered: 473 (Reduced 1218 Requests)
+[INF] Using Interactsh Server: oast.live
+[INF] Skipped host.docker.internal:8025 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8025
+[INF] Skipped host.docker.internal:8025 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8025
+[INF] Skipped host.docker.internal:8025 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8025
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:43800 from target list as found unresponsive permanently: cause="port closed or filtered" address=host.docker.internal:43800
+[CVE-2025-4123:open-redirect] [http] [high] http://host.docker.internal:3000/public/..%2F%5coast.pro%2F%3f%2F..%2F..
+[INF] Skipped host.docker.internal:8025 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8025
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[CVE-2026-21859] [http] [high] http://host.docker.internal:8025/proxy?url=http://127.0.0.1:8025/api/v1/info
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:8001 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8001
+[INF] Skipped host.docker.internal:8001 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8001
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:8025 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8025
+[INF] Skipped host.docker.internal:8001 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:8001
+[INF] Skipped host.docker.internal:9780 from target list as found unresponsive permanently: cause="port closed or filtered" address=host.docker.internal:9780
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:3000 from target list as found unresponsive permanently: cause="i/o timeout" address=host.docker.internal:3000
+[INF] Skipped host.docker.internal:80 from target list as found unresponsive permanently: cause="port closed or filtered" address=host.docker.internal:80
+[grafana-metrics-exposure:version] [http] [low] http://host.docker.internal:3000/metrics ["11.2.0"]
+[postgres-exporter-metrics] [http] [low] http://host.docker.internal:3000/metrics
+[INF] Skipped host.docker.internal:4040 from target list as found unresponsive permanently: cause="port closed or filtered" address=host.docker.internal:4040
+[INF] Scan completed in 8m. 4 matches found.
+[INF] HTTP connections: 31426 total, 5846 new, 25580 reused (81.4%)
