@@ -1,0 +1,11 @@
+GET http://localhost:8001/api/dashboard/kpis
+11/10/2026 01:56:57 UTC. Cierre de la sesión #22.
+
+Comparado con 22-kpis.txt (01:28:59 UTC, uptime_segundos=660):
+- uptime_segundos pasó a 2339 (+1679 s).
+- Reloj de pared 01:28:59 → 01:56:57 = 1678 s.
+- El proceso no se reinició: uptime y reloj avanzan juntos.
+- healthz ok en el cierre. Correo y BD: up.
+- Ventana de validación ≈ 28 min, sin caída.
+
+{"generado_en":"2026-10-11T01:56:57.912417Z","funcionamiento":{"agentes":[{"agente_id":"agente-aeb5b922","ultima_recepcion":"2026-10-07T21:24:01.928826Z","eventos":6,"activo":false}],"agentes_activos":0,"ultima_sincronizacion":"2026-10-07T21:24:01.928826Z","correo":{"estado":"up","host":"mailpit","port":1025},"base_de_datos":"up"},"volumen_por_tipo":{"alta_credencial":2,"borrado_credencial":3,"modificacion_credencial":1},"alertas":{"firma_invalida":3,"intento_fallido_maestra":0},"incidentes":{"abierto":0,"en_analisis":0,"resuelto":0},"kpis":{"mttd":{"segundos":null,"muestras":0},"mttr":{"segundos":null,"muestras":0},"cobertura_eventos":{"tipos_requeridos":["alta_credencial","modificacion_credencial","borrado_credencial","cambio_maestra"],"tipos_vistos":["alta_credencial","modificacion_credencial","borrado_credencial"],"porcentaje":75.0},"falsos_positivos":{"tasa":null,"alertas_siem":0,"alertas_reglas":0,"nota":"0 alertas de las reglas locales, ninguna clasificada. Wazuh todavía no emitió alertas de las reglas 100100-100120."},"uptime_segundos":2339}}

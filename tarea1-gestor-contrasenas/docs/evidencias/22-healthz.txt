@@ -1,0 +1,6 @@
+GET http://localhost:8001/healthz
+11/10/2026 ~01:56 UTC (cierre de la sesión de medición #22)
+
+{"status":"ok","database":"up"}
+
+Eso es la respuesta sana. No trae KPIs: para eso está /api/dashboard/kpis.

@@ -1,0 +1,9 @@
+RNF-02 — apertura de bóveda. 11/10/2026 ~22:41 hora local.
+Bóveda ya existente (ruta por defecto de la app). Cronómetro desde «Abrir bóveda» hasta la lista.
+
+1: 2.63 s
+2: 0.81 s
+3: 0.40 s
+
+La primera incluye frío (KDF/disco). 2 y 3 en caliente, ambas < 2 s.
+La letra pide apertura < 2 s; se declara el valor real, no se redondea la primera.
