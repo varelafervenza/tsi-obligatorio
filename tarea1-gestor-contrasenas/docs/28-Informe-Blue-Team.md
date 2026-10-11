@@ -25,7 +25,7 @@ Lo que está demostrado con evidencia:
 Lo que no cumple todavía, y se declara abierto en la sección 6:
 
 - El MTTD y el MTTR del panel se corrigieron el 06/10 (ver sección 4.2): el MTTD mide desde el evento hasta la alerta y el MTTR desde la alerta hasta la resolución.
-- El manager y el agente de Wazuh están levantados (4.14.8, sin indexer). Hay alertas reales de las reglas 100120, 100101 y 100111. La tasa de falsos positivos sigue vacía porque ninguna alerta local está clasificada.
+- El manager y el agente de Wazuh están levantados (4.14.8, sin indexer). Tasa de falsos positivos 0,0 % el 11/10 (alerta `cambio_maestra` clasificada como válida).
 - Hay limitaciones de alcance aceptadas con la cátedra: TLS en el laboratorio, y Windows Hello y WebAuthn fuera de la entrega.
 
 ---
@@ -74,7 +74,7 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 | MTTD | Tiempo de detección de un ataque simulado | 0.2 s (alerta 1 menos evento 10, definición A) | 1 | Sí, con la definición A (ver 4.2) |
 | MTTR | Tiempo de respuesta a incidente | 77 881.7 s (21 h 38 min), desde la alerta hasta la resolución | 1 | Sí, con la definición desde la alerta (ver 4.2). Valor alto por la espera de creación del caso |
 | Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % en la base (06/10, script) y alta/mod/borrado repetidos desde la app el 07/10 (`docs/evidencias/05-03-app-alta.png`, `05-03-app-modificacion.png`, `05-03-app-borrado.png`) | 4 de 4 tipos | Sí |
-| Falsos positivos del SIEM | Tasa de falsos positivos | Sin valor (`null`). `alertas_siem` ya cuenta las reglas de Wazuh | 16 alertas SIEM en la prueba del 07/10; ninguna alerta local clasificada | Tasa no medida |
+| Falsos positivos del SIEM | Tasa de falsos positivos | 0,0 % sobre 1 alerta local clasificada. Wazuh 1 | 11/10: `cambio_maestra` marcada `es_falso_positivo=false` | Medido |
 | Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
 
 ### 4.2 Lectura de los KPIs (lo que hay que saber antes de defenderlos)
@@ -149,7 +149,6 @@ nuclei corrido el 11/10 (`10-nuclei.txt`): V05–V07. OpenVAS, Trivy y `cargo au
 
 ### 6.3 Pendientes que pide la letra
 
-- Clasificar alertas para la tasa de falsos positivos (6.4). El manager ya emite alertas (07/10).
 - Video de la demo de 5 min o menos (6.2 #13; 8.2).
 - Tag `v1.0` y hash SHA-256 (6.3; 8.2). Mailpit y Wazuh sin indexer ya se hablaron con el profesor.
 
@@ -165,7 +164,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es medible: tasa de falsos positivos, video y tag `v1.0`. El #22 y el #23 (nuclei) se cerraron el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es el video y el tag `v1.0`. El #22, #23 y #29 se cerraron el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

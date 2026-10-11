@@ -2060,6 +2060,27 @@ Hora (UTC): 02:20
   caracteres no latinos de una plantilla no son un hallazgo propio.
 - **Observaciones**: Quedan #1, #2 y #29.
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 02:44
+---
+
+## Actividad: Tasa de falsos positivos (#29)
+
+- **Fase**: Prueba
+- **Duración**: 15 min
+- **Tarea realizada**: `/api/alerts/` estaba vacío. Se hizo C-08 (cambio de maestra).
+  Quedó la alerta 1, regla `cambio_maestra`. Se clasificó con
+  `PATCH /api/alerts/1` `es_falso_positivo=false`. KPIs:
+  `tasa=0.0`, `alertas_siem=1`, cobertura 100 %.
+- **Herramienta / comando**: app (C-08), `curl.exe` PATCH y GET kpis.
+- **Resultado**: #29 cerrado. Tasa 0,0 % sobre 1 alerta válida.
+- **Evidencia anexa**: `docs/evidencias/29-falsos-positivos.txt`.
+- **Incidencia / hallazgo**: En PowerShell el `curl` alias rompe el JSON; hace falta `curl.exe`.
+- **Observaciones**: Quedan #1 (tag) y #2 (video).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

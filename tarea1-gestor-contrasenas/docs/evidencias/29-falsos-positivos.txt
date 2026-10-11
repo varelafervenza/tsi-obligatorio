@@ -1,0 +1,16 @@
+#29 — tasa de falsos positivos. 11/10/2026 02:41–02:43 UTC.
+
+1. C-08 cambio de maestra → evento_id 7, alerta id 1, regla cambio_maestra.
+2. PATCH /api/alerts/1  {"es_falso_positivo":false}
+3. KPIs: tasa=0.0, alertas_reglas=1, alertas_siem=1, cobertura_eventos=100.0
+
+La tasa es 0 % sobre 1 alerta clasificada (válida). No se inventó.
+
+GET /api/alerts/ (antes del PATCH, es_falso_positivo null):
+[{"id":1,"regla":"cambio_maestra","evento_id":7,"agente_id":"agente-aeb5b922","creado_en":"2026-10-11T02:41:17.008325Z","es_falso_positivo":null}]
+
+PATCH /api/alerts/1:
+{"id":1,"regla":"cambio_maestra","evento_id":7,"agente_id":"agente-aeb5b922","creado_en":"2026-10-11T02:41:17.008325Z","es_falso_positivo":false}
+
+GET /api/dashboard/kpis (02:43:46Z, uptime_segundos=5147):
+{"generado_en":"2026-10-11T02:43:46.808200Z","funcionamiento":{"agentes":[{"agente_id":"agente-aeb5b922","ultima_recepcion":"2026-10-11T02:41:16.660093Z","eventos":7,"activo":true}],"agentes_activos":1,"ultima_sincronizacion":"2026-10-11T02:41:16.660093Z","correo":{"estado":"up","host":"mailpit","port":1025},"base_de_datos":"up"},"volumen_por_tipo":{"cambio_maestra":1,"alta_credencial":2,"borrado_credencial":3,"modificacion_credencial":1},"alertas":{"firma_invalida":3,"intento_fallido_maestra":0},"incidentes":{"abierto":0,"en_analisis":0,"resuelto":0},"kpis":{"mttd":{"segundos":null,"muestras":0},"mttr":{"segundos":null,"muestras":0},"cobertura_eventos":{"tipos_requeridos":["alta_credencial","modificacion_credencial","borrado_credencial","cambio_maestra"],"tipos_vistos":["alta_credencial","modificacion_credencial","borrado_credencial","cambio_maestra"],"porcentaje":100.0},"falsos_positivos":{"tasa":0.0,"alertas_siem":1,"alertas_reglas":1,"nota":"Tasa sobre alertas locales ya clasificadas. Wazuh emitió 1 alertas de las reglas del gestor."},"uptime_segundos":5147}}

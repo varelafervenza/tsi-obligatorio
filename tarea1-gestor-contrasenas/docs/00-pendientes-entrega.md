@@ -12,7 +12,6 @@
 |---|---|---|---|
 | 1 | Tag `v1.0` y hash SHA-256 | 6.3 H4; 8.2 | Pendiente el tag real. `v0.0-test` ya probó el Release (07/10). No se borra hasta el congelamiento |
 | 2 | Video de la demo, 5 minutos o menos | 6.2 entregable 13; 8.2 | Pendiente (al final) |
-| 29 | Tasa de falsos positivos del SIEM | 6.4 | Pendiente: hay alertas reales, ninguna clasificada |
 
 ## Cerrado (letra)
 
@@ -25,6 +24,7 @@
 | 20 | Notificaciones por correo (Mailpit; Mailu no se despliega) | RF-07 | 07/10. Justificación en `00-arquitectura-c4.md` |
 | 22 | Uptime, RNF-02, RNF-05 (carga básica) y rollback RNF-10 | 6.4; sección 4 | 11/10 |
 | 23 | nuclei sobre :8001/:3000/:8025 (OpenVAS no) | 8.1 plantilla 10 | 11/10 |
+| 29 | Tasa de falsos positivos del SIEM | 6.4 | 11/10: 0,0 % (1 alerta `cambio_maestra` clasificada como válida) |
 | 24 | CVSS de V03 y V04 | plantilla 10 + 7.4 (severidad) | 11/10 |
 | 28 | V03 remediada (FastAPI 0.142.3 / starlette 1.7.0) | plantilla 10 | 07/10 |
 
@@ -78,3 +78,4 @@ Ver `docs/00-arquitectura-c4.md` y la fila R02 de `docs/03-Analisis-Riesgos.md`.
 | 11/10 | — | CVSS de V03 (7.5) y V04 (7.4) (#24) |
 | 11/10 | — | #22: uptime 28 min, apertura 2,63/0,81/0,40 s, carga básica, rollback en `06` |
 | 11/10 | — | nuclei #23: V05 Grafana, V06 Mailpit, V07 /metrics |
+| 11/10 | — | #29: tasa de falsos positivos 0,0 % (alerta 1, cambio_maestra) |
