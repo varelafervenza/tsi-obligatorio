@@ -89,7 +89,7 @@ aplica a los **usuarios del panel de `control-central`**:
 
 | Usuario | Rol | Recursos accesibles | Fecha alta | Fecha baja | Revisión |
 |---|---|---|---|---|---|
-| _(pendiente: recién tiene sentido llenarlo cuando `control-central` esté desplegado con usuarios reales del panel — no antes de H2, 29/09)_ | | | | | |
+| rsi@correo.local | admin | Panel `/api/users`, incidentes, KPIs | 06/10/2026 | — | Prueba B-14 de `guia-de-pruebas.md` |
 
 ## 4. Gestión de secretos y credenciales
 
@@ -129,24 +129,15 @@ que va a generar y validar el módulo `generator` de `cliente-gestor`.
 
 ---
 
-## Evidencia pendiente (qué capturar y cuándo)
+## Evidencia (qué mostrar en la auditoría)
 
-Esta es la lista concreta de screenshots/capturas que hay que sacar **una vez que el código deje
-de ser un esqueleto**, para completar tanto este documento como el Excel
-`01-controles-mcu5-perfil-avanzado.xlsx`:
-
-| Evidencia a capturar | Cuándo se puede tomar | Dónde guardarla |
+| Evidencia | Dónde está | Estado |
 |---|---|---|
-| Enroll de TOTP (QR + primer código validado) | Cuando `auth/totp.rs` esté implementado (meta: H3, 02/10) | `docs/evidencias/09-enroll-totp.png` |
-| Registro de WebAuthn/Windows Hello | Cuando `auth/webauthn.rs` esté implementado (meta: H3) | `docs/evidencias/09-enroll-webauthn.png` |
-| Config del algoritmo de hash en `control-central` | Cuando `control-central` esté desplegado con su `.env` real (meta: H2, 29/09) | `docs/evidencias/09-config-hash.png` |
-| Intento de apertura de bóveda con maestra incorrecta (fricción/delay) | Cuando `crypto/kdf.rs` + delay adaptativo estén implementados | `docs/evidencias/09-delay-fuerza-bruta.png` |
-| Login al panel con 2FA | Cuando `control-central` tenga MFA operativo | `docs/evidencias/09-login-panel-2fa.png` |
-
-> No tiene sentido intentar generar esta evidencia antes de esas fechas: sería una captura de
-> algo que no funciona de verdad, y en la auditoría del 14/10 piden poder **demostrarlo en vivo**
-> (sección 6.6 de `LETRA.md`) — una captura sin la funcionalidad real detrás es peor que no
-> tenerla, porque es un control "declarado pero no demostrable" (hallazgo de auditoría).
+| TOTP de la bóveda (QR y confirmación) | App + prueba C-09 de `guia-de-pruebas.md` | Implementado |
+| Delay al fallar la maestra | `vault/commands.rs`; prueba en la guía | Implementado |
+| TOTP del panel | `POST /api/users/.../totp`; prueba B-14 | Implementado |
+| Hash Argon2id/bcrypt | `app/core/config.py`, alta de usuario | Implementado |
+| Windows Hello / WebAuthn | Limitación en este documento | Fuera de alcance |
 
 ---
 
@@ -154,15 +145,15 @@ de ser un esqueleto**, para completar tanto este documento como el Excel
 
 | Fase | Cómo completar | Con qué evidencia |
 |---|---|---|
-| Diseño (actual) | Definir el modelo de factores y política de contraseñas | Este documento |
-| Implementación (H2-H3) | Implementar TOTP, WebAuthn, Windows Hello y el hash configurable | Capturas de la tabla de arriba |
-| Demo (H4/H5) | Probar en vivo las políticas de factor por operación | Video/capturas en `docs/evidencias/` |
+| Diseño | Modelo de factores y política de contraseñas | Este documento |
+| Implementación | TOTP y hash configurable (hecho). Hello/WebAuthn fuera de alcance | Guía C-09 y B-14 |
+| Demo (14/10) | Probar en vivo maestra + TOTP y el panel | App y `http://localhost:8001/docs` |
 | Red Team | Va a atacar la autenticación (phishing TOTP, bypass) — ver R06 en `03-Analisis-Riesgos.md` | Informe Red Team |
 
 ## Check de aceptación
 
 - [x] MFA obligatorio definido en al menos 2 operaciones críticas (cambio de maestra, panel).
-- [ ] TOTP operativo con RFC 6238 (pendiente de implementación).
-- [ ] Argon2id/bcrypt configurado y evidenciado en `control-central` (pendiente de despliegue).
-- [ ] Revisión de accesos con acta (pendiente: sección 3 vacía hasta tener usuarios reales del panel).
-- [ ] Registro de autenticaciones llegando al SIEM (depende de `07-Monitoreo-Logs-SIEM.md`, aún pendiente).
+- [x] TOTP operativo con RFC 6238 (bóveda y panel).
+- [x] Argon2id/bcrypt elegible en `control-central`.
+- [x] Usuario de prueba `rsi@correo.local` en la sección 3.
+- [ ] Revisión periódica de accesos con acta (no hay calendario formal).

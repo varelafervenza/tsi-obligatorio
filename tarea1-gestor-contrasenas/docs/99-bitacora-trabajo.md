@@ -1919,6 +1919,31 @@ Hora (UTC): 22:56
   desfasados; no se tocaron en este cambio.
 - **Observaciones**: Ninguna.
 
+---
+Fecha: 10/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 23:12
+---
+
+## Actividad: Actualizar Excel MCU de controles y bitácora (#14 y #15)
+
+- **Fase**: Documentación
+- **Duración**: 30 min
+- **Tarea realizada**: Se regeneró `docs/mcu5/excel/04-bitacora-planilla.xlsx` desde las 79
+  entradas de esta bitácora (`scripts/actualizar_excels_mcu.py`). Se reescribieron 25 filas
+  de evidencia/demostración en `01-controles-mcu5-perfil-avanzado.xlsx` que todavía decían
+  “pendiente” (docs no escritos, TOTP/RBAC/JWS como TODO, SoA incompleta). El Excel de
+  controles es una sola hoja: la función va en la columna 1. Lo que sigue abierto se nombra
+  en la celda (firma del RSI, escaneos de red/Trivy, backup diario).
+- **Herramienta / comando**: `python scripts/actualizar_excels_mcu.py` desde
+  `tarea1-gestor-contrasenas/`.
+- **Resultado**: `bitacora: 79 entradas`; `controles: 25 filas de evidencia actualizadas`.
+- **Evidencia anexa**: `docs/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx`,
+  `docs/mcu5/excel/04-bitacora-planilla.xlsx`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Cierra #14 y #15 de `00-pendientes-entrega.md`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

@@ -164,7 +164,7 @@ No corridas todavía: escaneo de red y web (nmap, OpenVAS o nuclei), Trivy y `ca
 
 Cada control validado en la auditoría se relaciona con entradas de `99-bitacora-trabajo.md` por fecha y responsable. Las entradas del 04/10 al 06/10 cubren la simulación, la restauración con datos, la guía de pruebas, la SoA y esta notificación.
 
-Pendiente: la bitácora Excel `04-bitacora-planilla.xlsx` tiene las entradas hasta el 05/10. Hay que espejar las del 06/10 en adelante.
+La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bitácora (cerrado el 10/10, pendiente #15).
 
 ---
 

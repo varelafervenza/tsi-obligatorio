@@ -15,7 +15,7 @@ Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`doc
 | `00-arquitectura-4mas1.md` | `plantilla/plantilla-arquitectura-4más1.md` | ☑ borrador 0.1 |
 | `00-arquitectura-c4.md` | `plantilla/plantilla-arquitectura-C4.md` | ☑ borrador (Wazuh en compose, Mailpit justificado, cola 4 h) |
 | `diagrama-arquitectura.png` | diagrama usado en la LETRA | ☑ en esta carpeta |
-| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (entradas hasta el 07/10; el Excel no está al día) |
+| `99-bitacora-trabajo.md` | `plantilla/isaca/99-bitacora-trabajo.md` | ☑ en curso (espejada en el Excel, 79 entradas al 10/10) |
 | `01-Politica-Seguridad.md` | `plantilla/isaca/01-politica-seguridad.md` | ☑ borrador (TOTP/RBAC al día; falta firma del RSI) |
 | `02-Registro-Activos.md` | `plantilla/isaca/02-registro-activos.md` | ☑ borrador (+ Excel `docs/mcu5/excel/02-registro-activos-mcu5.xlsx`) |
 | `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 2.0 (13 riesgos; falta firma del RSI) |
@@ -28,8 +28,8 @@ Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`doc
 | `12-Notificacion-Incidentes.md` | `plantilla/isaca/12-notificacion-incidentes.md` | ☑ incidente 1 simulado; falta firma RSI y contactos oficiales |
 | `98-Glosario.md` | `plantilla/isaca/GLOSARIO.md` (complementario) | ☑ siglas técnicas de la tarea |
 | _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada |
-| _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 con Aplica; 24 filas de evidencia siguen en “pendiente” (#14) |
-| _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ desfasado: no espeja `99-bitacora-trabajo.md` desde el 06/10 (#15) |
+| _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 con Aplica; 25 filas de evidencia actualizadas el 10/10 (#14 cerrado) |
+| _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ 79 entradas espejadas desde `99-bitacora-trabajo.md` (#15 cerrado) |
 | `28-Informe-Blue-Team.md` | nueva | ☑ borrador (cobertura 100 % desde la app; V03 cerrada; falta firma RSI) |
 | `evidencias/` | capturas, logs | ☑ demo, Mailpit, Grafana, cobertura, Wazuh/cola, backups; falta el video (#2) |
 
