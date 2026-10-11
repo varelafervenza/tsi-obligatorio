@@ -19,7 +19,7 @@ Estado al **10/10/2026**. La firma del RSI y el tag `v1.0` siguen abiertos (`doc
 | `01-Politica-Seguridad.md` | `plantilla/isaca/01-politica-seguridad.md` | ☑ borrador (TOTP/RBAC al día; falta firma del RSI) |
 | `02-Registro-Activos.md` | `plantilla/isaca/02-registro-activos.md` | ☑ borrador (+ Excel `docs/mcu5/excel/02-registro-activos-mcu5.xlsx`) |
 | `03-Analisis-Riesgos.md` | `plantilla/isaca/03-analisis-riesgos.md` | ☑ borrador 2.0 (13 riesgos; falta firma del RSI) |
-| `04-gestion-incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☑ existe (el nombre canónico `04-Gestion-Incidentes.md` sigue pendiente, #13) |
+| `04-Gestion-Incidentes.md` | `plantilla/isaca/04-gestion-incidentes.md` | ☑ borrador (nombre canónico; #13 cerrado) |
 | `06-Plan-Continuidad.md` | `plantilla/isaca/06-plan-continuidad.md` | ☑ borrador (backup/restore probados; Wazuh ya está en el compose) |
 | `07-Monitoreo-Logs-SIEM.md` | `plantilla/isaca/07-monitoreo-logs.md` | ☑ borrador (reglas de API y Wazuh con alertas 100120/100101/100111) |
 | `09-Gestion-Accesos.md` | `plantilla/isaca/09-gestion-accesos.md` | ☑ TOTP en cliente y panel; Hello/WebAuthn fuera de alcance |

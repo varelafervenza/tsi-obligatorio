@@ -36,7 +36,7 @@ Ya cerrados: R06 (aviso al activar MFA) y R11 (hook de `gitleaks`), en `aaecc19`
 | # | Pendiente | Exigido por | Responsable | Estado |
 |---|---|---|---|---|
 | 12 | Firma del RSI en 01, 03, 06, 11, 12 y 28 | Letra | RSI | Pendiente |
-| 13 | Renombrar `04-gestion-incidentes.md` a `04-Gestion-Incidentes.md` y actualizar `docs/README.md` | Propio | a confirmar | Pendiente |
+| 13 | Renombrar `04-gestion-incidentes.md` a `04-Gestion-Incidentes.md` y actualizar `docs/README.md` | Propio | Pablo Morales | Cerrado (10/10) |
 | 14 | Actualizar las 24 filas "pendiente" de `docs/mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` con evidencia real | Letra (MCU 5.0) | Pablo Morales | Cerrado (10/10): 25 filas de evidencia/demostración reescritas con docs y código actuales. Lo que sigue abierto (firma RSI, escaneos, backup diario) queda nombrado en esas celdas |
 | 15 | Espejar en `docs/mcu5/excel/04-bitacora-planilla.xlsx` las entradas desde el 06/10 | Letra (bitácora) | Pablo Morales | Cerrado (10/10): 79 entradas espejadas desde `99-bitacora-trabajo.md` |
 | 16 | Revisar entradas de la bitácora sin firma o con hora/duración N/D | Propio | a confirmar | Pendiente |
@@ -110,3 +110,4 @@ Evidencia: `docs/evidencias/00-cola-eventos-reintento.txt`.
 | 07/10 | — | Cobertura alta/mod/borrado desde la app (`05-03-app-modificacion.png`, `05-03-app-borrado.png`) |
 | 07/10 | — | R13: PostgreSQL ya no se publica en el host (`5432`) |
 | 10/10 | — | Excel MCU: 25 filas de evidencia en `01-controles` (#14) y 79 entradas en `04-bitacora` (#15) |
+| 10/10 | — | Nombre canónico `04-Gestion-Incidentes.md` (#13) |

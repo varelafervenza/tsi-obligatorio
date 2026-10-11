@@ -97,7 +97,7 @@ configuración real desplegada (`infra/`, `control-central/`, `cliente-gestor/`)
 |---|---|---|---|
 | Política de control de accesos | MFA local (TOTP), RBAC del panel, elección de Argon2id/bcrypt. Hello/WebAuthn fuera de alcance | `09-Gestion-Accesos.md` | Borrador (implementado; sin firma RSI) |
 | Política de gestión de contraseñas/vulnerabilidades | Reglas de generación (RF-04/RF-05), rotación, escaneos | `10-Gestion-Vulnerabilidades.md` | Borrador (V03 remediada el 07/10) |
-| Política de gestión de incidentes | Detección, reporte, escalamiento, estados | `04-gestion-incidentes.md` | Borrador (incidente 1 simulado) |
+| Política de gestión de incidentes | Detección, reporte, escalamiento, estados | `04-Gestion-Incidentes.md` | Borrador (incidente 1 simulado) |
 | Política de monitoreo y logs | Eventos, reglas SIEM, retención ≥ 90 días (RNF-07) | `07-Monitoreo-Logs-SIEM.md` | Borrador (API + Wazuh 4.14.8) |
 | Política de copias de seguridad | Exportación de bóvedas, prueba de restauración | `06-Plan-Continuidad.md` | Borrador (restore probado; backup diario pendiente) |
 | Inventario y riesgos (insumo, no política) | Activos y amenazas que justifican los controles anteriores | `02-Registro-Activos.md`, `03-Analisis-Riesgos.md` | Hecho |

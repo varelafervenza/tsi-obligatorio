@@ -1944,6 +1944,28 @@ Hora (UTC): 23:12
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Cierra #14 y #15 de `00-pendientes-entrega.md`.
 
+---
+Fecha: 11/10/2026
+Equipo: Blue
+Responsable: Pablo Morales
+Hora (UTC): 00:37
+---
+
+## Actividad: Nombre canónico de gestión de incidentes (#13)
+
+- **Fase**: Documentación
+- **Duración**: 10 min
+- **Tarea realizada**: Se renombró `docs/04-gestion-incidentes.md` a
+  `docs/04-Gestion-Incidentes.md`. Se actualizaron el índice, la política, el script de
+  Excel MCU y `00-pendientes-entrega.md`. `LETRA.md` y `plantilla/` se dejaron con el
+  nombre de la plantilla del curso.
+- **Herramienta / comando**: rename en `docs/` (paso intermedio por el case-fold de NTFS).
+- **Resultado**: El archivo coincide con las referencias de la SoA y de `12`.
+- **Evidencia anexa**: `docs/04-Gestion-Incidentes.md`.
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Cierra #13. El tag `v1.0` (#1) no se toca: todavía faltan firma del
+  RSI, video y escaneos.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

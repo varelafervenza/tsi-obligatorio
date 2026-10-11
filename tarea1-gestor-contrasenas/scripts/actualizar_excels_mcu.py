@@ -46,7 +46,7 @@ EVIDENCIA_POR_FUNCION = {
         "Wazuh 4.14.8 reglas 100120/100101/100111. Sin indexer."
     ),
     "responder": (
-        "docs/04-gestion-incidentes.md; docs/12-Notificacion-Incidentes.md; "
+        "docs/04-Gestion-Incidentes.md; docs/12-Notificacion-Incidentes.md; "
         "POST/PATCH /api/incidents/; incidente 1 en docs/evidencias/06-restauracion-bd-con-datos.txt. "
         "Falta firma RSI y contactos oficiales."
     ),
