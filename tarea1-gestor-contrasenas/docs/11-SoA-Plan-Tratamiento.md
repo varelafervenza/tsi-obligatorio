@@ -120,7 +120,7 @@
 | 7.14 | Eliminación o reutilización segura de equipos | Sí | Los dumps de prueba y las claves de prueba no se borran de forma segura. | `06-Plan-Continuidad.md` | Pendiente |
 | 8.1 | Dispositivos de usuario final | Sí | El cliente corre en los equipos de los usuarios. El agente de Wazuh para esos equipos no está desplegado. | `02-Registro-Activos.md` (A01, A09) | Parcial |
 | 8.2 | Derechos de acceso privilegiado | Sí | Rol admin en el panel. El TOTP es opcional para todos los roles. | `09-Gestion-Accesos.md` | Parcial |
-| 8.3 | Restricción del acceso a la información | Sí | Bóveda cifrada, claves por agente y RBAC del panel. | `09-...`, `03-...` (R02) | Parcial |
+| 8.3 | Restricción del acceso a la información | Sí | Bóveda cifrada, claves por agente y RBAC del panel. Hasta el 12/10, `incidents` y `alerts` no pedían ningún token (V10); ya corregido. | `09-...`, `03-...` (R02, R03) | Parcial |
 | 8.4 | Acceso al código fuente | Sí | GitHub con escritura para el equipo. Sin protección de la rama `master`. | Git | Parcial |
 | 8.5 | Autenticación segura | Sí | Argon2id, TOTP y espera escalonada. WebAuthn y Windows Hello fuera de la entrega. | `09-...`, `guia-de-pruebas.md` (C-10) | Parcial |
 | 8.6 | Gestión de la capacidad | Sí | Carga básica medida el 11/10 (bóveda abierta, API/BD up). Objetivo 100 usuarios / 5000 credenciales no se corrió. | `docs/evidencias/22-*.txt` | Parcial |

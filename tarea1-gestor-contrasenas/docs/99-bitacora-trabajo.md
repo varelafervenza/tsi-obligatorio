@@ -2242,6 +2242,32 @@ Hora (UTC): N/D
 - **Observaciones**: Los tres hallazgos (V08, V09, V10) quedaron corregidos y verificados de punta a
   punta. Listo para seguir con el tag `v1.0`.
 
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Repaso de consistencia — V08/V09/V10 en el resto de los documentos
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: El usuario preguntó si V08/V09/V10 quedaron registrados en toda la
+  documentación, no solo en `10-Gestion-Vulnerabilidades.md`. La respuesta fue que no del todo.
+  Se corrigió: (1) `03-Analisis-Riesgos.md`, fila R03 (estado verificado) y su fila del plan de
+  tratamiento, que no mencionaban el hallazgo ni la corrección. (2) `28-Informe-Blue-Team.md`, cuya
+  tabla de vulnerabilidades llegaba solo hasta V07 y la fila de la función Identificar decía
+  "V01–V04" y "R01–R12" (van hasta V10 y R13). (3) `09-Gestion-Accesos.md`, que no tenía ninguna
+  fila para `incidents`/`alerts` en la tabla de operaciones y factores. (4) `11-SoA-Plan-Tratamiento.md`,
+  control 8.3, con una nota corta.
+- **Herramienta / comando**: `grep` dirigido por documento para encontrar las menciones stale.
+- **Resultado**: Los cuatro documentos corregidos.
+- **Evidencia anexa**: los cuatro archivos editados.
+- **Incidencia / hallazgo**: Ninguno nuevo; es consistencia documental, no código.
+- **Observaciones**: `11-SoA` controles 5.15, 5.18 y 8.2 siguen en "Parcial" por motivos más
+  amplios (RBAC sin revisión periódica, MFA opcional), no específicamente por V10; no se tocaron.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

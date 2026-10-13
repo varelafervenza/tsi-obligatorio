@@ -44,6 +44,7 @@
 | **Cambiar la contraseña maestra** | `cliente-gestor` | 2 factores | Maestra actual + TOTP si está enrolado (RF-07) |
 | Acceso al panel/dashboard de `control-central` | `control-central` | 2 factores | Password del panel (Argon2id/bcrypt) + TOTP |
 | Acciones administrativas (cambiar rol, elegir algoritmo de hash) | `control-central` | 2 factores + rol admin | RBAC (`app/api/users.py`) + MFA |
+| Ver o cambiar incidentes y alertas (`/api/incidents`, `/api/alerts`) | `control-central` | 1 factor (cualquier usuario del panel, sin rol específico) | Token del panel, `app/core/auth.py`. Hasta el 12/10 no pedían nada (V10, remediado) |
 
 > **Nota de diseño**: preferimos WebAuthn/Windows Hello por sobre TOTP cuando el hardware lo
 > permite, porque TOTP es phishable (RT-06 del Red Team apunta justo a esto — ver `R06` en

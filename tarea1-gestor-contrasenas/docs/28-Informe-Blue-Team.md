@@ -53,7 +53,7 @@ Los detalles por control están en `11-SoA-Plan-Tratamiento.md` y en el Excel `d
 | Función | Evidencia principal | Estado |
 |---|---|---|
 | **Gobernar** | Política (`01`, aprobada por el RSI el 12/10), registro de activos (14 activos), análisis de riesgos (12 riesgos, residual aceptado por el RSI), SoA (93 controles: 73 aplican, 20 N.A., aprobada por el RSI) | Implementado |
-| **Identificar** | Activos A01–A14, riesgos R01–R12 de RT-01 a RT-12, vulnerabilidades V01–V04 | Parcial |
+| **Identificar** | Activos A01–A14, riesgos R01–R13 de RT-01 a RT-12, vulnerabilidades V01–V10 | Parcial |
 | **Proteger** | Argon2id, XChaCha20-Poly1305, RS-256 para eventos, TOTP en login y en el panel, token por login, listado sin secretos | Parcial. TLS y Hello/WebAuthn fuera de la entrega |
 | **Detectar** | Reglas de la API con alertas en vivo (CU-01 a CU-03), panel de KPIs, log JSONL sin secretos, Wazuh 4.14.8 con alertas 100120, 100101 y 100111 | Parcial. Sin indexer ni FIM de la bóveda |
 | **Responder** | Procedimiento de incidentes (`04`), incidente de prueba resuelto, notificación simulada BCU/URCDP (`12`) | Parcial. Sin bloqueo automático del origen |
@@ -138,8 +138,13 @@ Nota de la corrida doble: el script `simular_casos_uso.py` se ejecutó dos veces
 | V05 | Grafana 11.2.0, CVE-2025-4123 | NVD 6.1. Aceptado en laboratorio |
 | V06 | Mailpit `/proxy`, CVE-2026-21859 | NVD 5.3. Aceptado en laboratorio |
 | V07 | Grafana `/metrics` (versión) | Baja. Aceptado |
+| V08 | `python-jose` 3.5.0, confusión de algoritmo RS256↔HS256 (CVE-2026-85394) | Sin fix de la librería. **Mitigado por diseño**: `algorithms=["RS256"]` fijo; probado con un token HS256 forjado a mano, rechazado |
+| V09 | `pyasn1` 0.4.8, 4 avisos de DoS, transitiva de `python-jose` | **Remediado** el 12/10: se subió a 0.6.4 (exigió subir `python-jose` de 3.4.0 a 3.5.0 por un conflicto real de dependencias) |
+| V10 | `incidents.py` y `alerts.py` sin ninguna autenticación, ni en las rutas que escriben | **Remediado** el 12/10. Probado en vivo: `401` sin token en las 5 rutas. 7 tests nuevos |
 
 Herramientas corridas: `pip-audit` antes y después, `bandit` con 0 issues, `npm audit` con 0 vulnerabilidades.
+Revisión manual de código el 12/10, antes del tag: sin SQL concatenado, sin XSS en el cliente, sin
+`Command::new` en el Rust de producción, sin CORS mal configurado.
 
 nuclei corrido el 11/10 (`10-nuclei.txt`): V05–V07. OpenVAS, Trivy y `cargo audit` no se corrieron.
 
