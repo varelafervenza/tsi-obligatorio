@@ -28,9 +28,9 @@
 |---|---|
 | Nombre del documento | Política de Seguridad de la Información — Gestor de Contraseñas |
 | Código | SI-POL-01 |
-| Versión | 0.3 (borrador; falta firma del RSI) |
-| Fecha de aprobación | Pendiente — a formalizar en la auditoría del 14/10/2026 |
-| Aprobado por | Pendiente (RSI del equipo / docente en la auditoría) |
+| Versión | 0.3 (aprobada por el RSI) |
+| Fecha de aprobación | 12/10/2026 |
+| Aprobado por | Andrés Varela (RSI del equipo) |
 | Autor | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Próxima revisión | 07/10/2026 (pre-entrega) y luego ante cualquier cambio significativo de arquitectura |
 
@@ -41,6 +41,7 @@
 | 0.1 | 22/09/2026 | Blue Team | Primera versión, alineada a la arquitectura, activos y riesgos ya documentados. |
 | 0.2 | 27/09/2026 | Blue Team | Se actualiza la gestión de incidentes a `Incident` interno, se deja TheHive como integración futura y se explicitan los estados de implementación de controles. |
 | 0.3 | 10/10/2026 | Pablo Morales | Se alinea la política al código: TOTP/RBAC implementados, Wazuh y Mailpit en el laboratorio, Hello fuera de alcance. |
+| 0.3 | 12/10/2026 | Andrés Varela (RSI) | Aprobación formal de la política. Se agrega la política de custodia de la clave privada de los agentes (sección 5.1). |
 
 ## 1. Objetivo
 
@@ -85,7 +86,7 @@ ataque fuera de las VMs del laboratorio del curso (ver reglas de compromiso, sec
 | Confidencialidad | Zero-knowledge: la bóveda se cifra y descifra solo en `cliente-gestor`; `control-central` nunca recibe ni puede reconstruir una contraseña, solo metadata firmada (RF-08). |
 | Integridad | Cifrado AEAD (XChaCha20-Poly1305) en la bóveda y firma JWS por agente en cada evento de auditoría; cualquier alteración se detecta antes de aceptarse. |
 | Disponibilidad | El gestor funciona 100% offline (RNF-01); la caída del control central no interrumpe el uso diario, solo retrasa la sincronización de eventos. |
-| Mínimo privilegio | RBAC en `control-central` (roles admin, auditor y rsi). Cada agente firma con su propia clave; un host comprometido no firma por otro. La custodia de `keys/agentes/` (copia de la privada) sigue pendiente de decisión del RSI. |
+| Mínimo privilegio | RBAC en `control-central` (roles admin, auditor y rsi). Cada agente firma con su propia clave; un host comprometido no firma por otro. Custodia de la clave privada: decidida (sección 5.1), sin copia fuera de la máquina que la generó. |
 | Defensa en profundidad / Zero Trust | Cada evento se verifica como hostil (JWS RS256). MFA: TOTP en la bóveda y en el panel. Windows Hello y WebAuthn quedan fuera de la entrega (ver `09-Gestion-Accesos.md`). |
 
 ## 5. Estructura de la política
@@ -95,12 +96,32 @@ configuración real desplegada (`infra/`, `control-central/`, `cliente-gestor/`)
 
 | Política específica | Contenido mínimo | Referencia | Estado |
 |---|---|---|---|
-| Política de control de accesos | MFA local (TOTP), RBAC del panel, elección de Argon2id/bcrypt. Hello/WebAuthn fuera de alcance | `09-Gestion-Accesos.md` | Borrador (implementado; sin firma RSI) |
+| Política de control de accesos | MFA local (TOTP), RBAC del panel, elección de Argon2id/bcrypt. Hello/WebAuthn fuera de alcance | `09-Gestion-Accesos.md` | Aprobada (RSI, 12/10/2026) |
+| Política de custodia de claves de agente | Dónde vive la clave privada de cada agente y qué pasa si se pierde | Este documento, sección 5.1 | Aprobada (RSI, 12/10/2026) |
 | Política de gestión de contraseñas/vulnerabilidades | Reglas de generación (RF-04/RF-05), rotación, escaneos | `10-Gestion-Vulnerabilidades.md` | Borrador (V03 remediada el 07/10) |
 | Política de gestión de incidentes | Detección, reporte, escalamiento, estados | `04-Gestion-Incidentes.md` | Borrador (incidente 1 simulado) |
 | Política de monitoreo y logs | Eventos, reglas SIEM, retención ≥ 90 días (RNF-07) | `07-Monitoreo-Logs-SIEM.md` | Borrador (API + Wazuh 4.14.8) |
 | Política de copias de seguridad | Exportación de bóvedas, prueba de restauración | `06-Plan-Continuidad.md` | Borrador (restore probado; backup diario pendiente) |
 | Inventario y riesgos (insumo, no política) | Activos y amenazas que justifican los controles anteriores | `02-Registro-Activos.md`, `03-Analisis-Riesgos.md` | Hecho |
+
+### 5.1 Custodia de la clave privada de los agentes
+
+**Decisión (RSI, 12/10/2026):** sin custodia centralizada. Cada clave privada de agente —la
+que genera la app de escritorio en `%APPDATA%\uy.tsi.gestor-contrasenas\agente.pem`, y la de
+prueba que genera `scripts/generar_par_agente.py`— vive únicamente en la máquina que la creó.
+Nadie la copia a un gestor de contraseñas del equipo, a un pendrive ni a ningún backup.
+
+**Qué pasa si se pierde la máquina:** esa identidad se pierde para siempre. La app genera una
+identidad nueva sola en el próximo arranque; hay que volver a copiar la clave pública nueva al
+control central ("Guardar y copiar clave pública"). Los eventos ya firmados con la identidad
+vieja siguen siendo válidos en la base; solo se pierde la capacidad de firmar eventos *nuevos*
+con esa identidad puntual.
+
+**Por qué:** cada copia de una clave privada es un blanco de ataque más. R02 de
+`03-Analisis-Riesgos.md` identifica "clave de firma compartida" como la vulnerabilidad a evitar;
+una custodia centralizada reintroduciría exactamente eso. El riesgo residual que queda —que
+comprometer la máquina permite firmar eventos falsos de ese agente puntual— ya está aceptado en
+R02 y no cambia con esta decisión.
 
 ## 6. Roles y responsabilidades
 

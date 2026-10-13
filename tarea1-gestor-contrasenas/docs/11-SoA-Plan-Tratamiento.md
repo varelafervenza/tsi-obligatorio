@@ -17,10 +17,11 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-SOA-11 |
-| Versión | 0.1 (borrador) |
+| Versión | 0.1 (aprobado por el RSI) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Metodología | ISO/IEC 27001:2022 (Anexo A) + MCU 5.0 |
 | Fecha | 06/10/2026 |
+| Aprobado por | Andrés Varela (RSI), 12/10/2026 |
 
 ---
 
@@ -58,7 +59,7 @@
 
 | ID | Control | ¿Aplica? | Justificación | Insumos (docs y evidencias) | Estado |
 |---|---|---|---|---|---|
-| 5.1 | Políticas de seguridad de la información | Sí | Hay un borrador de política (v0.2). Falta la aprobación y firma del RSI. | `01-Politica-Seguridad.md` | Parcial |
+| 5.1 | Políticas de seguridad de la información | Sí | Política v0.3 aprobada por el RSI el 12/10/2026, con la política de custodia de claves (sección 5.1 de esa política). | `01-Politica-Seguridad.md` | Implementado |
 | 5.2 | Roles y responsabilidades de seguridad | Sí | RACI con roles por componente. | `03-matriz-raci-mcu5.xlsx` | Implementado |
 | 5.3 | Segregación de funciones | Sí | Con tres integrantes la separación es parcial: quien implementa no es quien aprueba el riesgo residual. | RACI, `03-Analisis-Riesgos.md` | Parcial |
 | 5.4 | Responsabilidades de la dirección | Sí | El RSI (Andrés Varela) fija políticas y acepta riesgos; no hay comité. | `01-Politica-Seguridad.md` | Parcial |
@@ -173,7 +174,7 @@ La madurez es una estimación del equipo (escala 0 a 4) y debe validarla la audi
 
 | ID | Control | Acción | Prioridad | Responsable (RACI) | Fecha límite |
 |---|---|---|---|---|---|
-| T-01 | 5.1 | Aprobar la política de seguridad y registrar la firma del RSI | Alta | Andrés Varela | 07/10/2026 |
+| T-01 | 5.1 | Aprobar la política de seguridad y registrar la firma del RSI — **Hecho el 12/10/2026** | Alta | Andrés Varela | 07/10/2026 |
 | T-02 | 5.10, 6.7, 7.9 | Escribir la política de uso aceptable, de trabajo remoto y de dispositivos portátiles | Media | Andrés Varela | 14/10/2026 |
 | T-03 | 5.5, 6.8 | Terminar la notificación simulada a BCU y URCDP (`12-...`) | Alta | Andrés Varela | 07/10/2026 |
 | T-04 | 8.13, 5.30 | Backup diario automático y copia fuera del equipo | Alta | Pablo Morales | 07/10/2026 |
@@ -198,5 +199,5 @@ docente (`09-Gestion-Accesos.md` y `00-arquitectura-c4.md`).
 - [x] Anexo A completo, con los 93 controles y la aplicabilidad justificada.
 - [x] Brecha MCU 5.0 por función con madurez estimada.
 - [x] Plan de tratamiento con responsables y fechas.
-- [ ] Vinculados los entregables de `docs/` como evidencia (hecho en la columna de insumos; falta revisión del RSI).
-- [ ] Revisión y firma del RSI.
+- [x] Vinculados los entregables de `docs/` como evidencia (hecho en la columna de insumos).
+- [x] Revisión y firma del RSI: Andrés Varela, 12/10/2026.

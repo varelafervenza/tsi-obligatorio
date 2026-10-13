@@ -79,3 +79,4 @@ Ver `docs/00-arquitectura-c4.md` y la fila R02 de `docs/03-Analisis-Riesgos.md`.
 | 11/10 | — | #22: uptime 28 min, apertura 2,63/0,81/0,40 s, carga básica, rollback en `06` |
 | 11/10 | — | nuclei #23: V05 Grafana, V06 Mailpit, V07 /metrics |
 | 11/10 | — | #29: tasa de falsos positivos 0,0 % (alerta 1, cambio_maestra) |
+| 12/10 | — | Firma del RSI en 01, 03, 06, 11, 12 y 28, y decisión de custodia de claves (sin respaldo, `01` sección 5.1). No lo pedía la letra; se hizo igual por consistencia con la auditoría |

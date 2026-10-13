@@ -2112,6 +2112,42 @@ Hora (UTC): N/D
 - **Observaciones**: Quedan dos días hasta la defensa (14/10). Horacio no tiene pendientes de la letra
   asignados, pero no participó en la revisión final; conviene confirmar su disponibilidad para la demo.
 
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Aprobación del RSI en 01, 03, 06, 11, 12 y 28, y decisión de custodia de claves
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Se validó primero que la letra no exige por nombre ni la firma del RSI
+  sobre estos documentos ni una decisión de custodia de `keys/agentes/` (no aparece "RSI" con esa
+  función, ni "custodia", en `LETRA.md`; son campos de la plantilla ISACA). Aun así, se decidió
+  hacerlo: varios documentos seguían llamando "Parcial" a controles reales solo por la firma
+  faltante (control 5.1 del SoA, función Gobernar del informe 28), con una acción vencida (T-01,
+  fecha objetivo 07/10). Se aprobaron como RSI (Andrés Varela, 12/10/2026) los documentos 01, 03,
+  06, 11, 12 y 28. Se decidió la custodia de la clave privada de los agentes: **sin respaldo
+  centralizado**, por el mismo motivo que R02 ya identificaba como vulnerabilidad ("clave de firma
+  compartida"): cada copia es un blanco de ataque más, y una custodia compartida reintroduciría
+  justo lo que esa mitigación evita. La decisión completa quedó en `01-Politica-Seguridad.md`,
+  sección 5.1, con referencias desde `03` (R02) y `06` (escenario de pérdida del servidor).
+- **Herramienta / comando**: `grep` sobre `LETRA.md` para validar que no hay un requisito por
+  nombre; edición de los 6 documentos.
+- **Resultado**: Éxito. Control 5.1 del SoA pasó de "Parcial" a "Implementado"; la función
+  Gobernar del informe 28 pasó de "Parcial" a "Implementado".
+- **Evidencia anexa**: `docs/01-Politica-Seguridad.md` (sección 5.1), `docs/03-Analisis-Riesgos.md`,
+  `docs/06-Plan-Continuidad.md`, `docs/11-SoA-Plan-Tratamiento.md`, `docs/12-Notificacion-Incidentes.md`,
+  `docs/28-Informe-Blue-Team.md`, `docs/00-pendientes-entrega.md` (historial).
+- **Incidencia / hallazgo**: Un paso de recuperación en `06` (pérdida del servidor) todavía
+  asumía una copia de `keys/agentes/` "que no existe" como algo pendiente; se corrigió para
+  reflejar que no hace falta copia (`keys/agentes/` solo tiene públicas, cada cliente ya tiene
+  la suya).
+- **Observaciones**: Decisión del RSI, no de la letra. Quedan #1 (tag `v1.0`, pendiente) y #2
+  (video, en manos de Horacio) como los únicos dos puntos que la letra todavía exige.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

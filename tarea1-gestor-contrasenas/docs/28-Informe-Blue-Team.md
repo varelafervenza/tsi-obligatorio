@@ -5,7 +5,7 @@
 | Equipo | Blue Team: Horacio Duarte, Pablo Morales, Andrés Varela |
 | Versión | 0.1 (borrador para la pre-entrega del 07/10/2026) |
 | Fecha | 06/10/2026 |
-| Estado | Borrador. Pendiente la firma del RSI y el tag `v1.0` |
+| Estado | Aprobado por el RSI (Andrés Varela, 12/10/2026). Pendiente el tag `v1.0` |
 | Documentos de referencia | `00-arquitectura-c4.md`, `02-Registro-Activos.md`, `03-Analisis-Riesgos.md`, `06-Plan-Continuidad.md`, `07-Monitoreo-Logs-SIEM.md`, `09-Gestion-Accesos.md`, `10-Gestion-Vulnerabilidades.md`, `11-SoA-Plan-Tratamiento.md`, `12-Notificacion-Incidentes.md`, `guia-de-pruebas.md` |
 
 ---
@@ -52,7 +52,7 @@ Los detalles por control están en `11-SoA-Plan-Tratamiento.md` y en el Excel `d
 
 | Función | Evidencia principal | Estado |
 |---|---|---|
-| **Gobernar** | Política (`01`, borrador 0.1), registro de activos (14 activos), análisis de riesgos (12 riesgos), SoA (93 controles: 73 aplican, 20 N.A.) | Parcial. Política sin firma del RSI |
+| **Gobernar** | Política (`01`, aprobada por el RSI el 12/10), registro de activos (14 activos), análisis de riesgos (12 riesgos, residual aceptado por el RSI), SoA (93 controles: 73 aplican, 20 N.A., aprobada por el RSI) | Implementado |
 | **Identificar** | Activos A01–A14, riesgos R01–R12 de RT-01 a RT-12, vulnerabilidades V01–V04 | Parcial |
 | **Proteger** | Argon2id, XChaCha20-Poly1305, RS-256 para eventos, TOTP en login y en el panel, token por login, listado sin secretos | Parcial. TLS y Hello/WebAuthn fuera de la entrega |
 | **Detectar** | Reglas de la API con alertas en vivo (CU-01 a CU-03), panel de KPIs, log JSONL sin secretos, Wazuh 4.14.8 con alertas 100120, 100101 y 100111 | Parcial. Sin indexer ni FIM de la bóveda |
@@ -181,4 +181,4 @@ El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, r
 - [x] Cobertura de eventos al 100 % desde la app (alta, modificación y borrado, 07/10).
 - [x] MTTD con la definición A (primera alerta menos evento de origen).
 - [x] MTTR medido desde la alerta.
-- [ ] Firma del RSI.
+- [x] Firma del RSI: Andrés Varela, 12/10/2026.

@@ -20,9 +20,10 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-NOT-12 |
-| Versión | 0.1 (borrador) |
+| Versión | 0.1 (aprobado por el RSI) |
 | Responsable | Andrés Varela (redacción), con revisión de Pablo Morales y Horacio Duarte |
 | Fecha | 06/10/2026 |
+| Aprobado por | Andrés Varela (RSI), 12/10/2026 |
 | Tipo de caso | **Simulación** (incidente de laboratorio con datos de prueba). No se envió a ningún organismo. |
 
 ---
@@ -130,4 +131,4 @@ Alertas relacionadas del mismo día, que no forman parte de este incidente: 2 (`
 - [x] Criterios de decisión definidos y aplicados al incidente 1 (secciones 3 y 5).
 - [x] Al menos un incidente simulado documentado de punta a punta (incidente 1, desde la alerta hasta la resolución).
 - [ ] Contactos oficiales de reporte definidos.
-- [ ] Aprobación del RSI.
+- [x] Aprobación del RSI: Andrés Varela, 12/10/2026.

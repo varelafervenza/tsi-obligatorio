@@ -24,7 +24,7 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-RSK-03 |
-| Versión | 2.0 (revisión del 06/10/2026, borrador; falta la firma del RSI) |
+| Versión | 2.0 (revisión del 06/10/2026; riesgo residual aceptado por el RSI el 12/10/2026) |
 | Metodología | ISO 31000 + COBIT APO12 + MCU 5.0. Catálogo de amenazas = objetivos RT-01..RT-12, más R13 |
 | Fecha | 06/10/2026 |
 
@@ -146,19 +146,19 @@ Acciones propuestas, ordenadas por prioridad. Las de los riesgos Alto son obliga
 
 | ID | Riesgo residual (post-tratamiento) | Aceptado por | Fecha |
 |---|---|---|---|
-| R01 | Un ataque dirigido con hardware dedicado sigue siendo posible si la maestra es débil; queda a criterio del usuario | RSI | Pendiente de firma |
-| R02 | Compromiso total del endpoint del agente aún permitiría firmar eventos falsos de ese agente puntual | RSI | Pendiente de firma |
-| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) remediada el 07/10, CVSS 7.5; V04 aceptada, CVSS 7.4 | RSI | Pendiente de firma |
-| R04 | Ingeniería social directa al RSI (fuera del alcance técnico) | RSI | Pendiente de firma |
-| R05 | Intercepción del tráfico HTTP en la red del laboratorio, sin TLS (limitación acordada con el docente) | RSI | Pendiente de firma |
-| R06 | Phishing de TOTP al no haber factor resistente (WebAuthn/Hello fuera de alcance); robo físico del dispositivo con TOTP | RSI | Pendiente de firma |
-| R07 | XSS reflejado no cubierto si se agregan nuevos campos sin sanitizar | RSI | Pendiente de firma |
-| R08 | Un insider con acceso root al manager de Wazuh igual podría desactivarlo | RSI | Pendiente de firma |
-| R09 | Ataques de fuerza bruta contra la contraseña de transporte si es débil | RSI | Pendiente de firma |
-| R10 | Fugas por canales no contemplados (ej. volcado de memoria) quedan fuera de alcance de esta tarea | RSI | Pendiente de firma |
-| R11 | Historial de Git anterior a la adopción del hook no queda cubierto retroactivamente | RSI | Pendiente de firma |
+| R01 | Un ataque dirigido con hardware dedicado sigue siendo posible si la maestra es débil; queda a criterio del usuario | RSI | Aceptado (RSI, 12/10/2026) |
+| R02 | Compromiso total del endpoint del agente aún permitiría firmar eventos falsos de ese agente puntual. Decisión de custodia (12/10): sin respaldo centralizado de la clave privada, para no agregar un segundo blanco (`01-Politica-Seguridad.md`, sección 5.1) | RSI | Aceptado (RSI, 12/10/2026) |
+| R03 | Vulnerabilidades de día cero en dependencias de FastAPI/SQLAlchemy no cubiertas por SAST. V03 (starlette) remediada el 07/10, CVSS 7.5; V04 aceptada, CVSS 7.4 | RSI | Aceptado (RSI, 12/10/2026) |
+| R04 | Ingeniería social directa al RSI (fuera del alcance técnico) | RSI | Aceptado (RSI, 12/10/2026) |
+| R05 | Intercepción del tráfico HTTP en la red del laboratorio, sin TLS (limitación acordada con el docente) | RSI | Aceptado (RSI, 12/10/2026) |
+| R06 | Phishing de TOTP al no haber factor resistente (WebAuthn/Hello fuera de alcance); robo físico del dispositivo con TOTP | RSI | Aceptado (RSI, 12/10/2026) |
+| R07 | XSS reflejado no cubierto si se agregan nuevos campos sin sanitizar | RSI | Aceptado (RSI, 12/10/2026) |
+| R08 | Un insider con acceso root al manager de Wazuh igual podría desactivarlo | RSI | Aceptado (RSI, 12/10/2026) |
+| R09 | Ataques de fuerza bruta contra la contraseña de transporte si es débil | RSI | Aceptado (RSI, 12/10/2026) |
+| R10 | Fugas por canales no contemplados (ej. volcado de memoria) quedan fuera de alcance de esta tarea | RSI | Aceptado (RSI, 12/10/2026) |
+| R11 | Historial de Git anterior a la adopción del hook no queda cubierto retroactivamente | RSI | Aceptado (RSI, 12/10/2026) |
 | R12 | Un DoS sostenido y distribuido sigue afectando la disponibilidad del control central (RNF-03) | RSI | Aceptado, sin tratamiento más allá del límite de tasa básico |
-| R13 | Un contenedor en `blue-team-net` sigue pudiendo hablar con Postgres. El host ya no tiene el puerto 5432 | RSI | Pendiente de firma |
+| R13 | Un contenedor en `blue-team-net` sigue pudiendo hablar con Postgres. El host ya no tiene el puerto 5432 | RSI | Aceptado (RSI, 12/10/2026) |
 
 ---
 

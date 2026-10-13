@@ -24,9 +24,10 @@
 | Campo | Valor |
 |---|---|
 | Código | SI-BCP-06 |
-| Versión | 0.2 (borrador) |
+| Versión | 0.2 (aprobado por el RSI) |
 | Responsable | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
 | Fecha | 11/10/2026 |
+| Aprobado por | Andrés Varela (RSI), 12/10/2026 |
 
 ---
 
@@ -75,7 +76,7 @@ un usuario del panel con TOTP activo. Se repitió el backup y la restauración
 `vault::store::tests::favorito_y_copia_cifrada_viajan_a_otra_boveda`, que pasa en cada ejecución del
 workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 
-**Firma del responsable:** pendiente.
+**Firma del responsable:** Andrés Varela (RSI), 12/10/2026.
 
 ---
 
@@ -83,7 +84,7 @@ workflow `cliente-gestor` (últimos runs verdes en GitHub Actions).
 
 | Escenario | Procedimiento | RTO estimado | Probado | Responsable |
 |---|---|---|---|---|
-| Pérdida del servidor `control-central` | 1) Levantar el stack en otro equipo con `docker compose up --build -d` en `infra/`. 2) Restaurar la BD con `scripts/restaurar_bd_prueba.sh` apuntando al último dump. 3) Restaurar `keys/agentes/` desde una copia que todavía **no existe** (pendiente, ver sección 6). 4) Verificar con `healthz` y una firma válida. | No estimado (depende de la descarga de imágenes) | Restauración de la BD: sí. Stack completo: no. | Pablo Morales |
+| Pérdida del servidor `control-central` | 1) Levantar el stack en otro equipo con `docker compose up --build -d` en `infra/`. 2) Restaurar la BD con `scripts/restaurar_bd_prueba.sh` apuntando al último dump. 3) `keys/agentes/` arranca vacía: cada agente vuelve a tocar "Guardar y copiar clave pública" desde su propia app. No hace falta backup: `keys/agentes/` solo tiene públicas, y cada cliente ya tiene la suya (decisión de custodia, `01-Politica-Seguridad.md` sección 5.1). 4) Verificar con `healthz` y una firma válida. | No estimado (depende de la descarga de imágenes) | Restauración de la BD: sí. Stack completo: no. | Pablo Morales |
 | Corrupción de la BD | Restaurar desde el último dump en una base nueva, validar conteos y renombrar la base. | < 1 h para la base actual | Sí (restauración en base separada) | Pablo Morales |
 | Pérdida de la bóveda de un usuario | Importar el `.gex` con su contraseña de transporte. Si se perdió esa contraseña, el archivo `.gex` no se puede abrir: es el diseño del cifrado, y se avisa al usuario al exportar. | Inmediato si tiene el archivo | Sí (test automático en CI) | Usuario final |
 | Caída del SIEM (Wazuh) | El control central sigue guardando el JSONL y las alertas de la API. Al volver el manager, el agente relee `audit-events.jsonl`. | Manager + agente 4.14.8 en el compose (sin indexer) | Parcial (alerta 100120 verificada el 07/10) | Andrés Varela |
@@ -149,8 +150,11 @@ Qué no cubre este rollback: backup diario automático, copia fuera del equipo y
 2. **Copia fuera del sitio** de los dumps y de los logs: otra unidad física o un servicio de almacenamiento. Hoy todo queda en `infra/backups/`, en el mismo equipo.
 3. **Política de retención** de dumps: definir cuántos días se guardan.
 4. **Repetir la restauración** cuando haya incidentes y usuarios del panel, para que la prueba cubra todas las tablas.
-5. **Copia de respaldo de `keys/agentes/`**, sin subirla al repo: si se pierde la privada, hay que enrolar de nuevo el agente.
-6. **Firma del responsable** de la prueba.
+
+**Decidido, no pendiente:** la copia de `keys/agentes/` no se hace. El RSI decidió (12/10/2026, ver
+`01-Politica-Seguridad.md` sección 5.1) que ninguna clave privada de agente se respalda en ningún
+lugar fuera de la máquina que la generó, para no agregar un blanco de ataque extra. Si se pierde la
+privada, se enrola el agente de nuevo; es el comportamiento esperado, no una falla.
 
 ---
 
@@ -173,4 +177,4 @@ Qué no cubre este rollback: backup diario automático, copia fuera del equipo y
 - [x] Prueba de restauración ejecutada y documentada.
 - [x] Prueba con tablas no vacías (incidentes y usuarios del panel).
 - [ ] Backup diario automático (pendiente, requisito BCU).
-- [ ] Firma del responsable (pendiente).
+- [x] Firma del responsable: Andrés Varela (RSI), 12/10/2026.
