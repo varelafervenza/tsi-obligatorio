@@ -15,7 +15,7 @@ Stack y decisiones de arquitectura completas en la bitácora `docs/99-bitacora-t
 
 En código están la bóveda offline, los eventos firmados (alta, modificación, borrado, vencimiento y cambio de maestra), la cola con firma a 4 h y reintento al abrir/cerrar, el correo por Mailpit, los incidentes, `GET /api/dashboard/kpis`, Grafana, usuarios del panel con TOTP, el delay al fallar la maestra, y Wazuh manager + agente 4.14.8 en el compose de `infra/` (sin indexer; las alertas quedan en `alerts.json`). PostgreSQL no se publica en el host. FastAPI 0.142.3 / starlette 1.7.0. La ruta inicial de la bóveda es `boveda-prueba.sqlite` en la carpeta de datos de la app.
 
-Sigue afuera, como limitación o pendiente de entrega: TLS, WebAuthn/Windows Hello, tag `v1.0`, video de la demo y firma del RSI. Detalle en `docs/00-pendientes-entrega.md`.
+Sigue afuera, como limitación o pendiente de entrega: TLS, WebAuthn/Windows Hello y el tag `v1.0`. El video de la demo y la firma del RSI ya están. Detalle en `docs/00-pendientes-entrega.md`.
 
 ## Cómo empezar
 

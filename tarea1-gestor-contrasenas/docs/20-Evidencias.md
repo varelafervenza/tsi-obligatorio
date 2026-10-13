@@ -126,3 +126,17 @@ start http://localhost:8025
   `agente_id: agente-aeb5b922`, `occurred_at: 2026-10-07T21:24:01+00:00`, `firma_valida: True`.
 - Qué demuestra: el cliente firma y envía `borrado_credencial`. Junto con las altas de la
   sección 05 (`05-03-app-alta.png`) queda cubierta alta, modificación y borrado desde la app.
+
+# 08
+# 12/10/26 - Video de la demo funcional (6.2 entregable #13; 8.2)
+
+## 08-01 — Video de la demo (≤ 5 min)
+- Archivo: no está en el repositorio (pesa 103,9 MB). Grabado por Horacio Duarte, subido a
+  Google Drive: https://drive.google.com/drive/folders/1Aj1xQlM_9wqOxddlyUNqLhm2NgsjPbNg
+  (archivo `1012 (2).mp4`).
+- Verificado el 12/10/2026: el link abre una carpeta real de Drive llamada "Video", con ese
+  archivo. Pendiente confirmar que el permiso para quien lo abra sea "Cualquiera con el enlace
+  puede ver"; la vista anónima mostró un botón "Acceder", típico de un enlace con permiso más
+  restringido.
+- Qué demuestra: la demo funcional del sistema arrancando, con el diagrama de arquitectura
+  (sección 6.2, punto 1 de la defensa).

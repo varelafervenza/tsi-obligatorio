@@ -30,7 +30,7 @@ Estado al **11/10/2026**. Lo que falta y pide la letra está en `docs/00-pendien
 | _(Excel)_ `mcu5/excel/03-matriz-raci-mcu5.xlsx` | `plantilla/mcu5/excel/` | ☑ completada |
 | _(Excel)_ `mcu5/excel/01-controles-mcu5-perfil-avanzado.xlsx` | `plantilla/mcu5/excel/` | ☑ 47/47 con Aplica; 25 filas de evidencia actualizadas el 10/10 (#14 cerrado) |
 | _(Excel)_ `mcu5/excel/04-bitacora-planilla.xlsx` | `plantilla/mcu5/excel/` | ☑ 79 entradas espejadas desde `99-bitacora-trabajo.md` (#15 cerrado) |
-| `28-Informe-Blue-Team.md` | nueva | ☑ borrador (cobertura 100 % desde la app; V03 cerrada; falta firma RSI) |
-| `evidencias/` | capturas, logs | ☑ demo, Mailpit, Grafana, cobertura, Wazuh/cola, backups; falta el video (#2) |
+| `28-Informe-Blue-Team.md` | nueva | ☑ aprobado por el RSI (12/10); cobertura 100 % desde la app; V03 cerrada |
+| `evidencias/` | capturas, logs | ☑ demo, Mailpit, Grafana, cobertura, Wazuh/cola, backups, video (#2) |
 
 > La lista de lo que falta para el 14/10 está en `00-pendientes-entrega.md`.

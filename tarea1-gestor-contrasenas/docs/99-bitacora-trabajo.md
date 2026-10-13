@@ -2148,6 +2148,30 @@ Hora (UTC): N/D
 - **Observaciones**: Decisión del RSI, no de la letra. Quedan #1 (tag `v1.0`, pendiente) y #2
   (video, en manos de Horacio) como los únicos dos puntos que la letra todavía exige.
 
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Horacio Duarte y Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Video de la demo (#2)
+
+- **Fase**: Evidencia
+- **Duración**: N/D
+- **Tarea realizada**: Horacio Duarte grabó el video de la demo (6.2, entregable #13) y lo subió
+  a una carpeta de Google Drive (`1012 (2).mp4`, 103,9 MB; no entra al repositorio). Se verificó el
+  enlace con `WebFetch`: abre una carpeta real llamada "Video" con ese archivo. Se documentó en
+  `docs/20-Evidencias.md` (sección 08) y se cerró el #2 en `00-pendientes-entrega.md`.
+- **Herramienta / comando**: `WebFetch` contra el enlace de Drive.
+- **Resultado**: Enlace válido. La vista anónima mostró un botón "Acceder", típico de un enlace
+  que no es "cualquiera con el enlace puede ver".
+- **Evidencia anexa**: `docs/20-Evidencias.md` (sección 08-01), con el enlace.
+- **Incidencia / hallazgo**: No se pudo confirmar el permiso exacto del enlace desde esta sesión
+  (Drive pide iniciar sesión). Falta que alguien del equipo, logueado, confirme que cualquiera
+  con el enlace puede verlo, no solo quien ya tiene acceso.
+- **Observaciones**: De la letra, solo queda abierto el tag `v1.0`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

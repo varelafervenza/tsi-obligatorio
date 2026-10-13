@@ -1,7 +1,7 @@
 # Pendientes para la entrega — Tarea 1
 
 > Solo lo que pide `LETRA.md`. Se actualiza en el **mismo commit** que cierra cada punto.
-> Estado al **11/10/2026**. Defensa: **14/10/2026**.
+> Estado al **12/10/2026**. Defensa: **14/10/2026**.
 >
 > Si no está en la letra, no entra acá. Mailpit, Wazuh sin indexer y Docker en un host
 > ya se hablaron con el profesor: no hay consulta pendiente al foro.
@@ -11,7 +11,6 @@
 | # | Pendiente | Dónde en la letra | Estado |
 |---|---|---|---|
 | 1 | Tag `v1.0` y hash SHA-256 | 6.3 H4; 8.2 | Pendiente el tag real. `v0.0-test` ya probó el Release (07/10). No se borra hasta el congelamiento |
-| 2 | Video de la demo, 5 minutos o menos | 6.2 entregable 13; 8.2 | Pendiente (al final) |
 
 ## Cerrado (letra)
 
@@ -27,6 +26,7 @@
 | 29 | Tasa de falsos positivos del SIEM | 6.4 | 11/10: 0,0 % (1 alerta `cambio_maestra` clasificada como válida) |
 | 24 | CVSS de V03 y V04 | plantilla 10 + 7.4 (severidad) | 11/10 |
 | 28 | V03 remediada (FastAPI 0.142.3 / starlette 1.7.0) | plantilla 10 | 07/10 |
+| 2 | Video de la demo, 5 minutos o menos | 6.2 entregable 13; 8.2 | 12/10. Grabado por Horacio Duarte, en Drive (`docs/20-Evidencias.md`, sección 08). Falta confirmar el permiso del enlace |
 
 Backup y restauración de bóveda/BD ya están (06/10). La letra pide copias exportadas y prueba de restauración (6.2 #8; 8.1), no una tarea programada de Windows ni copia fuera del equipo.
 
@@ -80,3 +80,4 @@ Ver `docs/00-arquitectura-c4.md` y la fila R02 de `docs/03-Analisis-Riesgos.md`.
 | 11/10 | — | nuclei #23: V05 Grafana, V06 Mailpit, V07 /metrics |
 | 11/10 | — | #29: tasa de falsos positivos 0,0 % (alerta 1, cambio_maestra) |
 | 12/10 | — | Firma del RSI en 01, 03, 06, 11, 12 y 28, y decisión de custodia de claves (sin respaldo, `01` sección 5.1). No lo pedía la letra; se hizo igual por consistencia con la auditoría |
+| 12/10 | — | #2: video de la demo, grabado por Horacio Duarte y subido a Drive |
