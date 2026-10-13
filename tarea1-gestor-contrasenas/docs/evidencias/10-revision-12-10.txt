@@ -1,0 +1,77 @@
+# Revisión de seguridad antes del tag v1.0 — 12/10/2026
+# Pedido del usuario: pruebas estáticas, agujeros que el Red Team podría explotar, y
+# claves/puertos/accesos expuestos.
+
+## bandit (control-central/app) — sin cambios desde el 05/10
+No issues identified. 1071 líneas escaneadas.
+
+## npm audit --omit=dev (cliente-gestor) — sin cambios
+found 0 vulnerabilities
+
+## pip-audit -r control-central/requirements.txt — hallazgos nuevos desde el 05/10
+python-jose 3.4.0   CVE-2026-85394   (V08)
+pyasn1      0.4.8   PYSEC-2026-2263, 3455, 3456, 3457   (V09)
+ecdsa       0.19.2  PYSEC-2026-1325  (V04, ya conocido, riesgo aceptado)
+
+## gitleaks sobre el historial completo (vía el hook de pre-commit, sin Docker)
+Detect hardcoded secrets.................................................Passed
+
+## Puertos publicados en infra/docker-compose.yml (sin cambios respecto a lo ya decidido)
+control-central 8001:8000 ; mailpit 1025:1025 y 8025:8025 ; grafana 3000:3000
+thehive 9000:9000 (detrás de --profile thehive, no se levanta por defecto)
+Sin publicar: postgres 5432, wazuh-manager 1514/1515/55000 (decisiones del 07/10)
+
+## Revisión manual de código
+- SQL: `grep -rn "execute(f\"" control-central/app/` → vacío. Todo parametrizado con SQLAlchemy.
+- XSS/eval en el cliente: `grep -rn "dangerouslySetInnerHTML|innerHTML|eval(" cliente-gestor/src/` → vacío.
+- Secretos hardcodeados en el cliente: sin resultados.
+- Command injection en Rust: `grep -rn "Command::new|process::Command" cliente-gestor/src-tauri/src/` →
+  solo usos de `std::process::id()` en nombres de carpetas temporales de test. Sin `Command::new`.
+- CORS: sin `CORSMiddleware` configurado en `control-central/app/main.py` (seguro por defecto).
+- Autenticación de rutas: `users.py` usa `Depends(_usuario_actual)` en todos lados salvo login y el
+  primer alta. `incidents.py` y `alerts.py` no tenían ningún `Depends` de autenticación — hallazgo V10.
+
+## V08 — confusión de algoritmo en python-jose (CVE-2026-85394), probado a mano
+Token HS256 armado byte a byte (sin pasar por `jwt.encode`, que python-jose bloquea del lado de
+quien firma), usando el texto PEM de la clave PÚBLICA de un agente como secreto HMAC. Pasado a
+`verificar_jws` (`algorithms=["RS256"]` fijo):
+  RESULTADO: RECHAZADO -> JWTError: The specified alg value is not allowed
+Repetido después de subir pyasn1 a 0.6.4: mismo resultado. La firma RS256 legítima sigue
+aceptándose igual (`jwt.decode(..., algorithms=["RS256"])` → claims correctos).
+
+## V10 — incidents.py y alerts.py sin autenticación (hallazgo por lectura de código, no por herramienta)
+Ninguna ruta de esos dos archivos tenía `Depends` de autenticación: POST/PATCH /api/incidents/ y
+PATCH /api/alerts/ se podían llamar sin ningún token. Remediado moviendo la autenticación a
+`app/core/auth.py` (compartida con `users.py`) y agregando `Depends(usuario_actual)` a las 5 rutas.
+Pruebas nuevas en `tests/test_auth_incidentes_alertas.py` (401 sin token, 200/201 con token).
+
+## Después de abrir Docker (12/10/2026, misma sesión)
+
+### El fix de V09 tal como estaba escrito no funcionaba
+`docker compose build control-central` con `pyasn1>=0.6.4` y `python-jose[cryptography]==3.4.0`:
+  ERROR: Cannot install pyasn1>=0.6.4 and python-jose because these package versions have
+  conflicting dependencies. python-jose 3.4.0 depends on pyasn1<0.5.0 and >=0.4.1.
+La verificación anterior en el host no lo detectó porque el host ya tenía python-jose 3.5.0
+instalado (de alguna instalación previa), no la versión 3.4.0 que fija el `requirements.txt` del
+proyecto. Se subió `python-jose` a 3.5.0 (no tiene esa restricción) y se reconstruyó: build OK.
+
+### Tests reales, contra control_central_test
+python -m pytest -q tests
+..........................                                               [100%]
+26 passed, 3 warnings in 6.10s
+(18 de antes + 1 de la invariante HS256 + 7 de `test_auth_incidentes_alertas.py`)
+
+### V10, probado en vivo contra la API real (no solo en tests)
+curl -X POST http://localhost:8001/api/incidents/ (sin Authorization) -> 401
+curl -X PATCH http://localhost:8001/api/alerts/1 (sin Authorization) -> 401
+
+### pip-audit sobre el requirements.txt final (python-jose 3.5.0, pyasn1 0.6.4)
+Found 3 known vulnerabilities in 2 packages
+python-jose 3.5.0   CVE-2026-85394   (V08, sin fix, mitigado por diseño)
+ecdsa       0.19.2  PYSEC-2026-1325  (V04, ya conocido, riesgo aceptado)
+pyasn1 ya no aparece en la lista.
+
+## No corrido
+cargo audit: no está instalado. Instalarlo compila un árbol de dependencias grande con el linker
+inestable del equipo (ver CLAUDE.md). Se deja afuera, como ya se había decidido con Pablo para la
+matriz 8.1 (OpenVAS/nuclei/SAST, no menciona cargo audit).

@@ -87,3 +87,35 @@ def test_texto_todo_se_rechaza(claves):
 def test_agente_sin_clave_publica_se_rechaza(claves):
     firma = _firmar(claves, agente_id="agente-inexistente")
     assert verificar(firma, agente_id="agente-inexistente") is False
+
+
+def test_token_hs256_forjado_con_la_clave_publica_se_rechaza(tmp_path, monkeypatch):
+    # CVE-2026-85394 (V08 en 10-Gestion-Vulnerabilidades.md): python-jose puede dejar pasar un
+    # token HS256 firmado con la clave PUBLICA como secreto HMAC, si el que verifica acepta más
+    # de un algoritmo. Alguien con la pública (que es pública por diseño) no necesita la privada.
+    # Esta prueba arma ese token a mano, sin pasar por `jwt.encode` (que python-jose bloquea del
+    # lado de quien firma), tal como lo haría un atacante con cualquier librería HMAC genérica.
+    import base64
+    import hashlib
+    import hmac
+    import json
+
+    _, pem_publica = _par_de_claves()
+    (tmp_path / f"{AGENTE}.pub.pem").write_text(pem_publica, encoding="utf-8")
+    monkeypatch.setattr(settings, "jwt_public_keys_dir", str(tmp_path))
+
+    def b64url(data: bytes) -> str:
+        return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+    encabezado = b64url(json.dumps({"alg": "HS256", "typ": "JWT"}, separators=(",", ":")).encode())
+    cuerpo = b64url(
+        json.dumps(
+            {"agente_id": AGENTE, "tipo": TIPO, "sistema": SISTEMA, "ts": TS},
+            separators=(",", ":"),
+        ).encode()
+    )
+    entrada = f"{encabezado}.{cuerpo}".encode()
+    firma_hmac = hmac.new(pem_publica.encode(), entrada, hashlib.sha256).digest()
+    token_forjado = f"{entrada.decode()}.{b64url(firma_hmac)}"
+
+    assert verificar(token_forjado) is False

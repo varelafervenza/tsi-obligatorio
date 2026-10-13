@@ -7,6 +7,13 @@ from jose.exceptions import JOSEError
 from app.core.config import settings
 
 ALGORITMO = "RS256"
+# INVARIANTE DE SEGURIDAD — no agregar otro algoritmo a esta constante ni a la lista de abajo.
+# python-jose tiene una falla de confusión de algoritmo (CVE-2026-85394, V08 en
+# 10-Gestion-Vulnerabilidades.md): si `jwt.decode` permite más de un algoritmo (por ejemplo
+# RS256 y HS256 juntos), alguien con la clave PÚBLICA de un agente puede forjar un token HS256
+# usándola como si fuera el secreto HMAC, sin la clave privada. Mientras `algorithms` tenga un
+# solo elemento, `jose` rechaza cualquier token que declare un `alg` distinto, antes de intentar
+# verificar la firma. Probado el 12/10/2026 con un token HS256 armado a mano: rechazado.
 
 
 def _public_key_path(agente_id: str) -> Path:

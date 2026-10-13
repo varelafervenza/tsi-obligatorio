@@ -14,6 +14,8 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.auth import exigir_admin as _exigir_admin
+from app.core.auth import usuario_actual as _usuario_actual
 from app.core.config import settings
 from app.core.mfa import generar_secreto, uri_otpauth, verificar_totp
 from app.db.session import get_db
@@ -95,25 +97,6 @@ def _algoritmo(pedido: str | None) -> str:
     if valor not in ("argon2id", "bcrypt"):
         return "argon2id"
     return valor
-
-
-def _usuario_actual(
-    authorization: str | None = Header(default=None),
-    db: Session = Depends(get_db),
-) -> User:
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(status_code=401, detail="Falta el token.")
-    token = authorization.split(" ", 1)[1].strip()
-    huella = hashlib.sha256(token.encode("utf-8")).hexdigest()
-    usuario = db.scalar(select(User).where(User.token_hash == huella))
-    if usuario is None:
-        raise HTTPException(status_code=401, detail="Token inválido.")
-    return usuario
-
-
-def _exigir_admin(usuario: User) -> None:
-    if usuario.rol != "admin":
-        raise HTTPException(status_code=403, detail="Solo un admin puede hacer esto.")
 
 
 def _emitir_token(usuario: User, db: Session) -> str:

@@ -114,12 +114,17 @@
 | **Pasos** | Abrir `http://localhost:3000`. Entrar con el usuario y la contraseña de `infra/.env` (`GRAFANA_ADMIN_USER` y `GRAFANA_ADMIN_PASSWORD`). Ir a **Dashboards → Control central**. |
 | **Resultado esperado** | Paneles con datos: eventos, incidentes abiertos, agentes, última sincronización (un tiempo relativo, como "hace 5 minutos"), volumen por tipo e incidentes. |
 
+**Desde el 12/10/2026, `GET/POST/PATCH /api/alerts/` y `/api/incidents/` piden token**, igual que
+las de usuarios (B-14). Antes no pedían nada: cualquiera podía crear un incidente falso o cerrar uno
+real sin ninguna credencial (hallazgo V10 de `10-Gestion-Vulnerabilidades.md`). Si todavía no tenés
+un token de panel, hacé primero los pasos 1 y 2 de B-14 (crear usuario, login) y guardá `$T`.
+
 ### B-12. Simulación de casos de uso (alertas)
 
 | Campo | Detalle |
 |---|---|
 | **Quién** | Persona |
-| **Pasos** | `python scripts/simular_casos_uso.py` · Luego `GET /api/alerts/` en el navegador. |
+| **Pasos** | 1. `python scripts/simular_casos_uso.py` · 2. Con el token (`$T` de B-14): `Invoke-RestMethod -Uri http://localhost:8001/api/alerts/ -Headers @{Authorization="Bearer $T"}` |
 | **Resultado esperado** | 11 eventos con `201`. Aparecen alertas `fuerza_bruta_maestra`, `borrado_masivo` y `cambio_maestra`. |
 | **Nota** | Si se corre dos veces, aparecen alertas duplicadas de `cambio_maestra`. Es esperado; anotarlo. |
 
@@ -127,10 +132,10 @@
 
 | Campo | Detalle |
 |---|---|
-| **Quién** | Persona. Las rutas de incidentes no piden token, así que se pueden probar desde `http://localhost:8001/docs` con **Try it out**. |
-| **Pasos** | 1. Mirar `GET /api/alerts/` y anotar el `evento_id` de una alerta. · 2. En `POST /api/incidents/` mandar `{"evento_origen_id": <ese id>, "severidad": "S1", "descripcion": "...", "asignado_a": "..."}`. · 3. Anotar el `id` del incidente. · 4. En `PATCH /api/incidents/{incidente_id}` mandar `{"estado":"en_analisis"}`, y después `{"estado":"resuelto"}`. |
-| **Resultado esperado** | Estado `abierto`, luego `en_analisis`, luego `resuelto` con `resuelto_en` con fecha. |
-| **Nota** | Las rutas de usuarios (B-14) sí piden token. `/docs` no tiene un botón para cargarlo: se manda en PowerShell con el encabezado `Authorization` (ver B-14). |
+| **Quién** | Persona. Las rutas de incidentes y alertas piden token; `/docs` no tiene un botón para cargarlo, así que se mandan desde PowerShell con el encabezado `Authorization`. |
+| **Pasos** | 1. `$A = Invoke-RestMethod -Uri http://localhost:8001/api/alerts/ -Headers @{Authorization="Bearer $T"}` y anotar el `evento_id` de una alerta. · 2. `Invoke-RestMethod -Method Post -Uri http://localhost:8001/api/incidents/ -Headers @{Authorization="Bearer $T"} -ContentType "application/json" -Body '{"evento_origen_id": <ese id>, "severidad": "S1", "descripcion": "...", "asignado_a": "..."}'`. · 3. Anotar el `id` del incidente. · 4. `PATCH /api/incidents/{incidente_id}` (mismo encabezado) con `{"estado":"en_analisis"}`, y después `{"estado":"resuelto"}`. |
+| **Resultado esperado** | Estado `abierto`, luego `en_analisis`, luego `resuelto` con `resuelto_en` con fecha. Sin el encabezado `Authorization`, cualquiera de los pasos da `401`. |
+| **Nota** | El token es el mismo de B-14. Si expiró o es de otro usuario, da `401 Token inválido`. |
 
 ### B-14. Usuario del panel con TOTP
 

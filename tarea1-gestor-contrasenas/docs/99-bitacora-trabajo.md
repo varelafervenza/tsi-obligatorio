@@ -2172,6 +2172,76 @@ Hora (UTC): N/D
   con el enlace puede verlo, no solo quien ya tiene acceso.
 - **Observaciones**: De la letra, solo queda abierto el tag `v1.0`.
 
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Revisión de seguridad antes del tag v1.0 (V08, V09, V10)
+
+- **Fase**: Revisión y corrección
+- **Duración**: N/D
+- **Tarea realizada**: Antes del tag `v1.0`, se corrió `bandit`, `npm audit`, `pip-audit` y
+  `gitleaks` (vía el hook, sin Docker), y se revisó a mano SQL, XSS, command injection, CORS y
+  autenticación de rutas. Tres hallazgos, los tres corregidos: **V08** — `python-jose` tiene una
+  falla de confusión de algoritmo (CVE-2026-85394); probado a mano con un token HS256 forjado
+  usando la clave pública como secreto HMAC, y rechazado porque `security.py` fija
+  `algorithms=["RS256"]`. Se agregó un comentario de invariante y un test de regresión
+  (`test_token_hs256_forjado_con_la_clave_publica_se_rechaza`). **V09** — `pyasn1` 0.4.8 tenía 4
+  avisos de DoS; se subió a `>=0.6.4` en `requirements.txt`, verificado en el Python del host (la
+  firma RS256 real sigue funcionando, el ataque HS256 sigue rechazado). **V10**, el más serio:
+  `incidents.py` y `alerts.py` no tenían ninguna autenticación, ni en las rutas que escriben.
+  Cualquiera podía crear un incidente falso, cerrar uno real (apagando la alerta de un ataque en
+  curso) o marcar cualquier alerta como falso positivo. Se movió la autenticación de `users.py` a
+  `app/core/auth.py` (compartida) y se agregó `Depends(usuario_actual)` a las 5 rutas. Se
+  actualizaron B-12 y B-13 de `docs/guia-de-pruebas.md`, que asumían que no hacía falta token.
+- **Herramienta / comando**: `bandit`, `npm audit`, `pip-audit`, `gitleaks` (hook), `grep` manual,
+  y el Python del host para armar y probar el token HS256 forjado y la suba de `pyasn1`.
+- **Resultado**: Los tres hallazgos corregidos. **Falta correr los tests reales** (18 existentes +
+  7 nuevos en `test_auth_incidentes_alertas.py`) contra `control_central_test` y reconstruir la
+  imagen con el `pyasn1` nuevo: Docker Desktop estaba cerrado durante toda la revisión.
+- **Evidencia anexa**: `docs/evidencias/10-revision-12-10.txt`, `docs/10-Gestion-Vulnerabilidades.md`
+  (V08, V09, V10), `control-central/app/core/auth.py`, `control-central/tests/test_auth_incidentes_alertas.py`.
+- **Incidencia / hallazgo**: Ya está en la descripción de la tarea (V08, V09, V10).
+- **Observaciones**: No se corrió `cargo audit` (no instalado, ya descartado con Pablo para la
+  matriz 8.1). No se probó V10 en vivo contra la API real, solo por lectura de código y con el
+  cliente de pruebas (`TestClient`) de FastAPI. Pendiente abrir Docker, correr los tests, y recién
+  ahí seguir con el tag `v1.0`.
+
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Verificación real de V08/V09/V10 con Docker abierto
+
+- **Fase**: Prueba
+- **Duración**: N/D
+- **Tarea realizada**: Con Docker ya abierto, se reconstruyó `control-central`. El fix de V09 tal
+  como estaba escrito (`pyasn1>=0.6.4` con `python-jose==3.4.0`) **no se podía instalar**: conflicto
+  real de dependencias (`python-jose 3.4.0 depends on pyasn1<0.5.0`). La verificación anterior en el
+  host no lo detectó porque el host ya tenía `python-jose` 3.5.0 instalado de antes, no la 3.4.0 que
+  fija el proyecto. Se corrigió subiendo `python-jose` a 3.5.0 (sin esa restricción) y se reconstruyó
+  bien. Se corrieron los 26 tests contra `control_central_test` (18 de antes + 1 de la invariante
+  HS256 + 7 de autenticación): todos pasan. Se probó V10 en vivo, no solo en tests: `POST
+  /api/incidents/` y `PATCH /api/alerts/1` sin `Authorization` responden `401`. Se repitió
+  `pip-audit` sobre el `requirements.txt` final: solo V08 (sin fix) y V04 (aceptado); `pyasn1` ya no
+  aparece.
+- **Herramienta / comando**: `docker compose build control-central`, `python -m pytest -q tests`
+  dentro de la imagen, `curl` contra la API real, `pip-audit`.
+- **Resultado**: Éxito, con una corrección sobre la marcha (python-jose 3.4.0 → 3.5.0).
+- **Evidencia anexa**: `docs/evidencias/10-revision-12-10.txt` (actualizado con el resultado real),
+  `docs/10-Gestion-Vulnerabilidades.md` (V08 y V09 corregidos con la versión real).
+- **Incidencia / hallazgo**: La verificación "en el host" de la sesión anterior fue insuficiente:
+  probó con una versión de `python-jose` que no era la que el proyecto realmente fija. La prueba que
+  importa es la reconstrucción real de la imagen con el `requirements.txt` del repositorio.
+- **Observaciones**: Los tres hallazgos (V08, V09, V10) quedaron corregidos y verificados de punta a
+  punta. Listo para seguir con el tag `v1.0`.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

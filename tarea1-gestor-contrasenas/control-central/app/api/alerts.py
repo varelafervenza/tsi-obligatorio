@@ -6,8 +6,10 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.auth import usuario_actual
 from app.db.session import get_db
 from app.models.alert import Alert
+from app.models.user import User
 
 router = APIRouter()
 
@@ -28,13 +30,22 @@ class AlertaPatch(BaseModel):
 
 
 @router.get("/", response_model=list[AlertaOut])
-def listar_alertas(db: Session = Depends(get_db), limit: int = 50):
+def listar_alertas(
+    db: Session = Depends(get_db),
+    limit: int = 50,
+    _: User = Depends(usuario_actual),
+):
     stmt = select(Alert).order_by(Alert.id.desc()).limit(min(limit, 100))
     return list(db.scalars(stmt))
 
 
 @router.patch("/{alerta_id}", response_model=AlertaOut)
-def clasificar_alerta(alerta_id: int, payload: AlertaPatch, db: Session = Depends(get_db)):
+def clasificar_alerta(
+    alerta_id: int,
+    payload: AlertaPatch,
+    db: Session = Depends(get_db),
+    _: User = Depends(usuario_actual),
+):
     alerta = db.get(Alert, alerta_id)
     if alerta is None:
         raise HTTPException(status_code=404, detail="No existe la alerta.")

@@ -57,6 +57,9 @@ oficial cargado: no son el pendiente #24.
 | V05 | Grafana 11.2.0 (`:3000`) | CVE-2025-4123 (XSS / open redirect). Fix ≥ 11.2.9+security-01 | nuclei | **6.1 (Media)** NVD; vendor 7.6 | **Aceptado** en laboratorio (sección 5) | 11/10/2026 | — | Pablo Morales |
 | V06 | Mailpit v1.21 (`:8025`) | CVE-2026-21859 (SSRF en `/proxy`). Fix 1.28.1 | nuclei | **5.3 (Media)** NVD; CNA 5.8 | **Aceptado** en laboratorio (sección 5) | 11/10/2026 | — | Pablo Morales |
 | V07 | Grafana `:3000/metrics` | Expone versión 11.2.0 (y métricas). Sin CVE | nuclei | Baja (info) | **Aceptado** | 11/10/2026 | — | Pablo Morales |
+| V08 | `control-central` (`python-jose` 3.5.0) | CVE-2026-85394 / GHSA-3qf3-8w2g-rqmx: confusión de algoritmo RS256↔HS256. Afecta hasta la 3.5.0; sin fix de la librería | pip-audit | Sin CVSS publicado (OSV/NVD, al 12/10/2026) | **Mitigado por diseño, sin fix disponible.** `verificar_jws` fija `algorithms=["RS256"]` (un solo elemento); probado el 12/10 con un token HS256 forjado a mano usando la clave pública: rechazado, en vivo y en los tests. Ver `app/core/security.py` y `tests/test_firma_jws.py` | 12/10/2026 | — (mitigado) | Andrés Varela |
+| V09 | `control-central` (`pyasn1` 0.4.8, transitiva de `python-jose`/`ecdsa`) | 4 avisos de denegación de servicio por ASN.1 recursivo/cuadrático (PYSEC-2026-2263, 3455, 3456, 3457) | pip-audit | No evaluado (DoS, baja explotabilidad: solo parsea claves que el propio servidor guarda, no datos de una petición) | **Remediado**: `python-jose` 3.4.0 fija `pyasn1<0.5.0` (conflicto real al reconstruir la imagen); se subió `python-jose` a 3.5.0 para poder fijar `pyasn1>=0.6.4`. `pip-audit` sobre el `requirements.txt` final: sin avisos de `pyasn1` | 12/10/2026 | 12/10/2026 | Andrés Varela |
+| V10 | `control-central` (`app/api/incidents.py`, `app/api/alerts.py`) | Ninguna ruta pedía token, ni las que escriben: cualquiera podía crear incidentes falsos, cerrar un incidente real (apagando la alerta de un ataque en curso) o marcar cualquier alerta como falso positivo | Revisión manual de código | No evaluado (falla de diseño, no una dependencia) | **Remediado**: las 5 rutas piden el mismo token de panel que `users.py` (`app/core/auth.py`) | 12/10/2026 | 12/10/2026 | Andrés Varela |
 
 Desglose de V03 (`starlette` 0.38.6). La fila usa el peor CVSS v3.1 (7.5). CVE-2024-47874 no tiene
 base v3 en NVD; OSV publica CVSS v4 8.7 y un v3 0.0 (vector con impacto nulo, no se usa).
@@ -70,6 +73,17 @@ base v3 en NVD; OSV publica CVSS v4 8.7 y un v3 0.0 (vector con impacto nulo, no
 | PYSEC-2026-2280 | CVE-2026-48817 | 5.3 Media | [OSV](https://osv.dev/vulnerability/PYSEC-2026-2280) |
 | PYSEC-2026-249 | CVE-2026-54283 | 7.5 Alta | [OSV](https://osv.dev/vulnerability/PYSEC-2026-249) |
 | PYSEC-2026-248 | CVE-2026-54282 | 5.3 Media | [OSV](https://osv.dev/vulnerability/PYSEC-2026-248) |
+
+**Desglose de V08** (confusión de algoritmo en `python-jose`). La falla real: si `jwt.decode` acepta
+más de un algoritmo (por ejemplo `["RS256", "HS256"]`), alguien con la clave pública de un agente —que
+es pública por diseño, se copia a `keys/agentes/` a propósito— puede construir un JWT con cabecera
+`alg: HS256` y firmarlo con HMAC-SHA256 usando el texto de esa clave pública como "secreto", sin tocar
+la clave privada. Prueba hecha el 12/10/2026 (`tests/test_firma_jws.py`,
+`test_token_hs256_forjado_con_la_clave_publica_se_rechaza`): se armó ese token a mano —no con
+`jwt.encode`, que python-jose bloquea del lado de quien firma— y se lo pasó a `verificar_jws`.
+Rechazado con `"The specified alg value is not allowed"`, porque `ALGORITMO` en `security.py` es una
+lista de un solo elemento. Si alguna vez se agrega un segundo algoritmo a esa lista, la falla se
+reabre: por eso el comentario de invariante en el código.
 
 ---
 
@@ -116,6 +130,21 @@ de parcheo no corre mientras el tratamiento sea aceptación.
 `nuclei` (11/10/2026, `docs/evidencias/10-nuclei.txt`): 4 matches (V05–V07). Varios `i/o timeout` contra
 `host.docker.internal`; la API en `:8001` quedó casi sin barrer. Los puertos 80/4040/9780/43800
 dieron *connection refused*: no están publicados. OpenVAS no se corrió; la letra admite nuclei.
+
+**Revisión del 12/10/2026, antes del tag `v1.0`** (`docs/evidencias/10-revision-12-10.txt`):
+`bandit` y `npm audit` se repitieron, sin cambios (0 problemas). `pip-audit` encontró V08 y V09
+(no estaban en la corrida del 05/10). `gitleaks` sobre el historial completo, sin hallazgos nuevos.
+Revisión manual: sin SQL concatenado (todo parametrizado con SQLAlchemy), sin
+`dangerouslySetInnerHTML`/`innerHTML`/`eval` en el cliente web, sin `Command::new` en el Rust de
+producción, sin CORS configurado (por defecto, seguro). El hallazgo real fue V10, por lectura de
+código, no por una herramienta: ninguna ruta de `incidents.py` ni `alerts.py` pedía token. `cargo
+audit` no se corrió (no está instalado; instalarlo compila un árbol grande con el linker inestable
+del equipo, ya documentado en `CLAUDE.md`).
+
+**Después de abrir Docker:** se reconstruyó la imagen con `python-jose` 3.5.0 y `pyasn1` 0.6.4.
+Los 26 tests pasan (18 de antes + 8 nuevos: 1 de la invariante HS256, 7 de autenticación). En vivo,
+sin ningún token: `POST /api/incidents/` y `PATCH /api/alerts/1` responden `401`. `pip-audit` sobre
+el `requirements.txt` final: solo V08 (sin fix) y V04 (riesgo aceptado); `pyasn1` ya no aparece.
 
 ---
 

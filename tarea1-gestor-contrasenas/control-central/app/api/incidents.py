@@ -7,9 +7,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.auth import usuario_actual
 from app.db.session import get_db
 from app.models.event import AuditEvent
 from app.models.incident import Incident
+from app.models.user import User
 
 router = APIRouter()
 
@@ -52,7 +54,11 @@ def _aplicar_estado(incidente: Incident, estado: str) -> None:
 
 
 @router.post("/", response_model=IncidenteOut, status_code=201)
-def crear_incidente(payload: IncidenteIn, db: Session = Depends(get_db)):
+def crear_incidente(
+    payload: IncidenteIn,
+    db: Session = Depends(get_db),
+    _: User = Depends(usuario_actual),
+):
     evento = db.get(AuditEvent, payload.evento_origen_id)
     if evento is None:
         raise HTTPException(status_code=404, detail="No existe el evento de origen.")
@@ -75,7 +81,11 @@ def crear_incidente(payload: IncidenteIn, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[IncidenteOut])
-def listar_incidentes(db: Session = Depends(get_db), limit: int = 50):
+def listar_incidentes(
+    db: Session = Depends(get_db),
+    limit: int = 50,
+    _: User = Depends(usuario_actual),
+):
     stmt = select(Incident).order_by(Incident.id.desc()).limit(min(limit, 100))
     return list(db.scalars(stmt))
 
@@ -85,6 +95,7 @@ def actualizar_incidente(
     incidente_id: int,
     payload: IncidentePatch,
     db: Session = Depends(get_db),
+    _: User = Depends(usuario_actual),
 ):
     incidente = db.get(Incident, incidente_id)
     if incidente is None:
