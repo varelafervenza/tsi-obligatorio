@@ -75,7 +75,8 @@ Los valores salen de `GET /api/dashboard/kpis` el 06/10/2026 (18:43 UTC).
 | MTTR | Tiempo de respuesta a incidente | 77 881.7 s (21 h 38 min), desde la alerta hasta la resolución | 1 | Sí, con la definición desde la alerta (ver 4.2). Valor alto por la espera de creación del caso |
 | Cobertura de eventos | 100 % de alta, modificación, borrado y cambio de maestra | 100 % en la base (06/10, script) y alta/mod/borrado repetidos desde la app el 07/10 (`docs/evidencias/05-03-app-alta.png`, `05-03-app-modificacion.png`, `05-03-app-borrado.png`) | 4 de 4 tipos | Sí |
 | Falsos positivos del SIEM | Tasa de falsos positivos | 0,0 % sobre 1 alerta local clasificada. Wazuh 1 | 11/10: `cambio_maestra` marcada `es_falso_positivo=false` | Medido |
-| Uptime del control central | Durante la validación | 2 884 s desde el último arranque | — | No medido para el periodo de validación |
+| Uptime del control central | Durante la validación | 28 min (1 679 s) sin caída, 11/10. `healthz` ok en el cierre; `uptime_segundos` y el reloj de pared avanzaron igual, sin reinicio (`docs/evidencias/22-kpis.txt`, `22-kpis-cierre.txt`) | 1 ventana | Medido |
+| Apertura de bóveda (RNF-02, no es del 6.4 pero se mide junto a lo de arriba) | < 2 s | 2,63 s en frío (KDF + disco), 0,81 s y 0,40 s en caliente (`docs/evidencias/22-rnf02-apertura.txt`) | 3 | **No, la primera apertura.** Caliente sí cumple |
 
 ### 4.2 Lectura de los KPIs (lo que hay que saber antes de defenderlos)
 
@@ -103,8 +104,11 @@ el caso 1: incluye el tiempo entre la alerta y la creación manual del incidente
 - **Cobertura del 100 %:** resuelto. El 06/10 se completó el KPI en la base con un script; el 07/10 se
   repitió alta (sección 05), modificación y borrado desde el cliente (`firma_valida: true`, agente
   `agente-aeb5b922`, `docs/evidencias/05-03-app-modificacion.png` y `05-03-app-borrado.png`).
-- **Falsos positivos:** el manager ya emite alertas. La tasa sigue vacía hasta clasificar las alertas locales.
-- **Uptime:** medir durante la ventana de validación con una sonda de `healthz` registrada en el tiempo.
+- **Falsos positivos:** resuelto el 11/10. 0,0 % sobre la única alerta clasificada hasta ahora.
+- **Uptime:** resuelto el 11/10. 28 min sin caída.
+- **Apertura de bóveda (RNF-02):** la primera apertura (en frío, con la derivación de la clave y el disco)
+  tarda 2,63 s, por encima del límite de 2 s. Las dos siguientes (en caliente) dan 0,81 s y 0,40 s, y sí
+  cumplen. Se declara el valor real medido el 11/10, sin redondearlo para que pase.
 
 ---
 
@@ -164,7 +168,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es el video y el tag `v1.0`. El #22, #23 y #29 se cerraron el 11/10. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es el video y el tag `v1.0`. El #22, #23 y #29 se cerraron el 11/10: entre los valores medidos, la apertura en frío de la bóveda (RNF-02) dio 2,63 s, por encima del límite de 2 s; en caliente sí cumple. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

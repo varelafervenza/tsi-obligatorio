@@ -2081,6 +2081,37 @@ Hora (UTC): 02:44
 - **Incidencia / hallazgo**: En PowerShell el `curl` alias rompe el JSON; hace falta `curl.exe`.
 - **Observaciones**: Quedan #1 (tag) y #2 (video).
 
+---
+Fecha: 12/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Revisión del avance del equipo (Pablo y Horacio) a dos días de la defensa
+
+- **Fase**: Revisión
+- **Duración**: N/D
+- **Tarea realizada**: Se revisó qué hizo cada uno desde el 07/10. **Horacio**: su último commit sigue
+  siendo `1c4b4fb` (07/10, "se agrega wazhu"), ya detallado en sus propias cuatro entradas de ese día
+  (21:32-21:50): manager y agente de Wazuh 4.14.8 con alertas reales, V03 remediada subiendo FastAPI a
+  0.142.3 y Starlette a 1.7.0, la bóveda de 22 sistemas del Anexo B, y el cifrado del archivo completo
+  de la bóveda (formato `BOV2`), pedido por el docente. Sin actividad de Horacio el 08, 09, 10 ni 11/10.
+  **Pablo**: trabajó el 10 y el 11/10, cerrando los últimos puntos que pide la letra: Excel de controles
+  y de bitácora (#14, #15), nombre canónico de `04-Gestion-Incidentes.md` (#13), CVSS de V03 y V04 (#24),
+  escaneo con `nuclei` y V05-V07 (#23), uptime/RNF-02/RNF-05/rollback (#22), y la tasa de falsos positivos
+  (#29). También reescribió `00-pendientes-entrega.md` para que solo liste lo que pide la letra.
+- **Herramienta / comando**: `git log --author`, lectura de `00-pendientes-entrega.md`,
+  `28-Informe-Blue-Team.md` y las evidencias de los puntos #22, #23, #24 y #29.
+- **Resultado**: Confirmado. Quedan dos puntos abiertos que pide la letra: #1 (tag `v1.0`) y #2 (video
+  de la demo). Se agregó al informe 28 un hallazgo que estaba solo en la bitácora de Pablo: la primera
+  apertura de la bóveda (2,63 s) supera el límite de 2 s de RNF-02.
+- **Evidencia anexa**: `docs/28-Informe-Blue-Team.md` (sección 4.1 y conclusión).
+- **Incidencia / hallazgo**: Ninguno nuevo. El hallazgo de RNF-02 ya estaba en la entrada de Pablo del
+  11/10; solo faltaba que llegara al informe que se usa en la defensa.
+- **Observaciones**: Quedan dos días hasta la defensa (14/10). Horacio no tiene pendientes de la letra
+  asignados, pero no participó en la revisión final; conviene confirmar su disponibilidad para la demo.
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
