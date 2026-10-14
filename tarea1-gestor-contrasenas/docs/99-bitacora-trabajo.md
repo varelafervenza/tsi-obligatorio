@@ -2268,6 +2268,39 @@ Hora (UTC): N/D
 - **Observaciones**: `11-SoA` controles 5.15, 5.18 y 8.2 siguen en "Parcial" por motivos más
   amplios (RBAC sin revisión periódica, MFA opcional), no específicamente por V10; no se tocaron.
 
+---
+Fecha: 13/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Tag `v1.0` y hash SHA-256 de la entrega
+
+- **Fase**: Entrega
+- **Duración**: N/D
+- **Tarea realizada**: Con V08/V09/V10 ya corregidos y verificados (entradas del 12/10), se creó
+  el tag anotado `v1.0` sobre `a0907d6` (objeto de tag `9272c1a`) y se pusheó a `origin`. El
+  workflow `.github/workflows/release.yml` se disparó solo, construyó el instalador NSIS y publicó
+  el Release `v1.0` en GitHub. Se verificó que el asset
+  (`cliente-gestor_0.1.0_x64-setup.exe`, 3,94 MB) descarga sin login con `curl -I -L` anónimo
+  (`HTTP 200`). Se corrió `scripts/verificar_integridad_tag.sh v1.0`, que da el hash SHA-256 del
+  árbol pedido en la sección 8.2 de `LETRA.md`:
+  `5ffe5ac7cac1cde62cd5ed4085d17e59259986c1285a566f576823996b787a78`. El Release de prueba
+  `v0.0-test` (de una sesión anterior, usado solo para validar que el workflow funcionaba) se deja
+  publicado tal cual, sin borrar.
+- **Herramienta / comando**: `git tag -a`, `git push origin v1.0`; GitHub REST API
+  (`actions/runs`, `releases/tags/v1.0`) para confirmar el resultado del workflow; `curl -I -L`
+  para el asset; `bash scripts/verificar_integridad_tag.sh v1.0`.
+- **Resultado**: Éxito. Entrega congelada, Release publicado y hash de integridad calculado.
+- **Evidencia anexa**: Release en
+  `https://github.com/varelafervenza/tsi-obligatorio/releases/tag/v1.0`;
+  `docs/00-pendientes-entrega.md` (punto #1, cerrado).
+- **Incidencia / hallazgo**: Ninguna.
+- **Observaciones**: Con esto se cierra el último punto abierto de `docs/00-pendientes-entrega.md`.
+  Falta solo confirmar con Horacio el permiso de enlace del video de la demo (punto #2, ya cerrado
+  pero con una duda de permisos sin resolver).
+
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.

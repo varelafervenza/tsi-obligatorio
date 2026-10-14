@@ -1,21 +1,20 @@
 # Pendientes para la entrega — Tarea 1
 
 > Solo lo que pide `LETRA.md`. Se actualiza en el **mismo commit** que cierra cada punto.
-> Estado al **12/10/2026**. Defensa: **14/10/2026**.
+> Estado al **13/10/2026**. Defensa: **14/10/2026**.
 >
 > Si no está en la letra, no entra acá. Mailpit, Wazuh sin indexer y Docker en un host
 > ya se hablaron con el profesor: no hay consulta pendiente al foro.
 
 ## Abierto (letra)
 
-| # | Pendiente | Dónde en la letra | Estado |
-|---|---|---|---|
-| 1 | Tag `v1.0` y hash SHA-256 | 6.3 H4; 8.2 | Pendiente el tag real. `v0.0-test` ya probó el Release (07/10). No se borra hasta el congelamiento |
+Sin pendientes abiertos de la letra.
 
 ## Cerrado (letra)
 
 | # | Qué | Dónde | Cierre |
 |---|---|---|---|
+| 1 | Tag `v1.0` y hash SHA-256 del árbol | 6.3 H4; 8.2 | 13/10. Tag sobre `a0907d6` (objeto `9272c1a`). Release con el instalador publicado y descargable sin login (verificado con `curl -I -L` anónimo). Hash: `5ffe5ac7cac1cde62cd5ed4085d17e59259986c1285a566f576823996b787a78` (`scripts/verificar_integridad_tag.sh v1.0`). `v0.0-test` se deja publicado aparte, sin tocar |
 | 3 | Cobertura 100 % alta / mod / borrado desde la app | 6.4 | 07/10 |
 | 14 | Excel de controles MCU con evidencia | 8.1; 6.6 | 10/10 |
 | 15 | Excel de bitácora al día | 6.5; 8.1 | 10/10 |
@@ -81,3 +80,4 @@ Ver `docs/00-arquitectura-c4.md` y la fila R02 de `docs/03-Analisis-Riesgos.md`.
 | 11/10 | — | #29: tasa de falsos positivos 0,0 % (alerta 1, cambio_maestra) |
 | 12/10 | — | Firma del RSI en 01, 03, 06, 11, 12 y 28, y decisión de custodia de claves (sin respaldo, `01` sección 5.1). No lo pedía la letra; se hizo igual por consistencia con la auditoría |
 | 12/10 | — | #2: video de la demo, grabado por Horacio Duarte y subido a Drive |
+| 13/10 | — | #1: tag `v1.0` sobre `a0907d6`, Release con instalador y hash SHA-256 del árbol |
