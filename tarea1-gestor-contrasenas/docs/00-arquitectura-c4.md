@@ -197,7 +197,11 @@ vivo → vínculo de cada caja con controles MCU/BCU/ISO.
 
 ## Check de aceptación
 
-- [ ] 4 niveles completos (código solo para módulos de seguridad).
-- [ ] Tecnologías reales (las efectivamente desplegadas, no solo las planeadas).
-- [ ] Relaciones con actores y con SIEM/correo correctas.
-- [ ] Acompañado de capturas en `docs/evidencias/`.
+- [x] 4 niveles completos (código solo para módulos de seguridad).
+- [ ] Tecnologías reales (las efectivamente desplegadas, no solo las planeadas): el Nivel 2
+  todavía describe el objetivo (Mailu, Wazuh manager+indexer+dashboard, VM dedicada) y no lo
+  realmente desplegado (Mailpit, Wazuh solo manager+agente, contenedores Docker en un host —
+  ver las notas de "Limitación de alcance" más abajo en este mismo documento, que sí son reales).
+- [x] Relaciones con actores y con SIEM/correo correctas.
+- [ ] Acompañado de capturas en `docs/evidencias/` (no hay capturas de arquitectura ahí; existe
+  `docs/diagrama-arquitectura.png`, que es un diagrama, no una captura del sistema corriendo).

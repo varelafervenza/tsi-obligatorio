@@ -176,7 +176,7 @@ La planilla Excel `04-bitacora-planilla.xlsx` espeja las 79 entradas de esta bit
 
 ## 8. Conclusión
 
-El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. Lo que queda abierto y pide la letra es el tag `v1.0`. El video de la demo se grabó el 12/10. El #22, #23 y #29 se cerraron el 11/10: entre los valores medidos, la apertura en frío de la bóveda (RNF-02) dio 2,63 s, por encima del límite de 2 s; en caliente sí cumple. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
+El equipo tiene un sistema que funciona de punta a punta: firma, persistencia, reglas, alertas, incidente, notificación simulada, restauración y Wazuh con alertas reales. La cobertura alta/mod/borrado desde la app está demostrada. El tag `v1.0` se creó el 13/10/2026 (`a0907d6`), con Release publicado y hash SHA-256 del árbol verificado (`00-pendientes-entrega.md` #1); no quedan pendientes abiertos de la letra. El video de la demo se grabó el 12/10. El #22, #23 y #29 se cerraron el 11/10: entre los valores medidos, la apertura en frío de la bóveda (RNF-02) dio 2,63 s, por encima del límite de 2 s; en caliente sí cumple. V03 quedó cerrada con FastAPI 0.142.3. Para la auditoría del 14/10, el equipo presenta estos puntos como están, sin ajustar los valores para que cumplan.
 
 ---
 

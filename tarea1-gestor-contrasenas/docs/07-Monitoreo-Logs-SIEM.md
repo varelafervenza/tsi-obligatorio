@@ -101,7 +101,7 @@ Valores leídos de `GET /api/dashboard/kpis` el 05/10/2026, después de la demo:
 | Alertas de las reglas | 4 | fuerza_bruta_maestra (1), borrado_masivo (1), cambio_maestra (2). Incluye un cambio de maestra extra por la segunda corrida (ver nota). |
 | Incidentes abiertos | 0 | |
 | MTTD / MTTR | MTTD 0.2 s; MTTR 77 881.7 s (21 h 38 min) | MTTD: primera alerta menos `occurred_at` del evento. MTTR: resuelto menos la primera alerta, incidente 1 (06/10). |
-| Falsos positivos | N/D | Sin alertas clasificadas. |
+| Falsos positivos | N/D el 05/10 (sin alertas clasificadas en ese momento) | Medido después, el 11/10: **0,0 %** sobre 1 alerta local (`cambio_maestra`, `es_falso_positivo=false`). Ver `00-pendientes-entrega.md` #29 y `28-Informe-Blue-Team.md`. |
 
 **Evidencia de la simulación:** `docs/evidencias/07-simulacion-casos-uso.txt`, generada con
 `scripts/simular_casos_uso.py`. El script se ejecutó **dos veces** el 05/10/2026: la primera

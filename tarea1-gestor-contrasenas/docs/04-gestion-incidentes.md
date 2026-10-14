@@ -68,7 +68,7 @@
 
 | ID | Fecha | Descripción | Severidad | Vector | Activo | Estado | Responsable |
 |---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| INC-2026-001 | 06/10/2026 | Incidente 1 (simulado): alerta `fuerza_bruta_maestra` (alerta 1, evento 10) sobre la contraseña maestra | S2 | Local (cliente-gestor) | A02 (bóveda cifrada del usuario) | `resuelto` (abierto → en_analisis → resuelto el mismo día) | Andrés Varela (RSI) |
 
 ## 3. Procedimiento de respuesta (línea de tiempo)
 
@@ -111,7 +111,10 @@
 
 ## Check de aceptación
 
-- [ ] Definiciones de severidad y clasificación.
-- [ ] Procedimiento de respuesta completo (D→C→E→R→L).
-- [ ] Registro de incidentes con los simulados y los hallazgos del Red Team.
-- [ ] Procedimiento de notificación a BCU/URCDP.
+- [x] Definiciones de severidad y clasificación (sección 1, S0-S3 con criterio y ejemplo).
+- [x] Procedimiento de respuesta completo (D→C→E→R→L) (sección 3).
+- [x] Registro de incidentes con los simulados (INC-2026-001, sección 2). Los hallazgos del
+  Red Team quedan pendientes porque su parte todavía no corrió (28/10-09/11).
+- [ ] Procedimiento de notificación a BCU/URCDP: la plantilla y el flujo existen y ya se
+  ejercitaron de punta a punta con el incidente 1 (`12-Notificacion-Incidentes.md`), pero los
+  plazos legales de la tabla de la sección 4 siguen sin completar (`[plazo]`).

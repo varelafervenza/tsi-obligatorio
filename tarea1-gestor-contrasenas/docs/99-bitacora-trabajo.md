@@ -2304,7 +2304,7 @@ Hora (UTC): N/D
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
-- [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09; Pablo Morales el
-  25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10, el 03/10 y el 07/10).
+- [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09 y del 12/10 al 13/10;
+  Pablo Morales el 25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10, el 03/10 y el 07/10).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

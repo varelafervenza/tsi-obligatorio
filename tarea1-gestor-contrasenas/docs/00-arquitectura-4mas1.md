@@ -100,7 +100,7 @@ en vivo → vínculo con controles MCU/BCU/ISO).
 
 ## Check de aceptación
 
-- [ ] Las 4 vistas + escenarios están completas.
+- [x] Las 4 vistas + escenarios están completas.
 - [ ] El diagrama físico coincide con lo realmente desplegado (pendiente: reemplazar IPs `[a definir]`).
 - [ ] Cada control de auditoría puede anclarse a una vista.
 - [ ] Acompañado en repositorio con capturas reales (`docs/evidencias/`).

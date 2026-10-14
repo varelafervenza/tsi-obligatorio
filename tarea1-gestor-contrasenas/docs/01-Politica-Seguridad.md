@@ -166,7 +166,7 @@ R02 y no cambia con esta decisión.
 
 ## Check de aceptación
 
-- [ ] Aprobada formalmente con fecha y firmas (falta: hoy es borrador sin aprobación real).
+- [x] Aprobada formalmente con fecha y firmas (v0.3, Andrés Varela — RSI —, 12/10/2026).
 - [x] Menciona MCU 5.0, BCU, ISO y Ley 18.331.
 - [x] Define roles y responsabilidades.
 - [x] Referencia los documentos existentes y previstos de la carpeta `docs/`, indicando su estado real.
