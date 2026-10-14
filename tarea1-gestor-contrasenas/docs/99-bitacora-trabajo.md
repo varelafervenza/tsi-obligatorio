@@ -2298,13 +2298,46 @@ Hora (UTC): N/D
   `docs/00-pendientes-entrega.md` (punto #1, cerrado).
 - **Incidencia / hallazgo**: Ninguna.
 - **Observaciones**: Con esto se cierra el último punto abierto de `docs/00-pendientes-entrega.md`.
-  Falta solo confirmar con Horacio el permiso de enlace del video de la demo (punto #2, ya cerrado
-  pero con una duda de permisos sin resolver).
+  Quedaba solo confirmar con Horacio el permiso de enlace del video de la demo (punto #2):
+  resuelto el 14/10 (ver siguiente entrada).
+
+---
+Fecha: 14/10/2026
+Equipo: Blue
+Responsable: Andrés Varela
+Hora (UTC): N/D
+---
+
+## Actividad: Repaso final pre-auditoría — Check de aceptación, arquitectura C4 y permiso del video
+
+- **Fase**: Documentación
+- **Duración**: N/D
+- **Tarea realizada**: Día de la defensa (14/10). Se pidió revisar los 14 "Check de aceptación"
+  de `docs/` y validar que lo marcado fuera cierto. Se corrigieron seis documentos con
+  casilleros obsoletos o falsos (`01-Politica-Seguridad.md`, `00-arquitectura-4mas1.md`,
+  `00-arquitectura-c4.md`, `07-Monitoreo-Logs-SIEM.md`, `04-gestion-incidentes.md`,
+  `28-Informe-Blue-Team.md`; commit `d0ccaf2`). Al revisar `00-arquitectura-c4.md` quedó
+  pendiente actualizar el Nivel 2 (todavía describía Mailu, Wazuh manager+indexer+dashboard y VM
+  dedicada en vez de lo real); se corrigió con las imágenes y versiones reales de
+  `infra/docker-compose.yml` (Mailpit v1.21, Wazuh 4.14.8 solo manager+agente, Postgres 16,
+  Grafana OSS 11.2.0, contenedores Docker sobre un solo host) y se agregaron al Nivel 3 los
+  componentes reales que faltaban (`core.auth`, `api.alerts`, `siem.reglas`,
+  `siem.alertas_wazuh`) y se corrigió `core.mfa`/`auth` (cliente), que todavía mencionaban
+  WebAuthn/Windows Hello pese a que ese código se eliminó. Por último, Horacio Duarte confirmó
+  que el permiso del enlace de Drive del video de la demo funciona bien para quien lo abre
+  (punto #2 de `00-pendientes-entrega.md`, que tenía una duda sin resolver desde el 12/10).
+- **Herramienta / comando**: lectura cruzada de los 14 documentos con check de aceptación contra
+  `infra/docker-compose.yml`, `control-central/app/`, `cliente-gestor/src-tauri/src/auth/` y el
+  resto de `docs/`.
+- **Resultado**: Éxito. Documentación consistente con el sistema real antes de la auditoría.
+- **Evidencia anexa**: los archivos editados; `docs/20-Evidencias.md` sección 08 (video).
+- **Incidencia / hallazgo**: Ninguno nuevo; todo era documentación desactualizada, no código.
+- **Observaciones**: No quedan pendientes abiertos de `00-pendientes-entrega.md`.
 
 ## Check de aceptación (repetir por período de entrega)
 
 - [ ] Registro diario sin lagunas superiores a 2 días.
-- [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09 y del 12/10 al 13/10;
+- [x] Cada miembro firma sus entradas (Andrés Varela hasta el 23/09 y del 12/10 al 14/10;
   Pablo Morales el 25/09–26/09 UTC; Horacio Duarte el 27/09, el 02/10, el 03/10 y el 07/10).
 - [ ] Cada hallazgo/incidente tiene su entrada de bitácora asociada.
 - [ ] Cada control auditado del Excel MCU 5.0 puede relacionarse con una o más entradas de acá.

@@ -25,7 +25,7 @@ Sin pendientes abiertos de la letra.
 | 29 | Tasa de falsos positivos del SIEM | 6.4 | 11/10: 0,0 % (1 alerta `cambio_maestra` clasificada como válida) |
 | 24 | CVSS de V03 y V04 | plantilla 10 + 7.4 (severidad) | 11/10 |
 | 28 | V03 remediada (FastAPI 0.142.3 / starlette 1.7.0) | plantilla 10 | 07/10 |
-| 2 | Video de la demo, 5 minutos o menos | 6.2 entregable 13; 8.2 | 12/10. Grabado por Horacio Duarte, en Drive (`docs/20-Evidencias.md`, sección 08). Falta confirmar el permiso del enlace |
+| 2 | Video de la demo, 5 minutos o menos | 6.2 entregable 13; 8.2 | 12/10. Grabado por Horacio Duarte, en Drive (`docs/20-Evidencias.md`, sección 08). Permiso del enlace confirmado el 14/10 |
 
 Backup y restauración de bóveda/BD ya están (06/10). La letra pide copias exportadas y prueba de restauración (6.2 #8; 8.1), no una tarea programada de Windows ni copia fuera del equipo.
 

@@ -24,9 +24,9 @@
 |---|---|
 | Nombre | Modelo de arquitectura C4 — Gestor de Contraseñas con Control Centralizado |
 | Código | ARQ-C4-01 |
-| Versión | 0.1 (borrador) |
+| Versión | 0.2 (Nivel 2 y 3 actualizados con el despliegue real, 14/10/2026) |
 | Autor/equipo | Blue Team (Horacio Duarte, Pablo Morales, Andrés Varela) |
-| Fecha | 15/09/2026 |
+| Fecha | 15/09/2026 (creación); 14/10/2026 (última revisión) |
 | Aprobación | Pendiente (docente / RSI) |
 
 ---
@@ -41,7 +41,7 @@ El sistema como una sola caja: **"Gestor de Contraseñas con Control Centralizad
 | RSI / Auditor | Consulta el dashboard y recibe notificaciones para supervisar la seguridad y gestionar incidentes | Alertas, incidentes, KPIs y metadatos de auditoría — nunca secretos |
 | Dashboard (Grafana) | Visualiza KPIs, alertas, incidentes y funcionamiento para el RSI/auditor | Datos agregados de eventos, alertas, incidentes y agentes |
 | SIEM (Wazuh) | Recibe eventos normalizados, recibe reportes de agentes, correlaciona reglas y genera alertas | Eventos, logs, integridad de archivos y resultados de reglas |
-| Servidor de correo (Mailu) | Entrega notificaciones enviadas por el control central | Correos de alta, modificación, borrado y cambio de contraseña maestra |
+| Servidor de correo (Mailpit en el laboratorio; Mailu es el objetivo, no desplegado — ver limitación más abajo) | Entrega notificaciones enviadas por el control central | Correos de alta, modificación, borrado y cambio de contraseña maestra |
 | Red Team (Parte 2, fuera del límite de confianza) | Ataca el sistema una vez congelado | N/A — es un actor adversarial, no un integrador |
 
 **Límite de confianza clave**: todo lo que cruza de `cliente-gestor` hacia el resto del sistema
@@ -50,19 +50,25 @@ de una bóveda (zero-knowledge, sección 1.1 de `LETRA.md`).
 
 ## Nivel 2 — Contenedores
 
-| Contenedor | Tecnología | Responsabilidad | Despliegue | Protocolo |
-|---|---|---|---|---|
-| Cliente de escritorio | Tauri (Rust) + React/TS | Bóveda local, MFA, generador, firma de eventos | Binario nativo en la VM/equipo del usuario | HTTPS saliente (eventos) |
-| API de control central | Python / FastAPI | Verificación de eventos, RBAC, dashboard API | Contenedor Docker | REST/HTTPS |
-| Base de datos | PostgreSQL 16 | Persistencia de eventos, usuarios, incidentes | Contenedor Docker | SQL/TLS |
-| SIEM | Wazuh (manager + indexer + dashboard) | Correlación, reglas de detección, FIM | VM dedicada (stack oficial `wazuh-docker`) | Syslog / API Wazuh |
-| Servidor de correo | Mailu | Envío de notificaciones | VM dedicada (stack oficial Mailu) | SMTP/TLS |
-| Dashboard de KPIs | Grafana | Visualización de alertas/incidentes/KPIs | Contenedor Docker | HTTP, lee de Postgres/Wazuh |
-| Gestión de incidentes (`Incident` interno) | FastAPI + SQLAlchemy + PostgreSQL | Registra incidentes derivados de alertas Wazuh y gestiona su ciclo de vida | Componente de `control-central` y PostgreSQL | REST/HTTPS |
+**Tabla de despliegue real** (la planeada originalmente, por VM dedicada, se descartó el
+26/09/2026 — ver `docs/99-bitacora-trabajo.md` — en favor de contenedores Docker sobre un solo
+host, red `blue-team-net`; las filas `VM-*` de `00-arquitectura-4mas1.md` quedan como nodos
+lógicos, no físicos):
 
-La gestión de incidentes se implementa inicialmente dentro de `control-central`, sin desplegar
-TheHive. Una alerta de Wazuh crea un `Incident` en estado `abierto`; el RSI lo asigna y pasa a
-`en análisis`, adjunta evidencias y acciones, y finalmente lo pasa a `resuelto` con responsable
+| Contenedor | Tecnología real | Responsabilidad | Despliegue real | Protocolo |
+|---|---|---|---|---|
+| Cliente de escritorio | Tauri (Rust) + React/TS | Bóveda local, MFA, generador, firma de eventos | Binario nativo en el equipo del usuario | HTTPS saliente (eventos); sin TLS en el laboratorio (ver limitación abajo) |
+| API de control central | Python / FastAPI | Verificación de eventos, RBAC, dashboard API | Contenedor Docker (`infra/docker-compose.yml`), mismo host | REST/HTTP |
+| Base de datos | PostgreSQL 16 (`postgres:16-alpine`) | Persistencia de eventos, usuarios, incidentes, alertas | Contenedor Docker, mismo host | SQL, red interna Docker |
+| SIEM | Wazuh 4.14.8 — **solo manager + agente**, sin indexer ni dashboard (`wazuh/wazuh-manager`, `wazuh/wazuh-agent`) | El agente lee `infra/logs/audit-events.jsonl`; el manager corre `infra/wazuh/local_rules.xml` y escribe alertas en `alerts.json`, sin UI propia | Contenedores Docker, mismo host (no VM dedicada) | Agente→manager interno del stack; la API lee `alerts.json` directamente |
+| Servidor de correo | Mailpit v1.21 (`axllent/mailpit`). Mailu es el objetivo, no desplegado | Envío de notificaciones | Contenedor Docker, mismo host | SMTP sin TLS (`localhost:8025` para ver los correos) |
+| Dashboard de KPIs | Grafana OSS 11.2.0 (`grafana/grafana-oss`) | Visualización de alertas/incidentes/KPIs | Contenedor Docker, mismo host | HTTP, datasource Postgres únicamente |
+| Gestión de incidentes (`Incident` interno) | FastAPI + SQLAlchemy + PostgreSQL | Registra incidentes derivados de alertas Wazuh y gestiona su ciclo de vida | Componente de `control-central` y PostgreSQL | REST/HTTP |
+
+La gestión de incidentes se implementa dentro de `control-central`, sin desplegar TheHive (la
+imagen `strangebee/thehive` está en el compose detrás del profile `thehive`, que no se activa
+por defecto). Una alerta de Wazuh crea un `Incident` en estado `abierto`; el RSI lo asigna y pasa
+a `en análisis`, adjunta evidencias y acciones, y finalmente lo pasa a `resuelto` con responsable
 y fecha de cierre. TheHive queda como integración futura, no como alternativa de la arquitectura
 actual.
 
@@ -161,7 +167,7 @@ Está relacionado con R02 en `03-Analisis-Riesgos.md`.
 |---|---|---|
 | `crypto` (kdf, cipher) | Argon2id + XChaCha20-Poly1305 | — |
 | `vault` (store) | CRUD de credenciales. El archivo SQLite entero va cifrado en disco (`BOV2`, XChaCha20-Poly1305 con la clave Argon2id). Una bóveda vieja en SQLite sin cifrar se reescribe al abrirla | `crypto` |
-| `auth` (totp, webauthn) | MFA local para desbloquear la bóveda | `crypto` (deriva material de sesión) |
+| `auth` (totp) | MFA local para desbloquear la bóveda. El código de WebAuthn/Windows Hello se eliminó de la versión entregada (ver `09-Gestion-Accesos.md`) | `crypto` (deriva material de sesión) |
 | `events` (signer) | Firma JWS y envío/cola de eventos | `vault` (dispara al mutar), clave privada del agente |
 | `generator` (regex_policy) | Generación de contraseñas/passphrase cumpliendo regex por sistema | `vault` (lee la política definida) |
 
@@ -171,12 +177,16 @@ Está relacionado con R02 en `03-Analisis-Riesgos.md`.
 |---|---|---|
 | `api.events` | Recibe y verifica eventos JWS | `core.security`, `models.event` |
 | `api.users` | RBAC, MFA de usuarios del panel, elección Argon2id/bcrypt | `core.mfa`, `core.security`, `models.user` |
+| `api.incidents` | Crea un incidente desde una alerta Wazuh, permite asignarlo, adjuntar evidencias y cambiarlo entre `abierto`, `en análisis` y `resuelto`. Requiere token del panel (`core.auth`) | `models.incident`, `core.auth`, PostgreSQL |
+| `api.alerts` | Lista alertas y las clasifica como falso positivo (`PATCH`). Requiere token del panel (`core.auth`) | `siem.reglas`, `core.auth`, PostgreSQL |
 | `api.dashboard` | KPIs, alertas, incidentes, estado de agentes y última sincronización | `models.event`, `models.incident` |
-| `api.incidents` | Crea un incidente desde una alerta Wazuh, permite asignarlo, adjuntar evidencias y cambiarlo entre `abierto`, `en análisis` y `resuelto` | `models.incident`, `api.dashboard`, PostgreSQL |
 | `models.incident` | Persistencia del incidente, alerta de origen, responsable, estado, evidencias, fecha de creación y fecha de resolución | SQLAlchemy, PostgreSQL |
 | `core.security` | Verificación de firma JWS con clave pública por agente; hashing de contraseñas de usuarios del panel | Claves públicas de agentes (`keys/agentes/`) |
-| `core.mfa` | TOTP/WebAuthn/Windows Hello para usuarios del control central | `api.users` |
-| `siem.wazuh_forwarder` | Normaliza y reenvía eventos a Wazuh | `api.events` |
+| `core.auth` | Autenticación por token del panel para `api.incidents`/`api.alerts` (agregado el 12/10, hallazgo V10 de `10-Gestion-Vulnerabilidades.md`) | `models.user` |
+| `core.mfa` | TOTP (RFC 6238) para usuarios del control central. WebAuthn/Windows Hello no tienen endpoint — ver limitación en `09-Gestion-Accesos.md` | `api.users` |
+| `siem.wazuh_forwarder` | Escribe cada evento en `infra/logs/audit-events.jsonl`, que el agente de Wazuh lee | `api.events` |
+| `siem.reglas` | Correlación local (umbrales de fuerza bruta, borrado masivo, cambio de maestra), espejo de `infra/wazuh/local_rules.xml` | `api.events`, PostgreSQL |
+| `siem.alertas_wazuh` | Lee `alerts.json` del manager de Wazuh y cuenta alertas para los KPIs | `api.dashboard` |
 
 ## Nivel 4 — Código
 
@@ -187,6 +197,7 @@ Solo para los módulos de seguridad, según la guía de la plantilla.
 | `crypto` (cliente) | Strategy (KDF intercambiable Argon2id/bcrypt si se habilita) | `cliente-gestor/src-tauri/src/crypto/kdf.rs`, `cipher.rs` | `docs/09-Gestion-Accesos.md` |
 | `events.signer` (cliente) | — | `cliente-gestor/src-tauri/src/events/signer.rs` | `docs/09-Gestion-Accesos.md`, `docs/07-Monitoreo-Logs-SIEM.md` |
 | `core.security` (control central) | — | `control-central/app/core/security.py` | `docs/09-Gestion-Accesos.md` |
+| `core.auth` (control central) | — | `control-central/app/core/auth.py` | `docs/10-Gestion-Vulnerabilidades.md` (V10), `docs/09-Gestion-Accesos.md` |
 
 ---
 
@@ -198,10 +209,10 @@ vivo → vínculo de cada caja con controles MCU/BCU/ISO.
 ## Check de aceptación
 
 - [x] 4 niveles completos (código solo para módulos de seguridad).
-- [ ] Tecnologías reales (las efectivamente desplegadas, no solo las planeadas): el Nivel 2
-  todavía describe el objetivo (Mailu, Wazuh manager+indexer+dashboard, VM dedicada) y no lo
-  realmente desplegado (Mailpit, Wazuh solo manager+agente, contenedores Docker en un host —
-  ver las notas de "Limitación de alcance" más abajo en este mismo documento, que sí son reales).
+- [x] Tecnologías reales (las efectivamente desplegadas, no solo las planeadas): Nivel 2
+  actualizado el 14/10 con las imágenes y versiones reales de `infra/docker-compose.yml`
+  (Mailpit v1.21, Wazuh 4.14.8 solo manager+agente, Postgres 16, Grafana OSS 11.2.0, todo en
+  contenedores Docker sobre un solo host, no VM dedicada).
 - [x] Relaciones con actores y con SIEM/correo correctas.
 - [ ] Acompañado de capturas en `docs/evidencias/` (no hay capturas de arquitectura ahí; existe
   `docs/diagrama-arquitectura.png`, que es un diagrama, no una captura del sistema corriendo).

@@ -135,8 +135,6 @@ start http://localhost:8025
   Google Drive: https://drive.google.com/drive/folders/1Aj1xQlM_9wqOxddlyUNqLhm2NgsjPbNg
   (archivo `1012 (2).mp4`).
 - Verificado el 12/10/2026: el link abre una carpeta real de Drive llamada "Video", con ese
-  archivo. Pendiente confirmar que el permiso para quien lo abra sea "Cualquiera con el enlace
-  puede ver"; la vista anónima mostró un botón "Acceder", típico de un enlace con permiso más
-  restringido.
+  archivo. El 14/10/2026 Horacio Duarte confirmó que el permiso funciona bien para quien lo abre.
 - Qué demuestra: la demo funcional del sistema arrancando, con el diagrama de arquitectura
   (sección 6.2, punto 1 de la defensa).
