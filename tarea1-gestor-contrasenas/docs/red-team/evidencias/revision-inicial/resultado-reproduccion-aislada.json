@@ -1,0 +1,27 @@
+{
+  "prueba": "Evento con firma invalida en SQLite temporal en memoria",
+  "event_firma_valida": false,
+  "alertas_generadas": [
+    {
+      "regla": "cambio_maestra",
+      "evento_id": 1
+    }
+  ],
+  "tipo_incluido_en_notificaciones": true,
+  "base_real_modificada": false,
+  "correo_enviado": false,
+  "consultas_sin_authorization": {
+    "/api/events/?limit=1": {
+      "http": 200,
+      "tipo_respuesta": "list",
+      "registros": 1
+    },
+    "/api/dashboard/kpis": {
+      "http": 200,
+      "tipo_respuesta": "dict"
+    },
+    "/api/users/": {
+      "http": 401
+    }
+  }
+}

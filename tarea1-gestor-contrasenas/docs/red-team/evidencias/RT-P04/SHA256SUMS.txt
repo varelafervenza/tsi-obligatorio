@@ -1,0 +1,4 @@
+97c1e613ec8d993a48de54637e20ec9d47d664cb22f3664b774df0526a154fdc  01 - Consultar auditoria sin token.PNG
+1fa27afeae63dd6969463dc434fd0a631cbd96fb069d2f57526a2db4e53328e6  02-burp-eventos-200.png
+4caea8fa077f0fe12726359b17dbbf8c21be8a8acd95e77b8f0cb1b1e8d8ae03  03-burp-intercept-alertas.png
+80935b07dd938716982335984ef673f2e2bb81f999d95c5c264eeb500acde0e9  04-burp-alertas-401.png

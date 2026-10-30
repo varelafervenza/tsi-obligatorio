@@ -1,0 +1,42 @@
+{
+  "checked_at_utc": "2026-10-21T12:05:30.061596+00:00",
+  "original_id": 11,
+  "original_valid_before": true,
+  "original_valid_after": true,
+  "original_unchanged": true,
+  "only_changed_field": "sistema",
+  "original_request": {
+    "tipo": "alta_credencial",
+    "sistema": "RT-P02-Original",
+    "agente_id": "agente-215b7431",
+    "timestamp": "2026-10-21T12:01:26Z",
+    "firma_jws": "FIRMA_JWS_REDACTADA_1"
+  },
+  "altered_request": {
+    "tipo": "alta_credencial",
+    "sistema": "RT-P02-Alterado",
+    "agente_id": "agente-215b7431",
+    "timestamp": "2026-10-21T12:01:26Z",
+    "firma_jws": "FIRMA_JWS_REDACTADA_1"
+  },
+  "http_status": 201,
+  "http_response": {
+    "id": 43,
+    "tipo": "alta_credencial",
+    "sistema": "RT-P02-Alterado",
+    "agente_id": "agente-215b7431",
+    "occurred_at": "2026-10-21T12:01:26Z",
+    "received_at": "2026-10-21T12:05:30.014504Z",
+    "firma_valida": false,
+    "ip_origen": "127.0.0.1"
+  },
+  "database_record": {
+    "id": 43,
+    "tipo": "alta_credencial",
+    "sistema": "RT-P02-Alterado",
+    "agente_id": "agente-215b7431",
+    "firma_valida": false,
+    "occurred_at": "2026-10-21T12:01:26+00:00",
+    "received_at": "2026-10-21T12:05:30.014504+00:00"
+  }
+}

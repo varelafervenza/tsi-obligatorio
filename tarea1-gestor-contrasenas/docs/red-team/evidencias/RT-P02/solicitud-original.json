@@ -1,0 +1,7 @@
+{
+  "tipo": "alta_credencial",
+  "sistema": "RT-P02-Original",
+  "agente_id": "agente-215b7431",
+  "timestamp": "2026-10-21T12:01:26Z",
+  "firma_jws": "FIRMA_JWS_REDACTADA_1"
+}

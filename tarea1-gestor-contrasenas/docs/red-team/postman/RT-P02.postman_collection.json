@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "TSI - RT-P02 - Integridad",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:18001"
+    }
+  ],
+  "item": [
+    {
+      "name": "RT-P02 - Alteracion de eventos firmados",
+      "description": "Body visible. Obtener primero un evento NUEVO del exportador; sustituir body completo. Firmas históricas vencidas. Enviar manualmente original y luego alterado, sin Runner.",
+      "item": [
+        {
+          "name": "01 - Enviar original vigente",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/events/",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Los campos visibles son del evento histórico y su timestamp está vencido. Antes de Send, copiar TODO el objeto original/alterado que devuelve el exportador local: timestamp y firma deben pertenecer al mismo evento nuevo. No basta cambiar solo firma. El alterado cambia exclusivamente sistema. Detenerse si original no es válido. Cada POST crea auditoría y puede disparar notificaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Original\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"PEGAR_FIRMA_DEL_EVENTO_VIGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado de firma esperado\", function () { pm.response.to.have.status(201); pm.expect(pm.response.json().firma_valida).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Enviar alterado con MISMA firma",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/events/",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Los campos visibles son del evento histórico y su timestamp está vencido. Antes de Send, copiar TODO el objeto original/alterado que devuelve el exportador local: timestamp y firma deben pertenecer al mismo evento nuevo. No basta cambiar solo firma. El alterado cambia exclusivamente sistema. Detenerse si original no es válido. Cada POST crea auditoría y puede disparar notificaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Alterado\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"PEGAR_FIRMA_DEL_EVENTO_VIGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado de firma esperado\", function () { pm.response.to.have.status(201); pm.expect(pm.response.json().firma_valida).to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

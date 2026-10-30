@@ -1,0 +1,654 @@
+{
+  "info": {
+    "name": "TSI Red Team - Manual",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Pruebas manuales del laboratorio. Colección sin JWT incorporados. Pegar el payload del archivo rt03_payload.json en Body de la primera solicitud RT-P03. El segundo envío reutiliza el cuerpo capturado del primero. Revisar vigencia antes de ejecutar. No usar Runner ni bucles.",
+    "_postman_id": "ab851d88-7fb2-4cc5-9a7c-e547f0eb86c9"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:18001",
+      "type": "string"
+    },
+    {
+      "key": "rt03_first_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt03_first_valid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt02_payload",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt02_expires_utc",
+      "value": "2026-10-21T16:01:26+00:00",
+      "type": "string"
+    },
+    {
+      "key": "rt03_payload",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt03_expires_utc",
+      "value": "2026-10-21T16:21:41+00:00",
+      "type": "string"
+    },
+    {
+      "key": "rt02_altered_payload",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Comprobacion del backend",
+      "item": [
+        {
+          "name": "Comprobar backend",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/healthz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "healthz"
+              ]
+            },
+            "description": "Solo lectura. Debe responder status ok y database up."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Backend y base disponibles\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().database).to.eql(\"up\"); });"
+                ]
+              }
+            }
+          ],
+          "id": "5e4b0ed5-6353-4254-9b53-c0fb9b3c951b"
+        }
+      ]
+    },
+    {
+      "name": "RT-P02 - Alteracion de eventos firmados",
+      "description": "Body visible. Obtener primero un evento NUEVO del exportador; sustituir body completo. Firmas históricas vencidas. Enviar manualmente original y luego alterado, sin Runner.",
+      "item": [
+        {
+          "name": "01 - Enviar original vigente",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/events/",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Los campos visibles son del evento histórico y su timestamp está vencido. Antes de Send, copiar TODO el objeto original/alterado que devuelve el exportador local: timestamp y firma deben pertenecer al mismo evento nuevo. No basta cambiar solo firma. El alterado cambia exclusivamente sistema. Detenerse si original no es válido. Cada POST crea auditoría y puede disparar notificaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Original\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"PEGAR_FIRMA_DEL_EVENTO_VIGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado de firma esperado\", function () { pm.response.to.have.status(201); pm.expect(pm.response.json().firma_valida).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Enviar alterado con MISMA firma",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/events/",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Los campos visibles son del evento histórico y su timestamp está vencido. Antes de Send, copiar TODO el objeto original/alterado que devuelve el exportador local: timestamp y firma deben pertenecer al mismo evento nuevo. No basta cambiar solo firma. El alterado cambia exclusivamente sistema. Detenerse si original no es válido. Cada POST crea auditoría y puede disparar notificaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Alterado\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"PEGAR_FIRMA_DEL_EVENTO_VIGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado de firma esperado\", function () { pm.response.to.have.status(201); pm.expect(pm.response.json().firma_valida).to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RT-P03 - Reenvio del mismo evento (replay)",
+      "description": "Ejecutar 1 y 2 una sola vez cada uno, sin modificar el body entre envíos. Agrega hasta dos eventos a auditoría. El original creado por el gestor ya existe. Las firmas vencen: si firma_valida=false, detenerse y obtener un original fresco. No ejecutar en bucle.",
+      "item": [
+        {
+          "name": "01 - Primer envio del evento original",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            },
+            "description": "Antes de enviar, reemplazar TODO Body por el contenido del archivo rt03_payload.json. No cambiar campos del original. El cuerpo se guarda para el siguiente paso después de recibir la respuesta.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"PEGAR_EL_JSON_ORIGINAL_COMPLETO\",\n  \"agente_id\": \"PEGAR_EL_JSON_ORIGINAL_COMPLETO\",\n  \"timestamp\": \"2026-10-21T00:00:00Z\",\n  \"firma_jws\": \"PEGAR_EL_JSON_ORIGINAL_COMPLETO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"rt03_payload\", pm.variables.replaceIn(pm.request.body.raw));",
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "const result = pm.response.json();",
+                  "pm.test(\"Firma original válida\", function () { pm.expect(result.firma_valida).to.eql(true); });",
+                  "pm.collectionVariables.set(\"rt03_first_id\", String(result.id));",
+                  "pm.collectionVariables.set(\"rt03_first_valid\", String(result.firma_valida));"
+                ]
+              }
+            }
+          ],
+          "id": "c4d38d82-d785-41e4-aa67-f7342430029c"
+        },
+        {
+          "name": "02 - Repetir exactamente el mismo evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            },
+            "description": "Mismo body exacto del paso 1. Comparar IDs, estado de firma y HTTP. No editar ningún campo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{rt03_payload}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const result = pm.response.json();",
+                  "const first = pm.collectionVariables.get(\"rt03_first_id\");",
+                  "pm.test(\"Se ejecutó primero el envío 1\", function () { pm.expect(first).to.not.eql(\"\"); pm.expect(first).to.not.eql(undefined); });",
+                  "pm.collectionVariables.set(\"rt03_second_response\", JSON.stringify(result));",
+                  "if (pm.response.code === 201) {",
+                  " pm.test(\"Firma todavía válida\", function () { pm.expect(result.firma_valida).to.eql(true); });",
+                  " if (result.firma_valida === true && pm.collectionVariables.get(\"rt03_first_valid\") === \"true\" && String(result.id) !== first) {",
+                  "  console.log(\"OBSERVACIÓN: el mismo mensaje firmado produjo dos registros distintos\", first, result.id);",
+                  "  pm.collectionVariables.set(\"rt03_observation\", \"Acepta duplicados: IDs \" + first + \" y \" + result.id);",
+                  " } else { pm.collectionVariables.set(\"rt03_observation\", \"Revisar firma y respuestas; resultado no concluyente\"); }",
+                  "} else { pm.collectionVariables.set(\"rt03_observation\", \"Revisar HTTP \" + pm.response.code + \" y cuerpo antes de atribuir el rechazo a replay\"); }"
+                ]
+              }
+            }
+          ],
+          "id": "5ebc623b-d623-4ddc-9f83-547edd8ed0de"
+        },
+        {
+          "name": "03 - Consultar registros de replay",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/events/?limit=100",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Buscar RT-P03-Original y comparar IDs. Un 201 duplicado requiere analizar impacto, no acredita por sí solo una vulnerabilidad."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "const matches = pm.response.json().filter(x => x.sistema === \"RT-P03-Original\");",
+                  "console.log(\"Registros RT-P03 visibles:\", matches);"
+                ]
+              }
+            }
+          ],
+          "id": "76cdd835-b670-47f3-9125-8895d37db8eb"
+        }
+      ]
+    },
+    {
+      "name": "RT-P04 - Acceso a auditoria sin autenticacion",
+      "description": "Dos consultas de solo lectura. No enviar Authorization ni cookies de sesión. Un 200 con metadatos en auditoría evidencia acceso sin autenticación; el 401 de usuarios sirve de control. No revela contraseñas de la bóveda ni demuestra exposición a Internet.",
+      "item": [
+        {
+          "id": "8a2c15ab-7067-4c91-9467-2bb6527ca778",
+          "name": "01 - Consultar auditoria sin token",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": "{{base_url}}/api/events/?limit=1",
+            "description": "Authorization: No Auth. Body vacío. Si devuelve HTTP 200 y un evento, guardar captura como evidencia. El test de protección FALLARÁ en ese caso: es intencional, porque comprueba que el recurso debería estar protegido."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"La solicitud no configura Authorization\", function () { pm.expect(pm.request.headers.has(\"Authorization\")).to.eql(false); });",
+                  "pm.test(\"La auditoría debería exigir autenticación\", function () { pm.expect(pm.response.code, \"HTTP 200 con datos indica exposición sin token\").to.be.oneOf([401,403]); });",
+                  "if (pm.response.code === 200) { const body = pm.response.json(); console.log(\"Auditoría accesible sin token. Registros:\", Array.isArray(body) ? body.length : \"revisar respuesta\"); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "e8fef60b-94c0-4951-bc26-665743d3ead3",
+          "name": "02 - Comparar con usuarios protegidos",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": "{{base_url}}/api/users/",
+            "description": "Control comparativo con No Auth y Body vacío. Esperado HTTP 401. No introducir tokens para esta prueba."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sin Authorization configurado\", function () { pm.expect(pm.request.headers.has(\"Authorization\")).to.eql(false); });",
+                  "pm.test(\"Usuarios rechaza la consulta sin token\", function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RT-P06 - Intentos de login del control central",
+      "description": "Cuenta ficticia existente: prueba-login@example.com (admin, id 1; sin MFA al crearla). Preparación verificada; este archivo actualizado no se ha ejecutado. Primero completar y enviar 00; solo si responde 200, enviar 01–05 una vez cada una. Máximo cinco fallos; parar ante 429, bloqueo, Retry-After, timeout o demora importante. No Runner ni bucles. Las pruebas de rechazo no acreditan intentos ilimitados. Contraseña y token fuera de evidencias públicas.",
+      "item": [
+        {
+          "name": "00 - Control: login correcto (completar contraseña privada)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/users/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Cuenta ficticia creada y login correcto verificado en la preparación. Reemplazar SOLO el marcador de contraseña usando el archivo privado fuera del repositorio. No compartir ni exportar la colección con esa contraseña real. El login reemplaza el token previo de esta cuenta. No se almacena el token mediante scripts. Ocultar access_token en capturas. Si se activa MFA posteriormente, aportar código vigente; no desactivarlo para pasar la prueba.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"PEGAR_AQUI_LA_CLAVE_DEL_ARCHIVO_PRIVADO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login de control correcto\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Token de control recibido\", function () { pm.expect(pm.response.json().access_token).to.be.a(\"string\").and.not.empty; });",
+                  "console.log(\"RT-P06 control\", new Date().toISOString(), \"HTTP\", pm.response.code, \"ms\", pm.response.responseTime);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01 - Intento incorrecto 1 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Intento incorrecto 2 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-2!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Intento incorrecto 3 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-3!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Intento incorrecto 4 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-4!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Intento incorrecto 5 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-5!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

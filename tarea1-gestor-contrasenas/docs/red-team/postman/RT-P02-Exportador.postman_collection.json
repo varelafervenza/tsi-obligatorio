@@ -1,0 +1,23 @@
+{
+  "info": {
+    "name": "TSI - RT-P02 - Obtener evento firmado",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [],
+  "item": [
+    {
+      "name": "Obtener ultimo RT-P02-Original vigente",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "noauth"
+        },
+        "url": "http://127.0.0.1:18002/rt-p02/latest",
+        "description": "Requiere auxiliar rtp02_exportador_local.py ejecutándose en el host y evento ficticio recién creado en la app. API principal no devuelve firmas. Copiar el objeto original completo a RT-P02/01 y alterado a RT-P02/02. No copiar la respuesta envolvente completa. No crea eventos ni firmas."
+      }
+    }
+  ]
+}

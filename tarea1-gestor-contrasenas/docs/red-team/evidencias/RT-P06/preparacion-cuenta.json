@@ -1,0 +1,17 @@
+{
+  "actividad": "Preparación RT-P06, no intentos incorrectos",
+  "fecha_utc": "2026-10-26T00:50:58.405745+00:00",
+  "creacion_http": 201,
+  "usuario": {
+    "id": 1,
+    "email": "prueba-login@example.com",
+    "rol": "admin",
+    "algoritmo_hash": "argon2id",
+    "mfa_habilitado": false,
+    "mfa_tipo": null
+  },
+  "login_correcto_http": 200,
+  "token_emitido": true,
+  "secretos_excluidos": true,
+  "intentos_incorrectos_ejecutados": 0
+}

@@ -1,0 +1,289 @@
+{
+  "info": {
+    "name": "TSI - RT-P06 - Login central",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:18001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "RT-P06 - Intentos de login del control central",
+      "description": "Cuenta ficticia existente: prueba-login@example.com (admin, id 1; sin MFA al crearla). Preparación verificada; este archivo actualizado no se ha ejecutado. Primero completar y enviar 00; solo si responde 200, enviar 01–05 una vez cada una. Máximo cinco fallos; parar ante 429, bloqueo, Retry-After, timeout o demora importante. No Runner ni bucles. Las pruebas de rechazo no acreditan intentos ilimitados. Contraseña y token fuera de evidencias públicas.",
+      "item": [
+        {
+          "name": "00 - Control: login correcto (completar contraseña privada)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{base_url}}/api/users/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Cuenta ficticia creada y login correcto verificado en la preparación. Reemplazar SOLO el marcador de contraseña usando el archivo privado fuera del repositorio. No compartir ni exportar la colección con esa contraseña real. El login reemplaza el token previo de esta cuenta. No se almacena el token mediante scripts. Ocultar access_token en capturas. Si se activa MFA posteriormente, aportar código vigente; no desactivarlo para pasar la prueba.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"PEGAR_AQUI_LA_CLAVE_DEL_ARCHIVO_PRIVADO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login de control correcto\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Token de control recibido\", function () { pm.expect(pm.response.json().access_token).to.be.a(\"string\").and.not.empty; });",
+                  "console.log(\"RT-P06 control\", new Date().toISOString(), \"HTTP\", pm.response.code, \"ms\", pm.response.responseTime);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01 - Intento incorrecto 1 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Intento incorrecto 2 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-2!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Intento incorrecto 3 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-3!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Intento incorrecto 4 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-4!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Intento incorrecto 5 (un solo Send)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/login",
+            "description": "Preparación, NO ejecutada. Usar exclusivamente una cuenta ficticia existente y autorizada. Cambiar el correo visible en cada body por el de esa cuenta. No crear usuarios desde esta colección: el primer registro en una base vacía sería administrador. Confirmar previamente un login válido por separado para acreditar que la cuenta existe. Si exige MFA, conservarlo y verificar el acceso con el código vigente. Enviar manualmente una sola vez cada solicitud 01–05, esperando la respuesta. Máximo cinco fallos. No usar Runner, bucles ni cuentas personales. Detenerse ante 429, Retry-After, bloqueo, timeout o demora importante. Un 401 indica rechazo, no éxito del ataque. Cinco rechazos sin limitación visible no demuestran intentos ilimitados ni que una contraseña pueda adivinarse. Contrastar con código, configuración y límites externos. Registrar hora UTC, estado, tiempo y cabeceras; ocultar cualquier secreto en evidencia.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prueba-login@example.com\",\n  \"password\": \"Incorrecta-P06-5!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Credenciales incorrectas rechazadas o intento limitado\", function () {",
+                  "  pm.expect([401, 403, 423, 429]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test(\"No se emite access_token para este intento incorrecto\", function () {",
+                  "  let body = {}; try { body = pm.response.json(); } catch (_) {}",
+                  "  pm.expect(body).not.to.have.property(\"access_token\");",
+                  "});",
+                  "console.log(\"RT-P06\", new Date().toISOString(), \"HTTP\", pm.response.code,",
+                  "  \"ms\", pm.response.responseTime, \"Retry-After\", pm.response.headers.get(\"Retry-After\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

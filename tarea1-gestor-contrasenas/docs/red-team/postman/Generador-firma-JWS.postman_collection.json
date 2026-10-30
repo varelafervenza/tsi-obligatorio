@@ -1,0 +1,5 @@
+{
+ "info":{"name":"TSI - Generador de firmas JWS de prueba","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json","description":"Auxiliar local, no login. Requiere generador_firmas_local.py y registro autorizado de su clave pública. No envía eventos. Copiar body_evento completo; firma vigente cinco minutos."},
+ "auth":{"type":"noauth"},
+ "item":[{"name":"Generar firma y body completo","request":{"method":"POST","url":"http://127.0.0.1:18003/firmar","header":[{"key":"Content-Type","value":"application/json"},{"key":"X-TSI-Lab","value":"firmas-prueba"}],"body":{"mode":"raw","raw":"{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Original\"\n}","options":{"raw":{"language":"json"}}}}}]
+}

@@ -1,0 +1,21 @@
+{
+  "capturado_en_utc": "2026-10-22T01:23:17.344141+00:00",
+  "original_id": 51,
+  "reenvios_ids": [
+    52,
+    53
+  ],
+  "todos_firma_valida": true,
+  "campos_firmados_y_firma_identicos": true,
+  "sha256_firma_jws": "2c7216c977b82ec45e42dbcf10f45b8dc9416f61185623c30c0e908e9bf66ecb",
+  "lineas_auditoria_recuperadas": 3,
+  "correos_coincidentes": 3,
+  "correos_ids": [
+    "h7hPAGSa9Cwvri2VTM9yqd",
+    "GvEYmcGBYycMRmdhSDnHci",
+    "585fhqqc4L8ytQG5f5qVCN"
+  ],
+  "solicitudes_post_adicionales_ejecutadas": 0,
+  "origen_body": "Reconstruido desde los campos persistidos; no es una captura HAR de Postman.",
+  "respuestas_postman": "IDs 52 y 53 y firma_valida=true informados por el usuario y corroborados en PostgreSQL; no se capturaron cabeceras originales de sus POST."
+}

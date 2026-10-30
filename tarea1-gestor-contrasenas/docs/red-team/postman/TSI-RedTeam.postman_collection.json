@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "TSI - Pruebas Red Team",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Solicitudes manuales de laboratorio. Ejecutar de a una, no usar Runner ni bucles. base_url debe apuntar exclusivamente al backend autorizado. Las variables incluyen firmas de eventos ficticios de vigencia limitada, no claves privadas. Capturar las respuestas originales. No se afirma procedencia distinta de la real."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:18001",
+      "type": "string"
+    },
+    {
+      "key": "rt03_first_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt03_first_valid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rt02_payload",
+      "value": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Original\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"FIRMA_JWS_REDACTADA_1\"\n}",
+      "type": "string"
+    },
+    {
+      "key": "rt02_expires_utc",
+      "value": "2026-10-21T16:01:26+00:00",
+      "type": "string"
+    },
+    {
+      "key": "rt03_payload",
+      "value": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P03-Original\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:21:41Z\",\n  \"firma_jws\": \"FIRMA_JWS_REDACTADA_2\"\n}",
+      "type": "string"
+    },
+    {
+      "key": "rt03_expires_utc",
+      "value": "2026-10-21T16:21:41+00:00",
+      "type": "string"
+    },
+    {
+      "key": "rt02_altered_payload",
+      "value": "{\n  \"tipo\": \"alta_credencial\",\n  \"sistema\": \"RT-P02-Alterado-Manual\",\n  \"agente_id\": \"agente-215b7431\",\n  \"timestamp\": \"2026-10-21T12:01:26Z\",\n  \"firma_jws\": \"FIRMA_JWS_REDACTADA_1\"\n}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Salud",
+      "item": [
+        {
+          "name": "Comprobar backend",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/healthz",
+            "description": "Solo lectura. Debe responder status ok y database up."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Backend y base disponibles\", function () { pm.response.to.have.status(200); pm.expect(pm.response.json().database).to.eql(\"up\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RT-P03 - Replay",
+      "description": "Ejecutar 1 y 2 una sola vez cada uno, sin modificar el body entre envíos. Agrega hasta dos eventos a auditoría. El original creado por el gestor ya existe. Las firmas vencen: si firma_valida=false, detenerse y obtener un original fresco. No ejecutar en bucle.",
+      "item": [
+        {
+          "name": "1 - Primer reenvío idéntico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/events/",
+            "description": "Envía el evento original sin cambios. Anotar id y verificar firma_valida=true. Si falla, detenerse.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{rt03_payload}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "const result = pm.response.json();",
+                  "pm.test(\"Firma original válida\", function () { pm.expect(result.firma_valida).to.eql(true); });",
+                  "pm.collectionVariables.set(\"rt03_first_id\", String(result.id));",
+                  "pm.collectionVariables.set(\"rt03_first_valid\", String(result.firma_valida));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2 - Segundo reenvío idéntico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/events/",
+            "description": "Mismo body exacto del paso 1. Comparar IDs, estado de firma y HTTP. No editar ningún campo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{rt03_payload}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const result = pm.response.json();",
+                  "const first = pm.collectionVariables.get(\"rt03_first_id\");",
+                  "pm.test(\"Se ejecutó primero el envío 1\", function () { pm.expect(first).to.not.eql(\"\"); pm.expect(first).to.not.eql(undefined); });",
+                  "pm.collectionVariables.set(\"rt03_second_response\", JSON.stringify(result));",
+                  "if (pm.response.code === 201) {",
+                  " pm.test(\"Firma todavía válida\", function () { pm.expect(result.firma_valida).to.eql(true); });",
+                  " if (result.firma_valida === true && pm.collectionVariables.get(\"rt03_first_valid\") === \"true\" && String(result.id) !== first) {",
+                  "  console.log(\"OBSERVACIÓN: el mismo mensaje firmado produjo dos registros distintos\", first, result.id);",
+                  "  pm.collectionVariables.set(\"rt03_observation\", \"Acepta duplicados: IDs \" + first + \" y \" + result.id);",
+                  " } else { pm.collectionVariables.set(\"rt03_observation\", \"Revisar firma y respuestas; resultado no concluyente\"); }",
+                  "} else { pm.collectionVariables.set(\"rt03_observation\", \"Revisar HTTP \" + pm.response.code + \" y cuerpo antes de atribuir el rechazo a replay\"); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3 - Consultar registros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/events/?limit=100",
+            "description": "Buscar RT-P03-Original y comparar IDs. Un 201 duplicado requiere analizar impacto, no acredita por sí solo una vulnerabilidad."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "const matches = pm.response.json().filter(x => x.sistema === \"RT-P03-Original\");",
+                  "console.log(\"Registros RT-P03 visibles:\", matches);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RT-P02 - Integridad",
+      "description": "Opcional: repetir integridad. Primero original y después alterado. Se agregan dos eventos. No modifica la bóveda. Detenerse si la firma del original no es válida.",
+      "item": [
+        {
+          "name": "1 - Original sin cambios",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/events/",
+            "description": "Verificar firma_valida=true antes de enviar la copia alterada.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{rt02_payload}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "const result = pm.response.json();",
+                  "pm.test(\"Firma original válida\", function () { pm.expect(result.firma_valida).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2 - Solo sistema alterado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/events/",
+            "description": "Cambia únicamente sistema; conserva firma_jws y todos los demás campos. Esperado firma_valida=false.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{rt02_altered_payload}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Alteración detectada\", function () { pm.expect(pm.response.json().firma_valida).to.eql(false); });",
+                  "console.log(\"Comparar con original válido. Si el original dio false, la prueba no es concluyente.\");"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

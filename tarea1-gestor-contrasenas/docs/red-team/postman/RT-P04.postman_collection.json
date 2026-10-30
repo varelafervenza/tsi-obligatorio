@@ -1,0 +1,76 @@
+{
+  "info": {
+    "_postman_id": "e0c3079c-3574-43bf-89dc-06b04663d6b2",
+    "name": "RT-P04 - Acceso sin autenticacion",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Dos consultas de solo lectura. No enviar Authorization ni cookies de sesión. Un 200 con metadatos en auditoría evidencia acceso sin autenticación; el 401 de usuarios sirve de control. No revela contraseñas de la bóveda ni demuestra exposición a Internet."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:18001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "RT-P04 - Acceso a auditoria sin autenticacion",
+      "description": "Dos consultas de solo lectura. No enviar Authorization ni cookies de sesión. Un 200 con metadatos en auditoría evidencia acceso sin autenticación; el 401 de usuarios sirve de control. No revela contraseñas de la bóveda ni demuestra exposición a Internet.",
+      "item": [
+        {
+          "id": "8a2c15ab-7067-4c91-9467-2bb6527ca778",
+          "name": "01 - Consultar auditoria sin token",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": "{{base_url}}/api/events/?limit=1",
+            "description": "Authorization: No Auth. Body vacío. Si devuelve HTTP 200 y un evento, guardar captura como evidencia. El test de protección FALLARÁ en ese caso: es intencional, porque comprueba que el recurso debería estar protegido."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"La solicitud no configura Authorization\", function () { pm.expect(pm.request.headers.has(\"Authorization\")).to.eql(false); });",
+                  "pm.test(\"La auditoría debería exigir autenticación\", function () { pm.expect(pm.response.code, \"HTTP 200 con datos indica exposición sin token\").to.be.oneOf([401,403]); });",
+                  "if (pm.response.code === 200) { const body = pm.response.json(); console.log(\"Auditoría accesible sin token. Registros:\", Array.isArray(body) ? body.length : \"revisar respuesta\"); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "e8fef60b-94c0-4951-bc26-665743d3ead3",
+          "name": "02 - Comparar con usuarios protegidos",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": "{{base_url}}/api/users/",
+            "description": "Control comparativo con No Auth y Body vacío. Esperado HTTP 401. No introducir tokens para esta prueba."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sin Authorization configurado\", function () { pm.expect(pm.request.headers.has(\"Authorization\")).to.eql(false); });",
+                  "pm.test(\"Usuarios rechaza la consulta sin token\", function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ]
+}

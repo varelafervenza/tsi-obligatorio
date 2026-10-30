@@ -1,0 +1,52 @@
+[
+  {
+    "id": 5,
+    "tipo": "intento_fallido_maestra",
+    "sistema": "boveda",
+    "agente_id": "agente-215b7431",
+    "firma_valida": true,
+    "occurred_at": "2026-10-21T11:51:52+00:00",
+    "received_at": "2026-10-21T11:51:40.253699+00:00",
+    "ip_origen": "192.168.77.10"
+  },
+  {
+    "id": 6,
+    "tipo": "intento_fallido_maestra",
+    "sistema": "boveda",
+    "agente_id": "agente-215b7431",
+    "firma_valida": true,
+    "occurred_at": "2026-10-21T11:52:00+00:00",
+    "received_at": "2026-10-21T11:51:47.54447+00:00",
+    "ip_origen": "192.168.77.10"
+  },
+  {
+    "id": 7,
+    "tipo": "intento_fallido_maestra",
+    "sistema": "boveda",
+    "agente_id": "agente-215b7431",
+    "firma_valida": true,
+    "occurred_at": "2026-10-21T11:52:06+00:00",
+    "received_at": "2026-10-21T11:51:53.931019+00:00",
+    "ip_origen": "192.168.77.10"
+  },
+  {
+    "id": 8,
+    "tipo": "intento_fallido_maestra",
+    "sistema": "boveda",
+    "agente_id": "agente-215b7431",
+    "firma_valida": true,
+    "occurred_at": "2026-10-21T11:52:14+00:00",
+    "received_at": "2026-10-21T11:52:02.137631+00:00",
+    "ip_origen": "192.168.77.10"
+  },
+  {
+    "id": 9,
+    "tipo": "intento_fallido_maestra",
+    "sistema": "boveda",
+    "agente_id": "agente-215b7431",
+    "firma_valida": true,
+    "occurred_at": "2026-10-21T11:52:24+00:00",
+    "received_at": "2026-10-21T11:52:12.455691+00:00",
+    "ip_origen": "192.168.77.10"
+  }
+]

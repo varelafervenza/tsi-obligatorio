@@ -1,0 +1,5 @@
+24c2cbd13810338199851c8d621baea0f53bd7a06744231b989750a293dea51f  01-maestra-un-caracter.png
+a47876ac48821997d29d5638145563228101f0c7e214e47dbbc1b87c9ddb9fa1  02-apertura-rechazada.png
+b11c84b5245f93514ff04b17c7ba1578af3c677f0f5d79dd55a59d108d47be32  03-creacion-duplicada.png
+01eb12d51ecd4dd285aba84ddd276805f47ad38000c30336b44f637115577acc  04-nueva-boveda-un-caracter.png
+41e9e53a128b8143d5da7f45e5921b679a6f2fdcb8c1d2be904d30ca38bcc745  05-boveda-abierta-con-maestra-corta.png

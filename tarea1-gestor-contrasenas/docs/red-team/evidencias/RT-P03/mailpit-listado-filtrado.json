@@ -1,0 +1,77 @@
+{
+  "origen": "GET /api/v1/messages?limit=100",
+  "messages": [
+    {
+      "ID": "h7hPAGSa9Cwvri2VTM9yqd",
+      "MessageID": "eJ2NPuCzAsNGEUjNrKj7Wj@mailpit",
+      "Read": false,
+      "From": {
+        "Name": "",
+        "Address": "noreply@correo.local"
+      },
+      "To": [
+        {
+          "Name": "",
+          "Address": "rsi@correo.local"
+        }
+      ],
+      "Cc": [],
+      "Bcc": [],
+      "ReplyTo": [],
+      "Subject": "Alta de credencial",
+      "Created": "2026-10-22T01:19:22.577Z",
+      "Tags": [],
+      "Size": 786,
+      "Attachments": 0,
+      "Snippet": "Evento de auditoría del gestor de contraseñas. id: 53 tipo: alta_credencial sistema: RT-P03-Original agente_id: agente-215b7431 occurred_at: 2026-10-22T01:17:16+00:00 received_at: 2026-10-22T01:19:2..."
+    },
+    {
+      "ID": "GvEYmcGBYycMRmdhSDnHci",
+      "MessageID": "WMUdBBjsbnPn7755ndsnj7@mailpit",
+      "Read": false,
+      "From": {
+        "Name": "",
+        "Address": "noreply@correo.local"
+      },
+      "To": [
+        {
+          "Name": "",
+          "Address": "rsi@correo.local"
+        }
+      ],
+      "Cc": [],
+      "Bcc": [],
+      "ReplyTo": [],
+      "Subject": "Alta de credencial",
+      "Created": "2026-10-22T01:17:51.464Z",
+      "Tags": [],
+      "Size": 786,
+      "Attachments": 0,
+      "Snippet": "Evento de auditoría del gestor de contraseñas. id: 52 tipo: alta_credencial sistema: RT-P03-Original agente_id: agente-215b7431 occurred_at: 2026-10-22T01:17:16+00:00 received_at: 2026-10-22T01:17:5..."
+    },
+    {
+      "ID": "585fhqqc4L8ytQG5f5qVCN",
+      "MessageID": "oUb5bHz5MQ8DGMwgWEm53f@mailpit",
+      "Read": false,
+      "From": {
+        "Name": "",
+        "Address": "noreply@correo.local"
+      },
+      "To": [
+        {
+          "Name": "",
+          "Address": "rsi@correo.local"
+        }
+      ],
+      "Cc": [],
+      "Bcc": [],
+      "ReplyTo": [],
+      "Subject": "Alta de credencial",
+      "Created": "2026-10-22T01:17:03.777Z",
+      "Tags": [],
+      "Size": 786,
+      "Attachments": 0,
+      "Snippet": "Evento de auditoría del gestor de contraseñas. id: 51 tipo: alta_credencial sistema: RT-P03-Original agente_id: agente-215b7431 occurred_at: 2026-10-22T01:17:16+00:00 received_at: 2026-10-22T01:17:0..."
+    }
+  ]
+}
