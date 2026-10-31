@@ -1,0 +1,7 @@
+RT-P12 — Comprobación acotada de logs del backend
+Consulta: 2026-10-31 02:40 UTC
+Origen: contenedor control-central de la VM Linux
+Comando: docker compose logs --since 2026-10-31T02:00:00Z control-central
+Método: búsqueda booleana del marcador ficticio de la prueba, sin imprimir el contenido de los logs.
+Resultado: marcador ausente; la salida examinada tenía 911 caracteres.
+Límite: solo se examinaron logs recientes de ese contenedor. No acredita ausencia de filtraciones en otros servicios, fechas o rutas de error.

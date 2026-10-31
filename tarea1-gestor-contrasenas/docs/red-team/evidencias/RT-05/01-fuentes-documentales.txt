@@ -1,0 +1,17 @@
+RT-05 — Evidencia documental revisada el 31/10/2026
+
+Fuente 1: tarea1-gestor-contrasenas/docs/00-arquitectura-c4.md
+Sección: "Limitación de alcance: TLS en el laboratorio", líneas 85-109.
+SHA-256 del archivo fuente: 0545b276a824cb2a828f0d00cca44e0683e3a6fea59a3e72e4cdd08e6befc466
+Pasajes relevantes:
+  "la entrega no usa TLS en el canal cliente → API ni en el correo"
+  "Sin TLS, el cliente y la API se comunican en texto plano dentro de la red del laboratorio."
+  "un atacante con acceso a la red del laboratorio podría leer o alterar los eventos (RT-05)"
+
+Fuente 2: tarea1-gestor-contrasenas/docs/03-Analisis-Riesgos.md
+Fila: R05, línea 112.
+SHA-256 del archivo fuente: 1618653af3531e50516cb56b2946aa6f7c4d4c1606fa402d770de2ba29f74a72
+Pasaje relevante:
+  "Retener (limitación aceptada)"; "Aceptado, con mitigación no aplicada."
+
+Método: lectura de documentación local. No se ejecutó una prueba MITM.

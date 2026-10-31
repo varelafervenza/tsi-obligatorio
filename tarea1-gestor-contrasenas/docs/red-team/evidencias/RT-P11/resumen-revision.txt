@@ -1,0 +1,12 @@
+RT-P11 — Resumen de revisión de repositorio, 30/10/2026 (America/Montevideo)
+Alcance: carpeta tarea1-gestor-contrasenas, referencias Git locales y archivos Red Team sin versionar.
+Commits accesibles examinados: 87.
+Patrones de clave privada PEM, JWS compacto y tokens GitHub/AWS buscados en Git: 0 coincidencias.
+Archivos de entorno encontrados en el historial: infra/.env.example; infra/control-central.env.example.
+Asignaciones que requirieron revisión: token fijo y hash en control-central/tests/test_auth_incidentes_alertas.py; valores de prueba, no credenciales operativas confirmadas.
+Protección actual: .gitignore excluye .env reales, keys/, *.sqlite y copias.
+Archivos locales Red Team sin versionar con JWS completos: 9 archivos, 3 valores distintos; los 3 tenían exp anterior al 30/10/2026.
+Rutas locales afectadas: postman/rt02_altered_payload.json; postman/rt02_payload.json; postman/rt03_payload.json; postman/TSI-RedTeam.postman_collection.json; evidencias/RT-P02/resultado.json; evidencias/RT-P02/solicitud-alterada.json; evidencias/RT-P02/solicitud-original.json; evidencias/RT-P03/body-identico-reconstruido.json; evidencias/RT-P03/eventos-postgresql-originales.json.
+No se imprimieron ni archivaron los valores completos en esta revisión.
+Límite: docs/red-team.rar no inspeccionado; patrones no cubren todos los formatos; referencias remotas no descargadas.
+Resultado: sin secreto operativo confirmado en el historial local; saneamiento pendiente antes de publicar evidencias Red Team.
