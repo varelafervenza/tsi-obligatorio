@@ -19,7 +19,7 @@ Inventario obtenido del código y la documentación; los puertos son configuraci
 | Control central FastAPI | `control-central/`; `127.0.0.1:8001` | Autenticación, permisos, MFA del panel y validación de eventos firmados. |
 | PostgreSQL | Servicio `postgres` en la red Docker `blue-team-net`, sin puerto publicado | Persistencia y restricciones de acceso; verificar backups/restauración en el entorno acordado. |
 | Grafana | `127.0.0.1:3000` | Accesos y tratamiento de datos mostrados en el dashboard. |
-| Mailpit | SMTP `127.0.0.1:1025`; interfaz `127.0.0.1:8025` | Notificaciones de laboratorio y posibilidad de suplantación dentro del alcance. |
+| Mailpit | SMTP `127.0.0.1:1025`; interfaz `127.0.0.1:8025` | Receptor de notificaciones de laboratorio. Aceptar un mensaje aquí no prueba relay externo, SPF/DKIM ni suplantación en correo real; véase [RT-P14](RT-P14-correo-mailpit.md). |
 | Wazuh manager y agente | Red interna Docker, sin puertos publicados | Detección de intentos fallidos, borrados y cambios de maestra; evidencia de alertas y respuesta. |
 | Repositorio y configuración | Código, Dockerfiles, archivos de ejemplo y documentación | Secretos expuestos y diferencias entre controles declarados e implementados. No copiar secretos reales a evidencias. |
 

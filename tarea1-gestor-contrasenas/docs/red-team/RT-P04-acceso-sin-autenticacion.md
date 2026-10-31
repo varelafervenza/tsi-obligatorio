@@ -1,6 +1,6 @@
 # RT-P04 — Consulta de auditoría sin autenticación
 
-Fecha de la verificación inicial: **21/10/2026**. Comprobación adicional en Burp Suite Community: **28/10/2026**. Hallazgo relacionado: **RT-H01**. Estado: **lectura de auditoría sin autenticación reproducida en Postman y Burp**.
+Fecha de la verificación inicial: **21/10/2026**. Comprobación adicional en Burp Suite Community: **28/10/2026**. Hallazgo relacionado: **RT-H01**. Estado: **lectura de auditoría sin autenticación reproducida en Postman y Burp**. Esta prueba cubre el resultado de acceso a datos de auditoría del objetivo **RT-03**; no demuestra elevación de privilegios ni acceso a contraseñas de la bóveda.
 
 ## Objetivo y alcance
 
